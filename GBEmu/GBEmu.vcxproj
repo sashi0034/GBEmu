@@ -118,6 +118,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GBEmu\ConstParam.cpp" />
+    <ClCompile Include="GBEmu\DebugParam.cpp" />
     <ClCompile Include="GBEmu\EmuConfig.cpp">
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -197,7 +198,9 @@
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="GBEmu\EmuFlowchart.cpp" />
-    <ClCompile Include="GBEmu\HW\Memery.cpp" />
+    <ClCompile Include="GBEmu\HW\Cartridge.cpp" />
+    <ClCompile Include="GBEmu\HW\Memory.cpp" />
+    <ClCompile Include="GBEmu\HW\MemoryAddress.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -399,9 +402,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GBEmu\ConstParam.h" />
+    <ClInclude Include="GBEmu\DebugParam.h" />
     <ClInclude Include="GBEmu\EmuConfig.h" />
     <ClInclude Include="GBEmu\EmuFlowchart.h" />
-    <ClInclude Include="GBEmu\HW\Memery.h" />
+    <ClInclude Include="GBEmu\HW\Cartridge.h" />
+    <ClInclude Include="GBEmu\HW\Memory.h" />
+    <ClInclude Include="GBEmu\HW\MemoryAddress.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -487,7 +493,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App\asset\rom\.gitignore" />
     <Content Include="App\asset\rom\cpu_instrs.gb" />
+    <Content Include="App\asset\rom\Pocket Puyo Puyo 2 Tsuu.GB" />
+    <Content Include="App\asset\rom\Puyo Puyo.GB" />
+    <Content Include="App\asset\rom\Zelda no Densetsu - Yume o Miru Shima.GB" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

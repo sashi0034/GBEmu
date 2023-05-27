@@ -1,13 +1,15 @@
 ﻿#include "stdafx.h"
 #include "EmuFlowchart.h"
 
+#include "DebugParam.h"
 #include "EmuConfig.h"
+#include "HW/Memory.h"
 
 namespace GBEmu::EmuFlowchart
 {
 	void RunEmu()
 	{
-		EmuConfig config{U"asset/rom/cpu_instrs.gb"};
+		EmuConfig config{DebugParam::RomPathPuyoPuyo};
 
 		if (FileSystem::Exists(config.CartridgePath) == false)
 		{
@@ -17,6 +19,12 @@ namespace GBEmu::EmuFlowchart
 
 		Console.open();
 		Console.writeln(U"Setup ...");
+
+
+		HW::Memory memory;
+
+		memory.LoadCartridge(config.CartridgePath);
+
 
 		// 背景の色を設定する | Set the background color
 		Scene::SetBackground(ColorF{ 0.6, 0.8, 0.7 });
