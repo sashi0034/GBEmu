@@ -199,6 +199,8 @@
     </ClCompile>
     <ClCompile Include="GBEmu\EmuFlowchart.cpp" />
     <ClCompile Include="GBEmu\HW\Cartridge.cpp" />
+    <ClCompile Include="GBEmu\HW\CPU.cpp" />
+    <ClCompile Include="GBEmu\HW\CPUInstruction.cpp" />
     <ClCompile Include="GBEmu\HW\Memory.cpp" />
     <ClCompile Include="GBEmu\HW\MemoryAddress.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -406,6 +408,8 @@
     <ClInclude Include="GBEmu\EmuConfig.h" />
     <ClInclude Include="GBEmu\EmuFlowchart.h" />
     <ClInclude Include="GBEmu\HW\Cartridge.h" />
+    <ClInclude Include="GBEmu\HW\CPU.h" />
+    <ClInclude Include="GBEmu\HW\CPUInstruction.h" />
     <ClInclude Include="GBEmu\HW\Memory.h" />
     <ClInclude Include="GBEmu\HW\MemoryAddress.h" />
     <ClInclude Include="stdafx.h" />

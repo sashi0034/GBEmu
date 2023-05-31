@@ -36,14 +36,13 @@ namespace GBEmu::HW
 
 	namespace CartridgeAddress
 	{
-		inline uint16 TitleStart = 0x0134;
-		inline uint16 TitleEnd = 0x0143;
-
-		inline uint16 CartridgeType = 0x147;
-
-		inline uint16 RomSize = 0x148;
-
-		inline uint16 RamSize = 0x149;
+		enum : uint16{
+			TitleStart = 0x0134,
+			TitleEnd = 0x0143,
+			CartridgeType = 0x147,
+			RomSize = 0x148,
+			RamSize = 0x149,
+		};
 	};
 
 	struct CartridgeHeader
