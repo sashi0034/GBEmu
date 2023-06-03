@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace GBEmu
+namespace GBEmu::HW
 {
 	enum class CPUInstruction : uint8
 	{

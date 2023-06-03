@@ -4,10 +4,18 @@ namespace GBEmu::HW
 {
 	class HWEnv;
 
+	struct CPUInstructionProperty
+	{
+		bool IsPrefixedCB;
+		uint8 Code;
+	};
+
 	class CPU
 	{
 	public:
 		void StepOperation(HWEnv& env);
+
+		void SetSP(uint16 sp) { m_sp = sp; }
 
 		uint16 PC() const {return m_pc;}
 		uint16 SP() const {return m_sp;}
@@ -57,5 +65,8 @@ namespace GBEmu::HW
 			reg1 = value >> 8;
 			reg2 = value & 0xff;
 		}
+
+		CPUInstructionProperty fetchInstruction(HWEnv& env) const;
+
 	};
 }

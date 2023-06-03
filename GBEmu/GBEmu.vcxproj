@@ -202,7 +202,9 @@
     <ClCompile Include="GBEmu\HW\Cartridge.cpp" />
     <ClCompile Include="GBEmu\HW\CPU.cpp" />
     <ClCompile Include="GBEmu\HW\CPUInstruction.cpp" />
+    <ClCompile Include="GBEmu\HW\CPUInstructionCB.cpp" />
     <ClCompile Include="GBEmu\HW\CPUOperation.cpp" />
+    <ClCompile Include="GBEmu\HW\CPUOperationCB.cpp" />
     <ClCompile Include="GBEmu\HW\HWEnv.cpp" />
     <ClCompile Include="GBEmu\HW\HWLogger.cpp" />
     <ClCompile Include="GBEmu\HW\MBC.cpp" />
@@ -418,7 +420,9 @@
     <ClInclude Include="GBEmu\HW\Cartridge.h" />
     <ClInclude Include="GBEmu\HW\CPU.h" />
     <ClInclude Include="GBEmu\HW\CPUInstruction.h" />
+    <ClInclude Include="GBEmu\HW\CPUInstructionCB.h" />
     <ClInclude Include="GBEmu\HW\CPUOperation.h" />
+    <ClInclude Include="GBEmu\HW\CPUOperationCB.h" />
     <ClInclude Include="GBEmu\HW\HWEnv.h" />
     <ClInclude Include="GBEmu\HW\HWLogger.h" />
     <ClInclude Include="GBEmu\HW\MBC.h" />

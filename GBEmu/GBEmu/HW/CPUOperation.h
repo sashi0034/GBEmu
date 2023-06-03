@@ -17,6 +17,6 @@ namespace GBEmu::HW
 
 	namespace CPUOperation
 	{
-		CPUOperationResult OperateInstruction(HWEnv& ENV);
+		CPUOperationResult OperateInstruction(HWEnv& env, CPUInstruction instr);
 	};
 }

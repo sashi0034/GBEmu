@@ -42,6 +42,11 @@ namespace GBEmu::HW
 		return m_memory[addr];
 	}
 
+	uint16 Memory::Read16(uint16 addr)
+	{
+		return Read(addr) | (Read(addr + 1) << 8);
+	}
+
 	void Memory::Write(uint16 addr, uint8 data)
 	{
 		if (RangeUint16(RomBank00Start, RomBankNNEnd).IsBetween(addr) ||
