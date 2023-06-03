@@ -2,6 +2,7 @@
 #include "Memory.h"
 
 #include "MemoryAddress.h"
+#include "GBEmu/Util/Range.h"
 
 // http://bgb.bircd.org/pandocs.htm#memorymap
 
@@ -20,23 +21,44 @@
 
 namespace GBEmu::HW
 {
+	using namespace MemoryAddress;
+
 	Memory::Memory()
 	{
 		m_memory.resize(MemorySize);
 	}
 
-	void Memory::LoadCartridge(FilePath cartridgePath)
+	uint8 Memory::Read(uint16 addr)
+	{
+		// https://github.com/pokemium/gb-docs-ja/blob/main/cartridge/mbc/mbc1.md
+
+		if (Util::RangeUint16(RomBank00Start, RomBankNNEnd).IsBetween(addr))
+		{
+			return m_cartridge.Read(addr);
+		}
+		else if (Util::RangeUint16(ExternalRamStart, ExternalRamEnd).IsBetween(addr))
+		{
+			return m_cartridge.Read(addr);
+		}
+
+		// TODO: もっと対応させていく
+
+		return 0;
+	}
+
+
+	void Memory::LoadCartridge(const FilePath& cartridgePath)
 	{
 		BinaryReader reader{cartridgePath};
 
+		Array<uint8> cartridgeData{};
 		const int cartridgeSize = reader.size();
-		m_cartridgeData.resize(cartridgeSize);
-		reader.read(m_cartridgeData.data(), cartridgeSize);
+		cartridgeData.resize(cartridgeSize);
+		reader.read(cartridgeData.data(), cartridgeSize);
 
-		m_cartridgeHeader = loadCartridgeHeader(m_cartridgeData);
+		const auto cartridgeHeader = loadCartridgeHeader(cartridgeData);
 
-
-
+		m_cartridge = Cartridge(cartridgeHeader, cartridgeData);
 	}
 
 	CartridgeHeader Memory::loadCartridgeHeader(const Array<uint8>& cartridgeData)
@@ -60,7 +82,6 @@ namespace GBEmu::HW
 		uint8 romInfo = cartridgeData[CartridgeAddress::RomSize];
 		// カートリッジの ROM サイズを指定します。通常は「32KB shl N」として計算されます。
 		header.RomSizeKB = 32 << romInfo;
-
 
 		const uint8 ramInfo = cartridgeData[CartridgeAddress::RamSize];
 

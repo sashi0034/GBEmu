@@ -7,6 +7,11 @@ namespace GBEmu::HW
 {
 	void CPU::StepOperation(HardwareEnv& env)
 	{
+		// uint8 readCode = env.GetMemory().ReadAt()
+
 		auto&& operation = CPUOperation::OperateInstruction(env);
+
+
+
 	}
 }

@@ -8,15 +8,16 @@ namespace GBEmu::HW
 	public:
 		Memory();
 
-		void LoadCartridge(FilePath cartridgePath);
+		uint8 Read(uint16 addr);
+
+		void LoadCartridge(const FilePath& cartridgePath);
 
 		static constexpr int MemorySize = 0x10000;
 
 	private:
-		Array<uint8> m_cartridgeData{};
-		Array<uint8> m_memory{};
+		Cartridge m_cartridge{};
 
-		CartridgeHeader m_cartridgeHeader{};
+		Array<uint8> m_memory{};
 
 		static CartridgeHeader loadCartridgeHeader(const Array<uint8>& cartridgeData);
 	};

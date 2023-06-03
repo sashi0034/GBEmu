@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "MBC.h"
 
 namespace GBEmu::HW
 {
@@ -51,5 +52,23 @@ namespace GBEmu::HW
 		CartridgeType Type;
 		int RomSizeKB;
 		int RamSizeKB;
+	};
+
+	class Cartridge
+	{
+	public:
+		Cartridge() = default;
+		Cartridge(const CartridgeHeader& header, const Array<uint8>& data);
+
+		CartridgeHeader& Header(){return m_header;}
+		Array<uint8>& ROM(){return m_rom;}
+		Array<uint8>& RAM(){return m_ram;}
+		uint8 Read(uint16 addr);
+		void Write(uint16 addr, uint16 data);
+	private:
+		CartridgeHeader m_header{};
+		Array<uint8> m_rom{};
+		Array<uint8> m_ram{};
+		std::unique_ptr<MBC> m_mbc{};
 	};
 }
