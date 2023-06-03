@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "CPUInstruction.h"
-#include "HardwareEnv.h"
+#include "HWEnv.h"
 
 namespace GBEmu::HW
 {
@@ -17,6 +17,6 @@ namespace GBEmu::HW
 
 	namespace CPUOperation
 	{
-		CPUOperationResult OperateInstruction(HardwareEnv& ENV);
+		CPUOperationResult OperateInstruction(HWEnv& ENV);
 	};
 }

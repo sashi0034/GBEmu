@@ -2,12 +2,12 @@
 
 namespace GBEmu::HW
 {
-	class HardwareEnv;
+	class HWEnv;
 
 	class CPU
 	{
 	public:
-		void StepOperation(HardwareEnv& env);
+		void StepOperation(HWEnv& env);
 
 		uint16 PC() const {return m_pc;}
 		uint16 SP() const {return m_sp;}

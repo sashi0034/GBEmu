@@ -1,11 +1,11 @@
 ﻿#include "stdafx.h"
 #include "CPU.h"
-#include "HardwareEnv.h"
+#include "HWEnv.h"
 #include "CPUOperation.h"
 
 namespace GBEmu::HW
 {
-	void CPU::StepOperation(HardwareEnv& env)
+	void CPU::StepOperation(HWEnv& env)
 	{
 		// uint8 readCode = env.GetMemory().ReadAt()
 

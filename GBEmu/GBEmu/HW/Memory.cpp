@@ -2,7 +2,7 @@
 #include "Memory.h"
 
 #include "MemoryAddress.h"
-#include "GBEmu/EmuLogger.h"
+#include "HWLogger.h"
 #include "GBEmu/Util/Range.h"
 
 // http://bgb.bircd.org/pandocs.htm#memorymap
@@ -56,7 +56,7 @@ namespace GBEmu::HW
 		}
 		else if (RangeUint16(EchoWorkRamStart, EchoWorkRamEnd).IsBetween(addr))
 		{
-			EmuLogger::Warn(U"accessed mirrored work ram: {}"_fmt(addr));
+			HWLogger::Warn(U"accessed mirrored work ram: {}"_fmt(addr));
 			Write(addr- (static_cast<uint8>(EchoWorkRamStart) - static_cast<uint8>(WorkRamBank0Start)), data);
 		}
 		else if (RangeUint16(IOPortsStart, IOPortsEnd).IsBetween(addr))
@@ -111,7 +111,7 @@ namespace GBEmu::HW
 			ramInfo == 0x03 ? 32 :
 			0xff;
 
-		EmuLogger::Assert(header.RamSizeKB != 0xff, U"invalid ram info in cartridge");
+		HWLogger::Assert(header.RamSizeKB != 0xff, U"invalid ram info in cartridge");
 
 		return header;
 	}

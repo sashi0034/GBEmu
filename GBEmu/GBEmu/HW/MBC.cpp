@@ -3,7 +3,7 @@
 
 #include "Cartridge.h"
 #include "MemoryAddress.h"
-#include "GBEmu/EmuLogger.h"
+#include "HWLogger.h"
 #include "GBEmu/Util/Range.h"
 
 namespace GBEmu::HW
@@ -21,7 +21,7 @@ namespace GBEmu::HW
 	void MBCNone::Write(Cartridge& cartridge, uint16 addr, uint8 data)
 	{
 		// RomOnlyのときは書き込み不可
-		EmuLogger::Error(U"invalid write address in MBC0");
+		HWLogger::Error(U"invalid write address in MBC0");
 	}
 
 	uint8 MBC1::Read(Cartridge& cartridge, uint16 addr)
@@ -43,7 +43,7 @@ namespace GBEmu::HW
 			return cartridge.RAM()[externalRamAddress(addr)];
 		}
 
-		EmuLogger::Error(U"invalid read address in MBC1: {}"_fmt(addr));
+		HWLogger::Error(U"invalid read address in MBC1: {}"_fmt(addr));
 		return 0;
 	}
 
@@ -86,7 +86,7 @@ namespace GBEmu::HW
 		}
 		else
 		{
-			EmuLogger::Error(U"invalid write address in MBC1: {}"_fmt(addr));
+			HWLogger::Error(U"invalid write address in MBC1: {}"_fmt(addr));
 		}
 	}
 

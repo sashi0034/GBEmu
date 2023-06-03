@@ -8,7 +8,7 @@ namespace GBEmu::HW
 	class CPU;
 	class Memory;
 
-	class HardwareEnv
+	class HWEnv
 	{
 	public:
 		CPU& GetCPU()

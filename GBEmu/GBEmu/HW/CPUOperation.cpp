@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include "CPUOperation.h"
 
-#include "HardwareEnv.h"
+#include "HWEnv.h"
 
 namespace GBEmu::HW::CPUOperation
 {
@@ -10,7 +10,7 @@ namespace GBEmu::HW::CPUOperation
 		return CPUOperationResult(1, 4);
 	}
 
-	CPUOperationResult OperateInstruction(HardwareEnv& env)
+	CPUOperationResult OperateInstruction(HWEnv& env)
 	{
 		auto pc = env.GetCPU().PC();
 		// TODO: env.GetMemory().Read(pc);
