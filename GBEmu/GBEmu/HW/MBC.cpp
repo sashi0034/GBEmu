@@ -9,28 +9,37 @@ namespace GBEmu::HW
 {
 	using namespace MemoryAddress;
 
-	constexpr int romBankSize = 16 * 1024; // 0x4000
+	constexpr int romBankSize0x4000 = 0x4000; // 16 * 1024
+	constexpr int ramBankSize0x2000 = 0x2000;
+
+	uint8 MBCNone::Read(Cartridge& cartridge, uint16 addr)
+	{
+		return cartridge.ROM()[addr];
+	}
+
+	void MBCNone::Write(Cartridge& cartridge, uint16 addr, uint8 data)
+	{
+		// RomOnlyのときは書き込み不可
+		assert(false);
+	}
 
 	uint8 MBC1::Read(Cartridge& cartridge, uint16 addr)
 	{
-		if (Util::RangeUint16(RomBank00Start, RomBank00End).IsBetween(addr))
-		{
-			const uint16 offset = addr;
-			return m_bankMode == 1
-				? cartridge.ROM()[romBankIndexExtended(cartridge) * romBankSize + offset]
-				: cartridge.ROM()[addr];
-		}
-		else if (Util::RangeUint16(RomBankNNStart, RomBankNNEnd).IsBetween(addr))
+		if (RangeUint16(RomBank00Start, RomBank00End).IsBetween(addr))
 		{
 			const uint16 offset = addr - RomBank00Start;
-			return cartridge.ROM()[romBankIndexExtended(cartridge) * romBankSize + offset];
+			return m_bankMode == 1
+				? cartridge.ROM()[romBankIndexExtended(cartridge) * romBankSize0x4000 + offset]
+				: cartridge.ROM()[addr];
 		}
-		else if (Util::RangeUint16(ExternalRamStart, ExternalRamEnd).IsBetween(addr))
+		else if (RangeUint16(RomBankNNStart, RomBankNNEnd).IsBetween(addr))
 		{
-			const uint16 offset = addr - ExternalRamStart;
-			return cartridge.RAM()[m_bankMode == 0
-				? offset
-				: m_secondBankIndex * 0x2000 + offset];
+			const uint16 offset = addr - RomBankNNStart;
+			return cartridge.ROM()[romBankIndexExtended(cartridge) * romBankSize0x4000 + offset];
+		}
+		else if (RangeUint16(ExternalRamStart, ExternalRamEnd).IsBetween(addr))
+		{
+			return cartridge.RAM()[externalRamAddress(addr)];
 		}
 
 		assert(false);
@@ -39,7 +48,50 @@ namespace GBEmu::HW
 
 	void MBC1::Write(Cartridge& cartridge, uint16 addr, uint8 data)
 	{
-		// TODO
+		if (RangeUint16(0x0000, 0x1fff).IsBetween(addr))
+		{
+			m_ramEnableFrag = data == 0x0a;
+		}
+		else if (RangeUint16(0x2000, 0x3fff).IsBetween(addr))
+		{
+			if (data == 0x00 || data == 0x20 || data == 0x40 || data == 0x60)
+			{
+				m_romBankIndex = data + 1;
+			}
+			else
+			{
+				const auto romSizeKB = cartridge.Header().RomSizeKB;
+				m_romBankIndex = data & (
+					romSizeKB == 32 ? 0b1 :
+					romSizeKB == 64 ? 0b11 :
+					romSizeKB == 128 ? 0b111 :
+					romSizeKB == 256 ? 0b1111 :
+					0b11111);
+			}
+		}
+		else if (RangeUint16(0x4000, 0x5fff).IsBetween(addr))
+		{
+			m_secondBankIndex = data & 0b11;
+		}
+		else if (RangeUint16(0x6000, 0x7fff).IsBetween(addr))
+		{
+			m_bankMode = data & 0b1;
+		}
+		else if (RangeUint16(ExternalRamStart, ExternalRamEnd).IsBetween(addr))
+		{
+			if (m_ramEnableFrag == false) return;
+
+			const uint16 offset = addr - ExternalRamStart;
+			cartridge.RAM()[externalRamAddress(addr)] = data;
+		}
+	}
+
+	int MBC1::externalRamAddress(uint16 addr) const
+	{
+		const uint16 offset = addr - ExternalRamStart;
+		return m_bankMode == 0
+				   ? offset
+				   : m_secondBankIndex * ramBankSize0x2000 + offset;
 	}
 
 	uint16 MBC1::romBankIndexExtended(Cartridge& cartridge) const

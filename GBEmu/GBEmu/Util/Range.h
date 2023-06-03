@@ -63,3 +63,6 @@ namespace GBEmu::Util
 	using RangeUint8 = Range<uint8>;
 	using RangeUint16 = Range<uint16>;
 }
+
+using GBEmu::Util::RangeUint8;
+using GBEmu::Util::RangeUint16;

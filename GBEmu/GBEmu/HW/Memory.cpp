@@ -32,18 +32,13 @@ namespace GBEmu::HW
 	{
 		// https://github.com/pokemium/gb-docs-ja/blob/main/cartridge/mbc/mbc1.md
 
-		if (Util::RangeUint16(RomBank00Start, RomBankNNEnd).IsBetween(addr))
-		{
-			return m_cartridge.Read(addr);
-		}
-		else if (Util::RangeUint16(ExternalRamStart, ExternalRamEnd).IsBetween(addr))
+		if (RangeUint16(RomBank00Start, RomBankNNEnd).IsBetween(addr) ||
+			RangeUint16(ExternalRamStart, ExternalRamEnd).IsBetween(addr))
 		{
 			return m_cartridge.Read(addr);
 		}
 
-		// TODO: もっと対応させていく
-
-		return 0;
+		return m_memory[addr];
 	}
 
 

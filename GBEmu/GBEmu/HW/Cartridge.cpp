@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "Cartridge.h"
 
+#include "GBEmu/ConstParam.h"
+
 
 namespace GBEmu::HW
 {
@@ -9,6 +11,12 @@ namespace GBEmu::HW
 		const auto type = header.Type;
 
 		using ct = CartridgeType;
+
+		if (type == ct::RomOnly)
+		{
+			return std::make_unique<MBC>(MBCNone());
+		}
+
 		if (type == ct::MBC1 || type == ct::MBC1Ram || type == ct::MBC1RamBattery)
 		{
 			return std::make_unique<MBC>(MBC1());
