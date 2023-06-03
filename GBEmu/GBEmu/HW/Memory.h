@@ -9,6 +9,7 @@ namespace GBEmu::HW
 		Memory();
 
 		uint8 Read(uint16 addr);
+		void Write(uint16 addr, uint8 data);
 
 		void LoadCartridge(const FilePath& cartridgePath);
 

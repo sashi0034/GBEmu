@@ -81,7 +81,6 @@ namespace GBEmu::HW
 		{
 			if (m_ramEnableFrag == false) return;
 
-			const uint16 offset = addr - ExternalRamStart;
 			cartridge.RAM()[externalRamAddress(addr)] = data;
 		}
 	}

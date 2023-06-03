@@ -41,6 +41,29 @@ namespace GBEmu::HW
 		return m_memory[addr];
 	}
 
+	void Memory::Write(uint16 addr, uint8 data)
+	{
+		if (RangeUint16(RomBank00Start, RomBankNNEnd).IsBetween(addr) ||
+			RangeUint16(ExternalRamStart, ExternalRamEnd).IsBetween(addr))
+		{
+			m_cartridge.Write(addr, data);
+		}
+		else if (RangeUint16(WorkRamBank0Start, WorkRamBank1End).IsBetween(addr))
+		{
+			m_memory[addr] = data;
+			m_memory[EchoWorkRamStart + (addr - WorkRamBank0Start)] = data;
+		}
+		else if (RangeUint16(EchoWorkRamStart, EchoWorkRamEnd).IsBetween(addr))
+		{
+			// Waring: E000-FDFFは普通使わない
+			Write(addr- (static_cast<uint8>(EchoWorkRamStart) - static_cast<uint8>(WorkRamBank0Start)), data);
+		}
+		else if (RangeUint16(IOPortsStart, IOPortsEnd).IsBetween(addr))
+		{
+			// TODO: IO関連メソッドを作る
+		}
+	}
+
 
 	void Memory::LoadCartridge(const FilePath& cartridgePath)
 	{
