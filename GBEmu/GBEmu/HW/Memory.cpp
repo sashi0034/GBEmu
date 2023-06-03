@@ -62,11 +62,12 @@ namespace GBEmu::HW
 		header.RomSizeKB = 32 << romInfo;
 
 
-		uint8 ramInfo = cartridgeData[CartridgeAddress::RomSize];
+		const uint8 ramInfo = cartridgeData[CartridgeAddress::RamSize];
 
 		header.RamSizeKB =
 			ramInfo == 0x00 ? 0 :
 			ramInfo == 0x01 ? 2 :
+			ramInfo == 0x02 ? 8 :
 			ramInfo == 0x03 ? 32 :
 			0xff;
 		assert(header.RamSizeKB != 0xff);
