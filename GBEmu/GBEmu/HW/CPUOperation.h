@@ -13,6 +13,11 @@ namespace GBEmu::HW
 			ByteLength(byteLength),
 			CycleCount(cycleCount)
 		{}
+
+		static CPUOperationResult Invalid()
+		{
+			return CPUOperationResult(0, 0);
+		}
 	};
 
 	namespace CPUOperation

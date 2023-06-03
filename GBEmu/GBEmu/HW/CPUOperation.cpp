@@ -34,13 +34,53 @@ namespace GBEmu::HW::CPUOperation
 		return CPUOperationResult(3, 12);
 	}
 
+	CPUOperationResult operateLD_X_A(HWEnv& env, CPUInstruction instr)
+	{
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+		const uint8 a = cpu.RegA();
+
+		const auto cycle4 = CPUOperationResult(1, 4);
+		const auto cycle8 = CPUOperationResult(1, 8);
+		const auto cycle16 = CPUOperationResult(3, 16);
+
+		switch (instr)
+		{
+		case ci::LD_A_A:
+			cpu.SetA(a); return cycle4;
+		case ci::LD_B_A:
+			cpu.SetB(a); return cycle4;
+		case ci::LD_C_A:
+			cpu.SetC(a); return cycle4;
+		case ci::LD_C_D:
+			cpu.SetD(a); return cycle4;
+		case ci::LD_E_A:
+			cpu.SetE(a); return cycle4;
+		case ci::LD_H_A:
+			cpu.SetH(a); return cycle4;
+		case ci::LD_L_A:
+			cpu.SetL(a); return cycle4;
+		case ci::LD_mBC_A:
+			memory.Write(cpu.RegBC(), a); return cycle8;
+		case ci::LD_mDE_A:
+			memory.Write(cpu.RegDE(), a); return cycle8;
+		case ci::LD_mHL_A:
+			memory.Write(cpu.RegHL(), a); return cycle8;
+		case ci::LD_ma16_A:
+			memory.Write(memory.Read16(cpu.PC() + 1), a); return cycle16;
+		default:
+			assert(false);
+			return CPUOperationResult::Invalid();
+		}
+	}
+
 	CPUOperationResult OperateInstruction(HWEnv& env, CPUInstruction instr)
 	{
 		switch (instr)
 		{
 		case ci::NOP: return operateNOP();
 		case ci::LD_BC_d16: return operateLD_XX_d16(env, instr);
-		case ci::LD_mBC_A: break;
+		case ci::LD_mBC_A: return operateLD_X_A(env, instr);
 		case ci::INC_BC: break;
 		case ci::INC_B: break;
 		case ci::DEC_B: break;
@@ -55,8 +95,8 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_C_d8: break;
 		case ci::RRCA: break;
 		case ci::STOP_d8: break;
-		case ci::LD_DE_d16: operateLD_XX_d16(env, instr);
-		case ci::LD_mDE_A: break;
+		case ci::LD_DE_d16: return operateLD_XX_d16(env, instr);
+		case ci::LD_mDE_A: return operateLD_X_A(env, instr);
 		case ci::INC_DE: break;
 		case ci::INC_D: break;
 		case ci::DEC_D: break;
@@ -71,7 +111,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_E_d8: break;
 		case ci::RRA: break;
 		case ci::JR_NZ_r8: break;
-		case ci::LD_HL_d16: operateLD_XX_d16(env, instr);
+		case ci::LD_HL_d16: return operateLD_XX_d16(env, instr);
 		case ci::LDI_mHL_A: break;
 		case ci::INC_HL: break;
 		case ci::INC_H: break;
@@ -87,8 +127,8 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_L_d8: break;
 		case ci::CPL: break;
 		case ci::JR_NC_r8: break;
-		case ci::LD_SP_d16: operateLD_XX_d16(env, instr);
-		case ci::LD_mHL_A: break;
+		case ci::LD_SP_d16: return operateLD_XX_d16(env, instr);
+		case ci::LD_mHLm_A: break;
 		case ci::INC_SP: break;
 		case ci::INC_mHL: break;
 		case ci::DEC_mHL: break;
@@ -109,7 +149,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_B_H: break;
 		case ci::LD_B_L: break;
 		case ci::LD_B_HL: break;
-		case ci::LD_B_A: break;
+		case ci::LD_B_A: return operateLD_X_A(env, instr);
 		case ci::LD_C_B: break;
 		case ci::LD_C_C: break;
 		case ci::LD_C_D: break;
@@ -117,7 +157,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_C_H: break;
 		case ci::LD_C_L: break;
 		case ci::LD_C_HL: break;
-		case ci::LD_C_A: break;
+		case ci::LD_C_A: return operateLD_X_A(env, instr);
 		case ci::LD_D_B: break;
 		case ci::LD_D_C: break;
 		case ci::LD_D_D: break;
@@ -125,7 +165,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_D_H: break;
 		case ci::LD_D_L: break;
 		case ci::LD_D_HL: break;
-		case ci::LD_D_A: break;
+		case ci::LD_D_A: return operateLD_X_A(env, instr);
 		case ci::LD_E_B: break;
 		case ci::LD_E_C: break;
 		case ci::LD_E_D: break;
@@ -133,7 +173,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_E_H: break;
 		case ci::LD_E_L: break;
 		case ci::LD_E_HL: break;
-		case ci::LD_E_A: break;
+		case ci::LD_E_A: return operateLD_X_A(env, instr);
 		case ci::LD_H_B: break;
 		case ci::LD_H_C: break;
 		case ci::LD_H_D: break;
@@ -141,7 +181,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_H_H: break;
 		case ci::LD_H_L: break;
 		case ci::LD_H_HL: break;
-		case ci::LD_H_A: break;
+		case ci::LD_H_A: return operateLD_X_A(env, instr);
 		case ci::LD_L_B: break;
 		case ci::LD_L_C: break;
 		case ci::LD_L_D: break;
@@ -149,7 +189,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_L_H: break;
 		case ci::LD_L_L: break;
 		case ci::LD_L_HL: break;
-		case ci::LD_L_A: break;
+		case ci::LD_L_A: return operateLD_X_A(env, instr);
 		case ci::LD_HL_B: break;
 		case ci::LD_HL_C: break;
 		case ci::LD_HL_D: break;
@@ -157,7 +197,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_HL_H: break;
 		case ci::LD_HL_L: break;
 		case ci::HALT: break;
-		case ci::LD_HL_A: break;
+		case ci::LD_mHL_A: return operateLD_X_A(env, instr);
 		case ci::LD_A_B: break;
 		case ci::LD_A_C: break;
 		case ci::LD_A_D: break;
@@ -165,7 +205,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_A_H: break;
 		case ci::LD_A_L: break;
 		case ci::LD_A_HL: break;
-		case ci::LD_A_A: break;
+		case ci::LD_A_A: return operateLD_X_A(env, instr);
 		case ci::ADD_A_B: break;
 		case ci::ADD_A_C: break;
 		case ci::ADD_A_D: break;
@@ -272,7 +312,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::RST_20H: break;
 		case ci::ADD_SP_r8: break;
 		case ci::JP_HL: break;
-		case ci::LD_a16_A: break;
+		case ci::LD_ma16_A: return operateLD_X_A(env, instr);
 		case ci::Reserved_EB: break;
 		case ci::Reserved_EC: break;
 		case ci::Reserved_ED: break;
