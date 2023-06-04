@@ -74,6 +74,27 @@ namespace GBEmu::HW::CPUOperation
 		}
 	}
 
+	CPUOperationResult operateINC_XX(HWEnv& env, CPUInstruction instr)
+	{
+		auto&& cpu = env.GetCPU();
+		const auto result = CPUOperationResult(1, 8);
+
+		switch (instr)
+		{
+		case ci::INC_BC_0x03:
+			cpu.SetBC(cpu.RegBC() + 1); return result;
+		case ci::INC_DE_0x13:
+			cpu.SetDE(cpu.RegDE() + 1); return result;
+		case ci::INC_HL_0x23:
+			cpu.SetHL(cpu.RegHL() + 1); return result;
+		case ci::INC_SP_0x33:
+			cpu.SetSP(cpu.SP() + 1); return result;
+		default:
+			assert(false);
+			return CPUOperationResult::Invalid();
+		}
+	}
+
 	CPUOperationResult OperateInstruction(HWEnv& env, CPUInstruction instr)
 	{
 		switch (instr)
@@ -81,7 +102,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::NOP_0x00: return operateNOP();
 		case ci::LD_BC_d16_0x01: return operateLD_XX_d16(env, instr);
 		case ci::LD_mBC_A_0x02: return operateLD_X_A(env, instr);
-		case ci::INC_BC_0x03: break;
+		case ci::INC_BC_0x03: return operateINC_XX(env, instr);
 		case ci::INC_B_0x04: break;
 		case ci::DEC_B_0x05: break;
 		case ci::LD_B_d8_0x06: break;
@@ -97,7 +118,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::STOP_d8_0x10: break;
 		case ci::LD_DE_d16_0x11: return operateLD_XX_d16(env, instr);
 		case ci::LD_mDE_A_0x12: return operateLD_X_A(env, instr);
-		case ci::INC_DE_0x13: break;
+		case ci::INC_DE_0x13: return operateINC_XX(env, instr);
 		case ci::INC_D_0x14: break;
 		case ci::DEC_D_0x15: break;
 		case ci::LD_D_d8_0x16: break;
@@ -113,7 +134,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::JR_NZ_r8_0x20: break;
 		case ci::LD_HL_d16_0x21: return operateLD_XX_d16(env, instr);
 		case ci::LDI_mHL_A_0x22: break;
-		case ci::INC_HL_0x23: break;
+		case ci::INC_HL_0x23: return operateINC_XX(env, instr);
 		case ci::INC_H_0x24: break;
 		case ci::DEC_H_0x25: break;
 		case ci::LD_H_d8_0x26: break;
@@ -129,7 +150,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::JR_NC_r8_0x30: break;
 		case ci::LD_SP_d16_0x31: return operateLD_XX_d16(env, instr);
 		case ci::LD_mHLm_A_0x32: break;
-		case ci::INC_SP_0x33: break;
+		case ci::INC_SP_0x33: return operateINC_XX(env, instr);
 		case ci::INC_mHL_0x34: break;
 		case ci::DEC_mHL_0x35: break;
 		case ci::LD_mHL_d8_0x36: break;
