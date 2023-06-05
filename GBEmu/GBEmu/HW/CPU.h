@@ -10,6 +10,8 @@ namespace GBEmu::HW
 		uint8 Code;
 	};
 
+	class CPUOperationZNHC;
+
 	class CPU
 	{
 	public:
@@ -47,6 +49,11 @@ namespace GBEmu::HW
 		void SetBC(uint16 value) { setRegXX(m_regB, m_regC, value); }
 		void SetDE(uint16 value) { setRegXX(m_regD, m_regE, value); }
 		void SetHL(uint16 value) { setRegXX(m_regH, m_regL, value); }
+
+		bool FlagZ() const { return (m_regF >> 7) & 0b1;}
+		bool FlagN() const { return (m_regF >> 6) & 0b1;}
+		bool FlagH() const { return (m_regF >> 5) & 0b1;}
+		bool FlagC() const { return (m_regF >> 4) & 0b1;}
 	private:
 		uint16 m_pc{};
 		uint16 m_sp{};
@@ -65,6 +72,8 @@ namespace GBEmu::HW
 			reg1 = value >> 8;
 			reg2 = value & 0xff;
 		}
+
+		static uint8 applyFlagZNHC(uint8 regF, CPUOperationZNHC flag);
 
 		CPUInstructionProperty fetchInstruction(HWEnv& env) const;
 
