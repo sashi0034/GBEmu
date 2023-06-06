@@ -15,7 +15,7 @@ namespace GBEmu::HW::CPUOperation
 
 	CPUOperationResult operateLD_XX_d16(HWEnv& env, CPUInstruction instr)
 	{
-		const uint16 d16 = env.GetMemory().Read(env.GetCPU().PC() + 1);
+		const uint16 d16 = env.GetMemory().Read16(env.GetCPU().PC() + 1);
 
 		switch (instr)
 		{
