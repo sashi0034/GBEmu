@@ -95,6 +95,52 @@ namespace GBEmu::HW::CPUOperation
 		}
 	}
 
+	CPUOperationResult operateINC_X(HWEnv& env, CPUInstruction instr)
+	{
+		// https://github.com/pokemium/gb-docs-ja/blob/main/cpu/instruction/alu8.md
+
+		auto&& cpu = env.GetCPU();
+
+		const CPUReg8 target =
+			instr == ci::INC_A_0x3C ? CPUReg8::A :
+			instr == ci::INC_B_0x04 ? CPUReg8::B :
+			instr == ci::INC_C_0x0C ? CPUReg8::C :
+			instr == ci::INC_D_0x14 ? CPUReg8::D :
+			instr == ci::INC_E_0x1C ? CPUReg8::E :
+			instr == ci::INC_H_0x24 ? CPUReg8::H :
+			instr == ci::INC_L_0x2C ? CPUReg8::L :
+			CPUReg8::Invalid;
+		assert(target != CPUReg8::Invalid);
+
+		const bool h = (cpu.GetReg8(target) & 0xF) == 0xF;
+
+		cpu.SetReg8(target, cpu.GetReg8(target) + 1);
+
+		const bool z = cpu.GetReg8(target) == 0;
+
+		return CPUOperationResult(
+			1,
+			4,
+			CPUOperationZNHC{z, false, h, cpu.FlagC()});
+	}
+
+	CPUOperationResult operateINC_mHL(HWEnv& env)
+	{
+		auto&& cpu = env.GetCPU();
+
+		const uint8 before = env.GetMemory().Read(cpu.RegHL());
+		const bool h = (before & 0xF) == 0xF;
+
+		const uint8 after = before + 1;
+		env.GetMemory().Write(cpu.RegHL(), after);
+		const bool z = after == 0;
+
+		return CPUOperationResult(
+			1,
+			12,
+			CPUOperationZNHC{z, false, h, cpu.FlagC()});
+	}
+
 	CPUOperationResult OperateInstruction(HWEnv& env, CPUInstruction instr)
 	{
 		switch (instr)
@@ -103,7 +149,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_BC_d16_0x01: return operateLD_XX_d16(env, instr);
 		case ci::LD_mBC_A_0x02: return operateLD_X_A(env, instr);
 		case ci::INC_BC_0x03: return operateINC_XX(env, instr);
-		case ci::INC_B_0x04: break;
+		case ci::INC_B_0x04: return operateINC_X(env, instr);
 		case ci::DEC_B_0x05: break;
 		case ci::LD_B_d8_0x06: break;
 		case ci::RLCA_0x07: break;
@@ -111,7 +157,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::ADD_HL_BC_0x09: break;
 		case ci::LD_A_mBC_0x0A: break;
 		case ci::DEC_BC_0x0B: break;
-		case ci::INC_C_0x0C: break;
+		case ci::INC_C_0x0C: return operateINC_X(env, instr);
 		case ci::DEC_C_0x0D: break;
 		case ci::LD_C_d8_0x0E: break;
 		case ci::RRCA_0x0F: break;
@@ -119,7 +165,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_DE_d16_0x11: return operateLD_XX_d16(env, instr);
 		case ci::LD_mDE_A_0x12: return operateLD_X_A(env, instr);
 		case ci::INC_DE_0x13: return operateINC_XX(env, instr);
-		case ci::INC_D_0x14: break;
+		case ci::INC_D_0x14: return operateINC_X(env, instr);
 		case ci::DEC_D_0x15: break;
 		case ci::LD_D_d8_0x16: break;
 		case ci::RLA_0x17: break;
@@ -127,7 +173,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::ADD_HL_DE_0x19: break;
 		case ci::LD_A_mDE_0x1A: break;
 		case ci::DEC_DE_0x1B: break;
-		case ci::INC_E_0x1C: break;
+		case ci::INC_E_0x1C: return operateINC_X(env, instr);
 		case ci::DEC_E_0x1D: break;
 		case ci::LD_E_d8_0x1E: break;
 		case ci::RRA_0x1F: break;
@@ -135,7 +181,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_HL_d16_0x21: return operateLD_XX_d16(env, instr);
 		case ci::LDI_mHL_A_0x22: break;
 		case ci::INC_HL_0x23: return operateINC_XX(env, instr);
-		case ci::INC_H_0x24: break;
+		case ci::INC_H_0x24: return operateINC_X(env, instr);
 		case ci::DEC_H_0x25: break;
 		case ci::LD_H_d8_0x26: break;
 		case ci::DAA_0x27: break;
@@ -143,7 +189,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::ADD_HL_HL_0x29: break;
 		case ci::LD_A_mHLp_0x2A: break;
 		case ci::DEC_HL_0x2B: break;
-		case ci::INC_L_0x2C: break;
+		case ci::INC_L_0x2C: return operateINC_X(env, instr);
 		case ci::DEC_L_0x2D: break;
 		case ci::LD_L_d8_0x2E: break;
 		case ci::CPL_0x2F: break;
@@ -151,7 +197,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_SP_d16_0x31: return operateLD_XX_d16(env, instr);
 		case ci::LD_mHLm_A_0x32: break;
 		case ci::INC_SP_0x33: return operateINC_XX(env, instr);
-		case ci::INC_mHL_0x34: break;
+		case ci::INC_mHL_0x34: return operateINC_mHL(env);
 		case ci::DEC_mHL_0x35: break;
 		case ci::LD_mHL_d8_0x36: break;
 		case ci::SCF_0x37: break;
@@ -159,7 +205,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::ADD_HL_SP_0x39: break;
 		case ci::LD_A_mHLm_0x3A: break;
 		case ci::DEC_SP_0x3B: break;
-		case ci::INC_A_0x3C: break;
+		case ci::INC_A_0x3C: return operateINC_X(env, instr);
 		case ci::DEC_A_0x3D: break;
 		case ci::LD_A_d8_0x3E: break;
 		case ci::CCF_0x3F: break;

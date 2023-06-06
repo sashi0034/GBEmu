@@ -12,6 +12,19 @@ namespace GBEmu::HW
 
 	class CPUOperationZNHC;
 
+	enum class CPUReg8 : uint8
+	{
+		Invalid,
+		A,
+		F,
+		B,
+		C,
+		D,
+		E,
+		H,
+		L,
+	};
+
 	class CPU
 	{
 	public:
@@ -39,6 +52,9 @@ namespace GBEmu::HW
 		void SetE(uint8 value) { m_regE = value; }
 		void SetH(uint8 value) { m_regH = value; }
 		void SetL(uint8 value) { m_regL = value; }
+
+		uint8 GetReg8(CPUReg8 kind) const;
+		void SetReg8(CPUReg8 kind, uint8 value);
 
 		uint16 RegAF() const {return (m_regA << 8) | m_regF;}
 		uint16 RegBC() const {return (m_regB << 8) | m_regC;}

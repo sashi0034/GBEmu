@@ -6,10 +6,10 @@ namespace GBEmu::HW
 {
 	struct CPUOperationZNHC
 	{
-		const bool Z;
-		const bool N;
-		const bool H;
-		const bool C;
+		bool Z{};
+		bool N{};
+		bool H{};
+		bool C{};
 	};
 
 	struct CPUOperationResult
