@@ -104,6 +104,14 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateLD_ma16_SP(HWEnv& env)
+	{
+		const uint16 a16 = env.GetMemory().Read16(env.GetCPU().PC() + 1);
+		env.GetMemory().Write16(a16, env.GetCPU().SP());
+		return CPUOperationResult(3, 20);
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateINC_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -232,7 +240,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::DEC_B_0x05: return operateDEC_X(env, instr);
 		case ci::LD_B_d8_0x06: return operateLD_X_d8(env, instr);
 		case ci::RLCA_0x07: return operateRLCA(env);
-		case ci::LD_ma16_SP_0x08: break;
+		case ci::LD_ma16_SP_0x08: return operateLD_ma16_SP(env);
 		case ci::ADD_HL_BC_0x09: break;
 		case ci::LD_A_mBC_0x0A: break;
 		case ci::DEC_BC_0x0B: break;
