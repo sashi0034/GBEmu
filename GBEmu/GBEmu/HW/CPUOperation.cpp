@@ -207,6 +207,18 @@ namespace GBEmu::HW::CPUOperation
 		return CPUOperationResult(1, 12, CPUOperationZNHC{z, false, h, cpu.FlagC()});
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateRLCA(HWEnv& env)
+	{
+		auto&& cpu = env.GetCPU();
+
+		const uint8 bit7 = cpu.RegA() >> 7;
+		cpu.SetA((cpu.RegA() << 1) | bit7);
+
+		// TODO: 資料によっては、Z: Set if result is zero となっているのものあるので確認
+		return CPUOperationResult(1, 4, CPUOperationZNHC{false, false, false, bit7 == 1});
+	}
+
 
 	CPUOperationResult OperateInstruction(HWEnv& env, CPUInstruction instr)
 	{
@@ -219,7 +231,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::INC_B_0x04: return operateINC_X(env, instr);
 		case ci::DEC_B_0x05: return operateDEC_X(env, instr);
 		case ci::LD_B_d8_0x06: return operateLD_X_d8(env, instr);
-		case ci::RLCA_0x07: break;
+		case ci::RLCA_0x07: return operateRLCA(env);
 		case ci::LD_ma16_SP_0x08: break;
 		case ci::ADD_HL_BC_0x09: break;
 		case ci::LD_A_mBC_0x0A: break;
