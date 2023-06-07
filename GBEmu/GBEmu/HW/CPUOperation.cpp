@@ -8,6 +8,12 @@ namespace GBEmu::HW::CPUOperation
 {
 	using ci = CPUInstruction;
 
+	uint8 undefined8()
+	{
+		assert(false);
+		return 0;
+	}
+
 	[[nodiscard]]
 	CPUOperationResult operateNOP()
 	{
@@ -223,10 +229,29 @@ namespace GBEmu::HW::CPUOperation
 		const uint8 bit7 = cpu.RegA() >> 7;
 		cpu.SetA((cpu.RegA() << 1) | bit7);
 
-		// TODO: 資料によっては、Z: Set if result is zero となっているのものあるので確認
+		// 資料によっては、Z: Set if result is zero となっているのものあるのでしっかりテストしたい
 		return CPUOperationResult(1, 4, CPUOperationZNHC{false, false, false, bit7 == 1});
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateADD_HL_XX(HWEnv& env, CPUInstruction instr)
+	{
+		auto&& cpu = env.GetCPU();
+
+		const uint16 src =
+			instr == ci::ADD_HL_BC_0x09 ? cpu.RegBC() :
+			instr == ci::ADD_HL_DE_0x19 ? cpu.RegDE() :
+			instr == ci::ADD_HL_HL_0x29 ? cpu.RegHL() :
+			instr == ci::ADD_HL_SP_0x39 ? cpu.SP() :
+			undefined8();
+
+		const bool h = ((cpu.RegHL() & 0x7fff) + (src & 0x7fff)) > 0x7fff; // bit11からオーバーフローした場合にセット
+		const bool c = ((cpu.RegHL() & 0xffff) + (src & 0xffff)) > 0xffff; // bit11からオーバーフローした場合にセット
+
+		cpu.SetHL(cpu.RegHL() + src);
+
+		return CPUOperationResult(1, 8, CPUOperationZNHC{cpu.FlagZ(), false, h, c});
+	}
 
 	CPUOperationResult OperateInstruction(HWEnv& env, CPUInstruction instr)
 	{
@@ -241,7 +266,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_B_d8_0x06: return operateLD_X_d8(env, instr);
 		case ci::RLCA_0x07: return operateRLCA(env);
 		case ci::LD_ma16_SP_0x08: return operateLD_ma16_SP(env);
-		case ci::ADD_HL_BC_0x09: break;
+		case ci::ADD_HL_BC_0x09: return operateADD_HL_XX(env, instr);
 		case ci::LD_A_mBC_0x0A: break;
 		case ci::DEC_BC_0x0B: break;
 		case ci::INC_C_0x0C: return operateINC_X(env, instr);
@@ -257,7 +282,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_D_d8_0x16: return operateLD_X_d8(env, instr);;
 		case ci::RLA_0x17: break;
 		case ci::JR_r8_0x18: break;
-		case ci::ADD_HL_DE_0x19: break;
+		case ci::ADD_HL_DE_0x19: return operateADD_HL_XX(env, instr);
 		case ci::LD_A_mDE_0x1A: break;
 		case ci::DEC_DE_0x1B: break;
 		case ci::INC_E_0x1C: return operateINC_X(env, instr);
@@ -273,7 +298,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_H_d8_0x26: return operateLD_X_d8(env, instr);;
 		case ci::DAA_0x27: break;
 		case ci::JR_Z_r8_0x28: break;
-		case ci::ADD_HL_HL_0x29: break;
+		case ci::ADD_HL_HL_0x29: return operateADD_HL_XX(env, instr);
 		case ci::LD_A_mHLp_0x2A: break;
 		case ci::DEC_HL_0x2B: break;
 		case ci::INC_L_0x2C: return operateINC_X(env, instr);
@@ -289,7 +314,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_mHL_d8_0x36: break;
 		case ci::SCF_0x37: break;
 		case ci::JR_C_r8_0x38: break;
-		case ci::ADD_HL_SP_0x39: break;
+		case ci::ADD_HL_SP_0x39: return operateADD_HL_XX(env, instr);
 		case ci::LD_A_mHLm_0x3A: break;
 		case ci::DEC_SP_0x3B: break;
 		case ci::INC_A_0x3C: return operateINC_X(env, instr);
