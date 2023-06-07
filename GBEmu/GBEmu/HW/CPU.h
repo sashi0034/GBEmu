@@ -10,7 +10,7 @@ namespace GBEmu::HW
 		uint8 Code;
 	};
 
-	class CPUOperationZNHC;
+	struct CPUOperationZNHC;
 
 	enum class CPUReg8 : uint8
 	{
