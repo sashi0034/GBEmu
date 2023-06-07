@@ -110,6 +110,39 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateLD_A_X(HWEnv& env, CPUInstruction instr)
+	{
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+
+		const auto cycle4 = CPUOperationResult(1, 4);
+
+		using std::pair;
+		const pair<uint8, CPUOperationResult> dispatch =
+			instr == ci::LD_A_A_0x7F ? pair{cpu.RegA(), cycle4} :
+			instr == ci::LD_A_B_0x78 ? pair{cpu.RegB(), cycle4} :
+			instr == ci::LD_A_C_0x79 ? pair{cpu.RegC(), cycle4} :
+			instr == ci::LD_A_D_0x7A ? pair{cpu.RegD(), cycle4} :
+			instr == ci::LD_A_E_0x7B ? pair{cpu.RegE(), cycle4} :
+			instr == ci::LD_A_H_0x7C ? pair{cpu.RegH(), cycle4} :
+			instr == ci::LD_A_L_0x7D ? pair{cpu.RegL(), cycle4} :
+			instr == ci::LD_A_mBC_0x0A ?
+				pair{memory.Read(cpu.RegBC()), CPUOperationResult(1, 8)} :
+			instr == ci::LD_A_mDE_0x1A ?
+				pair{memory.Read(cpu.RegDE()), CPUOperationResult(1, 8)} :
+			instr == ci::LD_A_mHL_0x7E ?
+				pair{memory.Read(cpu.RegHL()), CPUOperationResult(1, 8)} :
+			instr == ci::LD_A_ma16_0xFA ?
+				pair{memory.Read(memory.Read16(cpu.PC() + 1)), CPUOperationResult(3, 16)} :
+			instr == ci::LD_A_md8_0x3E ?
+				pair{memory.Read(cpu.PC() + 1), CPUOperationResult(2, 8)} :
+			std::pair{undefined8(), CPUOperationResult::Invalid()};
+
+		cpu.SetA(dispatch.first);
+		return dispatch.second;
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateLD_ma16_SP(HWEnv& env)
 	{
 		const uint16 a16 = env.GetMemory().Read16(env.GetCPU().PC() + 1);
@@ -267,7 +300,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::RLCA_0x07: return operateRLCA(env);
 		case ci::LD_ma16_SP_0x08: return operateLD_ma16_SP(env);
 		case ci::ADD_HL_BC_0x09: return operateADD_HL_XX(env, instr);
-		case ci::LD_A_mBC_0x0A: break;
+		case ci::LD_A_mBC_0x0A: return operateLD_A_X(env, instr);
 		case ci::DEC_BC_0x0B: break;
 		case ci::INC_C_0x0C: return operateINC_X(env, instr);
 		case ci::DEC_C_0x0D: return operateDEC_X(env, instr);
@@ -283,7 +316,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::RLA_0x17: break;
 		case ci::JR_r8_0x18: break;
 		case ci::ADD_HL_DE_0x19: return operateADD_HL_XX(env, instr);
-		case ci::LD_A_mDE_0x1A: break;
+		case ci::LD_A_mDE_0x1A: return operateLD_A_X(env, instr);
 		case ci::DEC_DE_0x1B: break;
 		case ci::INC_E_0x1C: return operateINC_X(env, instr);
 		case ci::DEC_E_0x1D: return operateDEC_X(env, instr);
@@ -319,7 +352,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::DEC_SP_0x3B: break;
 		case ci::INC_A_0x3C: return operateINC_X(env, instr);
 		case ci::DEC_A_0x3D: return operateDEC_X(env, instr);
-		case ci::LD_A_d8_0x3E: break;
+		case ci::LD_A_md8_0x3E: return operateLD_A_X(env, instr);
 		case ci::CCF_0x3F: break;
 		case ci::LD_B_B_0x40: break;
 		case ci::LD_B_C_0x41: break;
@@ -377,13 +410,13 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_HL_L_0x75: break;
 		case ci::HALT_0x76: break;
 		case ci::LD_mHL_A_0x77: return operateLD_X_A(env, instr);
-		case ci::LD_A_B_0x78: break;
-		case ci::LD_A_C_0x79: break;
-		case ci::LD_A_D_0x7A: break;
-		case ci::LD_A_E_0x7B: break;
-		case ci::LD_A_H_0x7C: break;
-		case ci::LD_A_L_0x7D: break;
-		case ci::LD_A_HL_0x7E: break;
+		case ci::LD_A_B_0x78: return operateLD_A_X(env, instr);
+		case ci::LD_A_C_0x79: return operateLD_A_X(env, instr);
+		case ci::LD_A_D_0x7A: return operateLD_A_X(env, instr);
+		case ci::LD_A_E_0x7B: return operateLD_A_X(env, instr);
+		case ci::LD_A_H_0x7C: return operateLD_A_X(env, instr);
+		case ci::LD_A_L_0x7D: return operateLD_A_X(env, instr);
+		case ci::LD_A_mHL_0x7E: return operateLD_A_X(env, instr);
 		case ci::LD_A_A_0x7F: return operateLD_X_A(env, instr);
 		case ci::ADD_A_B_0x80: break;
 		case ci::ADD_A_C_0x81: break;
@@ -507,7 +540,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::RST_30H_0xF7: break;
 		case ci::LD_HL_SP_r8_0xF8: break;
 		case ci::LD_SP_HL_0xF9: break;
-		case ci::LD_A_a16_0xFA: break;
+		case ci::LD_A_ma16_0xFA: return operateLD_A_X(env, instr);
 		case ci::EI_0xFB: break;
 		case ci::Reserved_FC_0xFC: break;
 		case ci::Reserved_FD_0xFD: break;
