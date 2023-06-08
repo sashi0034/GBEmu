@@ -17,23 +17,35 @@ namespace GBEmu::HW
 		const uint8 ByteLength;
 		const uint8 CycleCount;
 		const Optional<CPUOperationZNHC> Flag;
+		const Optional<uint16> NextPC;
 
 		CPUOperationResult(uint8 byteLength, uint8 cycleCount) :
 			ByteLength(byteLength),
 			CycleCount(cycleCount),
-			Flag(none)
+			Flag(none),
+			NextPC(none)
 		{}
 
-		CPUOperationResult(uint8 byteLength, uint8 cycleCount, CPUOperationZNHC flag) :
-			ByteLength(byteLength),
-			CycleCount(cycleCount),
-			Flag(flag)
-		{}
+		static CPUOperationResult ByCalc(uint8 byteLength, uint8 cycleCount, CPUOperationZNHC flag)
+		{
+			return CPUOperationResult(byteLength, cycleCount, flag, none);
+		}
+
+		static CPUOperationResult ByJump(uint8 byteLength, uint8 cycleCount, uint16 nextPC)
+		{
+			return CPUOperationResult(byteLength, cycleCount, none, nextPC);
+		}
 
 		static CPUOperationResult Invalid()
 		{
 			return CPUOperationResult(0, 0);
 		}
+	private:
+		CPUOperationResult(uint8 byteLength, uint8 cycleCount, const Optional<CPUOperationZNHC>& flag, const Optional<uint16>& nextPC) :
+			ByteLength(byteLength),
+			CycleCount(cycleCount),
+			Flag(flag),
+			NextPC(nextPC){}
 	};
 
 	namespace CPUOperation

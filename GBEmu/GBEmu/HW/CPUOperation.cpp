@@ -203,7 +203,7 @@ namespace GBEmu::HW::CPUOperation
 
 		const bool z = cpu.GetReg8(target) == 0;
 
-		return CPUOperationResult(1, 4, CPUOperationZNHC{z, false, h, cpu.FlagC()});
+		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{z, false, h, cpu.FlagC()});
 	}
 
 	[[nodiscard]]
@@ -218,7 +218,7 @@ namespace GBEmu::HW::CPUOperation
 		env.GetMemory().Write(cpu.RegHL(), after);
 		const bool z = after == 0;
 
-		return CPUOperationResult(1,12, CPUOperationZNHC{z, false, h, cpu.FlagC()});
+		return CPUOperationResult::ByCalc(1,12, CPUOperationZNHC{z, false, h, cpu.FlagC()});
 	}
 
 	[[nodiscard]]
@@ -265,7 +265,7 @@ namespace GBEmu::HW::CPUOperation
 
 		const bool z = cpu.GetReg8(target) == 0;
 
-		return CPUOperationResult(1, 4, CPUOperationZNHC{z, false, h, cpu.FlagC()});
+		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{z, false, h, cpu.FlagC()});
 	}
 
 	[[nodiscard]]
@@ -280,7 +280,7 @@ namespace GBEmu::HW::CPUOperation
 		env.GetMemory().Write(cpu.RegHL(), after);
 		const bool z = after == 0;
 
-		return CPUOperationResult(1, 12, CPUOperationZNHC{z, false, h, cpu.FlagC()});
+		return CPUOperationResult::ByCalc(1, 12, CPUOperationZNHC{z, false, h, cpu.FlagC()});
 	}
 
 	[[nodiscard]]
@@ -292,7 +292,7 @@ namespace GBEmu::HW::CPUOperation
 		cpu.SetA((cpu.RegA() << 1) | bit7);
 
 		// 資料によっては、Z: Set if result is zero となっているのものあるのでしっかりテストしたい
-		return CPUOperationResult(1, 4, CPUOperationZNHC{false, false, false, bit7 == 1});
+		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{false, false, false, bit7 == 1});
 	}
 
 	[[nodiscard]]
@@ -306,7 +306,7 @@ namespace GBEmu::HW::CPUOperation
 		cpu.SetA((cpu.RegA() << 1) | carry);
 
 		// 資料によっては、Z: Set if result is zero となっているのものあるのでしっかりテストしたい
-		return CPUOperationResult(1, 4, CPUOperationZNHC{false, false, false, bit7 == 1});
+		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{false, false, false, bit7 == 1});
 	}
 
 	[[nodiscard]]
@@ -319,7 +319,7 @@ namespace GBEmu::HW::CPUOperation
 		cpu.SetA((cpu.RegA() >> 1) | (bit0 << 7));
 
 		// 資料によっては、Z: Set if result is zero となっているのものあるのでしっかりテストしたい
-		return CPUOperationResult(1, 4, CPUOperationZNHC{false, false, false, c});
+		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{false, false, false, c});
 	}
 
 	[[nodiscard]]
@@ -339,7 +339,7 @@ namespace GBEmu::HW::CPUOperation
 
 		cpu.SetHL(cpu.RegHL() + src);
 
-		return CPUOperationResult(1, 8, CPUOperationZNHC{cpu.FlagZ(), false, h, c});
+		return CPUOperationResult::ByCalc(1, 8, CPUOperationZNHC{cpu.FlagZ(), false, h, c});
 	}
 
 	CPUOperationResult OperateInstruction(HWEnv& env, CPUInstruction instr)
