@@ -21,6 +21,13 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateSTOP_d8(HWEnv& env)
+	{
+		env.GetCPU().SetState(CPUState::Stopped);
+		return CPUOperationResult(2, 4);
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateLD_XX_d16(HWEnv& env, CPUInstruction instr)
 	{
 		const uint16 d16 = env.GetMemory().Read16(env.GetCPU().PC() + 1);
@@ -341,7 +348,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::DEC_C_0x0D: return operateDEC_X(env, instr);
 		case ci::LD_C_d8_0x0E: return operateLD_X_d8(env, instr);;
 		case ci::RRCA_0x0F: return operateRRCA(env);
-		case ci::STOP_d8_0x10: break;
+		case ci::STOP_d8_0x10: return operateSTOP_d8(env);
 		case ci::LD_DE_d16_0x11: return operateLD_XX_d16(env, instr);
 		case ci::LD_mDE_A_0x12: return operateLD_X_A(env, instr);
 		case ci::INC_DE_0x13: return operateINC_XX(env, instr);

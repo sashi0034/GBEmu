@@ -25,6 +25,13 @@ namespace GBEmu::HW
 		L,
 	};
 
+	enum class CPUState : uint8
+	{
+		Running,
+		Halted,
+		Stopped,
+	};
+
 	class CPU
 	{
 	public:
@@ -70,6 +77,10 @@ namespace GBEmu::HW
 		bool FlagN() const { return (m_regF >> 6) & 0b1;}
 		bool FlagH() const { return (m_regF >> 5) & 0b1;}
 		bool FlagC() const { return (m_regF >> 4) & 0b1;}
+
+		void SetState(const CPUState state){ m_state = state; }
+		CPUState State() const { return m_state; }
+
 	private:
 		uint16 m_pc{};
 		uint16 m_sp{};
@@ -82,6 +93,8 @@ namespace GBEmu::HW
 		uint8 m_regE{};
 		uint8 m_regH{};
 		uint8 m_regL{};
+
+		CPUState m_state = CPUState::Running;
 
 		static void setRegXX(uint8& reg1, uint8& reg2, uint16 value)
 		{
