@@ -215,6 +215,28 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateDEC_XX(HWEnv& env, CPUInstruction instr)
+	{
+		auto&& cpu = env.GetCPU();
+		const auto result = CPUOperationResult(1, 8);
+
+		switch (instr)
+		{
+		case ci::DEC_BC_0x0B:
+			cpu.SetBC(cpu.RegBC() - 1); return result;
+		case ci::DEC_DE_0x1B:
+			cpu.SetDE(cpu.RegDE() - 1); return result;
+		case ci::DEC_HL_0x2B:
+			cpu.SetHL(cpu.RegHL() - 1); return result;
+		case ci::DEC_SP_0x3B:
+			cpu.SetSP(cpu.SP() - 1); return result;
+		default:
+			assert(false);
+			return CPUOperationResult::Invalid();
+		}
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateDEC_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -301,7 +323,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_ma16_SP_0x08: return operateLD_ma16_SP(env);
 		case ci::ADD_HL_BC_0x09: return operateADD_HL_XX(env, instr);
 		case ci::LD_A_mBC_0x0A: return operateLD_A_X(env, instr);
-		case ci::DEC_BC_0x0B: break;
+		case ci::DEC_BC_0x0B: return operateDEC_XX(env, instr);
 		case ci::INC_C_0x0C: return operateINC_X(env, instr);
 		case ci::DEC_C_0x0D: return operateDEC_X(env, instr);
 		case ci::LD_C_d8_0x0E: return operateLD_X_d8(env, instr);;
@@ -317,7 +339,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::JR_r8_0x18: break;
 		case ci::ADD_HL_DE_0x19: return operateADD_HL_XX(env, instr);
 		case ci::LD_A_mDE_0x1A: return operateLD_A_X(env, instr);
-		case ci::DEC_DE_0x1B: break;
+		case ci::DEC_DE_0x1B: return operateDEC_XX(env, instr);
 		case ci::INC_E_0x1C: return operateINC_X(env, instr);
 		case ci::DEC_E_0x1D: return operateDEC_X(env, instr);
 		case ci::LD_E_d8_0x1E: return operateLD_X_d8(env, instr);;
@@ -333,7 +355,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::JR_Z_r8_0x28: break;
 		case ci::ADD_HL_HL_0x29: return operateADD_HL_XX(env, instr);
 		case ci::LD_A_mHLp_0x2A: break;
-		case ci::DEC_HL_0x2B: break;
+		case ci::DEC_HL_0x2B: return operateDEC_XX(env, instr);
 		case ci::INC_L_0x2C: return operateINC_X(env, instr);
 		case ci::DEC_L_0x2D: return operateDEC_X(env, instr);
 		case ci::LD_L_d8_0x2E: return operateLD_X_d8(env, instr);;
@@ -349,7 +371,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::JR_C_r8_0x38: break;
 		case ci::ADD_HL_SP_0x39: return operateADD_HL_XX(env, instr);
 		case ci::LD_A_mHLm_0x3A: break;
-		case ci::DEC_SP_0x3B: break;
+		case ci::DEC_SP_0x3B: return operateDEC_XX(env, instr);
 		case ci::INC_A_0x3C: return operateINC_X(env, instr);
 		case ci::DEC_A_0x3D: return operateDEC_X(env, instr);
 		case ci::LD_A_md8_0x3E: return operateLD_A_X(env, instr);
