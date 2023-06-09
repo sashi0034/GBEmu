@@ -269,6 +269,16 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateLD_A_mHLd(HWEnv& env)
+	{
+		// 0x3A
+		auto&& cpu = env.GetCPU();
+		cpu.SetA(env.GetMemory().Read(cpu.RegHL()));
+		cpu.SetHL(cpu.RegHL() - 1);
+		return CPUOperationResult(1, 8);
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateINC_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -596,7 +606,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::SCF_0x37: return operateSCF(env);
 		case ci::JR_C_r8_0x38: return operateJR_X_r8(env, instr);
 		case ci::ADD_HL_SP_0x39: return operateADD_HL_XX(env, instr);
-		case ci::LD_A_mHLm_0x3A: break;
+		case ci::LD_A_mHLd_0x3A: return operateLD_A_mHLd(env);
 		case ci::DEC_SP_0x3B: return operateDEC_XX(env, instr);
 		case ci::INC_A_0x3C: return operateINC_X(env, instr);
 		case ci::DEC_A_0x3D: return operateDEC_X(env, instr);
