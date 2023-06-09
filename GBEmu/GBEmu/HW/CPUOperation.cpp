@@ -518,6 +518,14 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateCCF(HWEnv& env)
+	{
+		// 0x3F
+		auto&& cpu = env.GetCPU();
+		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{cpu.FlagZ(), false, false, !cpu.FlagC()});
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateDAA(HWEnv& env)
 	{
 		// 0x27
@@ -611,7 +619,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::INC_A_0x3C: return operateINC_X(env, instr);
 		case ci::DEC_A_0x3D: return operateDEC_X(env, instr);
 		case ci::LD_A_md8_0x3E: return operateLD_A_X(env, instr);
-		case ci::CCF_0x3F: break;
+		case ci::CCF_0x3F: return operateCCF(env);
 		case ci::LD_B_B_0x40: return operateLD_X_X(env, instr);
 		case ci::LD_B_C_0x41: return operateLD_X_X(env, instr);
 		case ci::LD_B_D_0x42: return operateLD_X_X(env, instr);
