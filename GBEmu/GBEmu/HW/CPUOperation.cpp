@@ -387,6 +387,32 @@ namespace GBEmu::HW::CPUOperation
 			: CPUOperationResult(2, 8);
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateDAA(HWEnv& env)
+	{
+		// 0x27
+		auto&& cpu = env.GetCPU();
+
+		int16 result = cpu.RegA();
+
+		if (cpu.FlagN())
+		{
+			if (cpu.FlagH()) result = (result - 0x6) & 0xFF;
+			if (cpu.FlagC()) result -= 0x60;
+		}
+		else
+		{
+			if (cpu.FlagH() || (result & 0xF) > 0x9) result += 0x6;
+			if (cpu.FlagC() || result > 0x9F) result += 0x60;
+		}
+
+		const bool c = cpu.FlagC() || (result & 0x100) == 0x100;
+		cpu.SetA(result & 0xFF);
+		const bool z = cpu.RegA() == 0;
+
+		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{z, cpu.FlagN(), false, c});
+	}
+
 
 	CPUOperationResult OperateInstruction(HWEnv& env, CPUInstruction instr)
 	{
@@ -431,7 +457,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::INC_H_0x24: return operateINC_X(env, instr);
 		case ci::DEC_H_0x25: return operateDEC_X(env, instr);
 		case ci::LD_H_d8_0x26: return operateLD_X_d8(env, instr);;
-		case ci::DAA_0x27: break;
+		case ci::DAA_0x27: return operateDAA(env);
 		case ci::JR_Z_r8_0x28: return operateJR_X_r8(env, instr);
 		case ci::ADD_HL_HL_0x29: return operateADD_HL_XX(env, instr);
 		case ci::LD_A_mHLp_0x2A: break;
