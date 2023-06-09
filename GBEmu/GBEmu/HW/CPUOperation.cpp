@@ -178,6 +178,16 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateLD_mHLd_A(HWEnv& env)
+	{
+		// 0x32
+		auto&& cpu = env.GetCPU();
+		env.GetMemory().Write(cpu.RegHL(), cpu.RegA());
+		cpu.SetHL(cpu.RegHL() - 1);
+		return CPUOperationResult(1, 8);
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateINC_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -489,7 +499,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::CPL_0x2F: return operateCPL(env);
 		case ci::JR_NC_r8_0x30: return operateJR_X_r8(env, instr);
 		case ci::LD_SP_d16_0x31: return operateLD_XX_d16(env, instr);
-		case ci::LD_mHLm_A_0x32: break;
+		case ci::LD_mHLd_A_0x32: return operateLD_mHLd_A(env);
 		case ci::INC_SP_0x33: return operateINC_XX(env, instr);
 		case ci::INC_mHL_0x34: return operateINC_mHL(env);
 		case ci::DEC_mHL_0x35: return operateDEC_mHL(env);
@@ -650,7 +660,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::RET_NC_0xD0: break;
 		case ci::POP_DE_0xD1: break;
 		case ci::JP_NC_a16_0xD2: break;
-		case ci::Reserved_D3_0xD3: break;
+		case ci::Reserved_0xD3: return CPUOperationResult::Default();
 		case ci::CALL_NC_a16_0xD4: break;
 		case ci::PUSH_DE_0xD5: break;
 		case ci::SUB_d8_0xD6: break;
@@ -658,32 +668,32 @@ namespace GBEmu::HW::CPUOperation
 		case ci::RET_C_0xD8: break;
 		case ci::RETI_0xD9: break;
 		case ci::JP_C_a16_0xDA: break;
-		case ci::Reserved_DB_0xDB: break;
+		case ci::Reserved_0xDB: return CPUOperationResult::Default();
 		case ci::CALL_C_a16_0xDC: break;
-		case ci::Reserved_DD_0xDD: break;
+		case ci::Reserved_0xDD: return CPUOperationResult::Default();
 		case ci::SBC_A_d8_0xDE: break;
 		case ci::RST_18H_0xDF: break;
 		case ci::LDH_a8_A_0xE0: break;
 		case ci::POP_HL_0xE1: break;
 		case ci::LD_mC_A_0xE2: break;
-		case ci::Reserved_E3_0xE3: break;
-		case ci::Reserved_E4_0xE4: break;
+		case ci::Reserved_0xE3: return CPUOperationResult::Default();
+		case ci::Reserved_0xE4: return CPUOperationResult::Default();
 		case ci::PUSH_HL_0xE5: break;
 		case ci::AND_d8_0xE6: break;
 		case ci::RST_20H_0xE7: break;
 		case ci::ADD_SP_r8_0xE8: break;
 		case ci::JP_HL_0xE9: break;
 		case ci::LD_ma16_A_0xEA: return operateLD_X_A(env, instr);
-		case ci::Reserved_EB_0xEB: break;
-		case ci::Reserved_EC_0xEC: break;
-		case ci::Reserved_ED_0xED: break;
+		case ci::Reserved_0xEB: return CPUOperationResult::Default();
+		case ci::Reserved_0xEC: return CPUOperationResult::Default();
+		case ci::Reserved_0xED: return CPUOperationResult::Default();
 		case ci::XOR_d8_0xEE: break;
 		case ci::RST_28H_0xEF: break;
 		case ci::LDH_A_a8_0xF0: break;
 		case ci::POP_AF_0xF1: break;
 		case ci::LD_A_mC_0xF2: break;
 		case ci::DI_0xF3: break;
-		case ci::Reserved_F4_0xF4: break;
+		case ci::Reserved_0xF4: return CPUOperationResult::Default();
 		case ci::PUSH_AF_0xF5: break;
 		case ci::OR_d8_0xF6: break;
 		case ci::RST_30H_0xF7: break;
@@ -691,8 +701,8 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_SP_HL_0xF9: break;
 		case ci::LD_A_ma16_0xFA: return operateLD_A_X(env, instr);
 		case ci::EI_0xFB: break;
-		case ci::Reserved_FC_0xFC: break;
-		case ci::Reserved_FD_0xFD: break;
+		case ci::Reserved_0xFC: return CPUOperationResult::Default();
+		case ci::Reserved_0xFD: return CPUOperationResult::Default();
 		case ci::CP_d8_0xFE: break;
 		case ci::RST_38H_0xFF: break;
 		default: ;
