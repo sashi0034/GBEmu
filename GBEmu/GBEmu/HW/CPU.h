@@ -10,6 +10,11 @@ namespace GBEmu::HW
 		uint8 Code;
 	};
 
+	struct CPUCycle
+	{
+		int Count;
+	};
+
 	struct CPUOperationZNHC;
 
 	enum class CPUReg8 : uint8
@@ -35,7 +40,7 @@ namespace GBEmu::HW
 	class CPU
 	{
 	public:
-		void StepOperation(HWEnv& env);
+		CPUCycle StepOperation(HWEnv& env);
 
 		void SetSP(uint16 sp) { m_sp = sp; }
 
@@ -102,6 +107,7 @@ namespace GBEmu::HW
 			reg2 = value & 0xff;
 		}
 
+		[[nodiscard]]
 		static uint8 applyFlagZNHC(uint8 regF, CPUOperationZNHC flag);
 
 		CPUInstructionProperty fetchInstruction(HWEnv& env) const;

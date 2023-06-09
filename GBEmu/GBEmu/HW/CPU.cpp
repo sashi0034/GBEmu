@@ -7,18 +7,30 @@
 
 namespace GBEmu::HW
 {
-	void CPU::StepOperation(HWEnv& env)
+	CPUCycle CPU::StepOperation(HWEnv& env)
 	{
-		auto nextInstruction = fetchInstruction(env);
+		// HALTされているとき、割り込みまで進まない
+		constexpr int haltCycle = 4;
+		if (m_state != CPUState::Running) return CPUCycle{haltCycle};
 
-		auto&& operation = nextInstruction.IsPrefixedCB
-			? CPUOperationCB::OperateInstructionCB(env, static_cast<CPUInstructionCB>(nextInstruction.Code))
-			: CPUOperation::OperateInstruction(env, static_cast<CPUInstruction>(nextInstruction.Code));
+		auto [isPrefixedCB, code] = fetchInstruction(env);
 
-		// TODO: PC進める
+		// 命令実行
+		const auto opResult =
+			isPrefixedCB
+              ? CPUOperationCB::OperateInstructionCB(env, static_cast<CPUInstructionCB>(code))
+              : CPUOperation::OperateInstruction(env, static_cast<CPUInstruction>(code));
 
-		// TODO: applyFlagZNHCする
+		m_pc = opResult.NextPC.has_value()
+			// 分岐命令など
+			? opResult.NextPC.value()
+			// 基本は、実行した命令長を進める
+			: m_pc + opResult.ByteLength;
 
+		// 算術演算のときはフラグ更新
+		if (opResult.Flag.has_value()) m_regF = applyFlagZNHC(m_regF, opResult.Flag.value());
+
+		return CPUCycle{opResult.CycleCount};
 	}
 
 	uint8 CPU::GetReg8(CPUReg8 kind) const
@@ -53,7 +65,7 @@ namespace GBEmu::HW
 
 	CPUInstructionProperty CPU::fetchInstruction(HWEnv& env) const
 	{
-		uint8 nextCode = env.GetMemory().Read(m_pc);
+		const uint8 nextCode = env.GetMemory().Read(m_pc);
 
 		if (nextCode != 0xCB) return {false, nextCode};
 
