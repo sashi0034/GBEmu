@@ -86,6 +86,7 @@ namespace GBEmu::HW
 		void SetState(const CPUState state){ m_state = state; }
 		CPUState State() const { return m_state; }
 
+		bool IME() const { return m_imeFlag; }
 	private:
 		uint16 m_pc{};
 		uint16 m_sp{};
@@ -100,6 +101,9 @@ namespace GBEmu::HW
 		uint8 m_regL{};
 
 		CPUState m_state = CPUState::Running;
+
+		// Interrupt Master Enable Flag
+		bool m_imeFlag{};
 
 		static void setRegXX(uint8& reg1, uint8& reg2, uint16 value)
 		{

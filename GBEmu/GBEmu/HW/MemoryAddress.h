@@ -25,6 +25,9 @@ namespace GBEmu::HW
 
 			IOPortsStart = 0xFF00,
 			IOPortsEnd = 0xFF7F,
+
+			InterruptFlag = 0xFF0F, // IF: Interrupt Flag
+			InterruptEnable = 0xFFFF, // IE: Interrupt Enable
 		};
 	};
 }

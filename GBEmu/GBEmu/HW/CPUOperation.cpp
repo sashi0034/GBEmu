@@ -3,6 +3,7 @@
 
 #include "HWEnv.h"
 #include "HWLogger.h"
+#include "MemoryAddress.h"
 
 namespace GBEmu::HW::CPUOperation
 {
@@ -551,6 +552,36 @@ namespace GBEmu::HW::CPUOperation
 		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{z, cpu.FlagN(), false, c});
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateHALT(HWEnv& env)
+	{
+		// 0x76
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+
+		if (cpu.IME())
+		{
+			cpu.SetState(CPUState::Halted);
+		}
+		else
+		{
+			const uint8 interruptEnable = memory.Read(MemoryAddress::InterruptEnable);
+			const uint8 interruptFlag = memory.Read(MemoryAddress::InterruptFlag);
+			if ((interruptEnable & interruptFlag) != 0)
+			{
+				// https://github.com/pokemium/gb-docs-ja/blob/main/cpu/instruction/misc.md#halt
+				// ただし、ハードウェアのバグにより、HALTの次のバイトが2回連続して読み込まれることに注意
+				// ?
+			}
+			else
+			{
+				cpu.SetState(CPUState::Halted);
+			}
+		}
+
+		return CPUOperationResult(1, 4);
+	}
+
 
 	CPUOperationResult OperateInstruction(HWEnv& env, CPUInstruction instr)
 	{
@@ -674,7 +705,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_mHL_E_0x73: return operateLD_X_X(env, instr);
 		case ci::LD_mHL_H_0x74: return operateLD_X_X(env, instr);
 		case ci::LD_mHL_L_0x75: return operateLD_X_X(env, instr);
-		case ci::HALT_0x76: break;
+		case ci::HALT_0x76: return operateHALT(env);
 		case ci::LD_mHL_A_0x77: return operateLD_X_A(env, instr);
 		case ci::LD_A_B_0x78: return operateLD_A_X(env, instr);
 		case ci::LD_A_C_0x79: return operateLD_A_X(env, instr);
