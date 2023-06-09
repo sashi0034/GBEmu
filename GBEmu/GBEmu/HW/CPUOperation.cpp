@@ -150,6 +150,87 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateLD_X_X(HWEnv& env, CPUInstruction instr)
+	{
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+
+		const auto result_1_4 = CPUOperationResult(1, 4);
+		const auto result_1_8 = CPUOperationResult(1, 8);
+		const auto result_2_12 = CPUOperationResult(2, 12);
+
+		switch (instr)
+		{
+		// destination B
+		case ci::LD_B_B_0x40: cpu.SetB(cpu.RegB()); return result_1_4;
+		case ci::LD_B_C_0x41: cpu.SetB(cpu.RegC()); return result_1_4;
+		case ci::LD_B_D_0x42: cpu.SetB(cpu.RegD()); return result_1_4;
+		case ci::LD_B_E_0x43: cpu.SetB(cpu.RegE()); return result_1_4;
+		case ci::LD_B_H_0x44: cpu.SetB(cpu.RegH()); return result_1_4;
+		case ci::LD_B_L_0x45: cpu.SetB(cpu.RegL()); return result_1_4;
+		case ci::LD_B_mHL_0x46: cpu.SetB(memory.Read(cpu.RegHL())); return result_1_8;
+
+		// destination C
+		case ci::LD_C_B_0x48: cpu.SetC(cpu.RegB()); return result_1_4;
+		case ci::LD_C_C_0x49: cpu.SetC(cpu.RegC()); return result_1_4;
+		case ci::LD_C_D_0x4A: cpu.SetC(cpu.RegD()); return result_1_4;
+		case ci::LD_C_E_0x4B: cpu.SetC(cpu.RegE()); return result_1_4;
+		case ci::LD_C_H_0x4C: cpu.SetC(cpu.RegH()); return result_1_4;
+		case ci::LD_C_L_0x4D: cpu.SetC(cpu.RegL()); return result_1_4;
+		case ci::LD_C_mHL_0x4E: cpu.SetC(memory.Read(cpu.RegHL())); return result_1_8;
+
+		// destination D
+		case ci::LD_D_B_0x50: cpu.SetD(cpu.RegB()); return result_1_4;
+		case ci::LD_D_C_0x51: cpu.SetD(cpu.RegC()); return result_1_4;
+		case ci::LD_D_D_0x52: cpu.SetD(cpu.RegD()); return result_1_4;
+		case ci::LD_D_E_0x53: cpu.SetD(cpu.RegE()); return result_1_4;
+		case ci::LD_D_H_0x54: cpu.SetD(cpu.RegH()); return result_1_4;
+		case ci::LD_D_L_0x55: cpu.SetD(cpu.RegL()); return result_1_4;
+		case ci::LD_D_mHL_0x56: cpu.SetD(memory.Read(cpu.RegHL())); return result_1_8;
+
+		// destination E
+		case ci::LD_E_B_0x58: cpu.SetE(cpu.RegB()); return result_1_4;
+		case ci::LD_E_C_0x59: cpu.SetE(cpu.RegC()); return result_1_4;
+		case ci::LD_E_D_0x5A: cpu.SetE(cpu.RegD()); return result_1_4;
+		case ci::LD_E_E_0x5B: cpu.SetE(cpu.RegE()); return result_1_4;
+		case ci::LD_E_H_0x5C: cpu.SetE(cpu.RegH()); return result_1_4;
+		case ci::LD_E_L_0x5D: cpu.SetE(cpu.RegL()); return result_1_4;
+		case ci::LD_E_mHL_0x5E: cpu.SetE(memory.Read(cpu.RegHL())); return result_1_8;
+
+		// destination H
+		case ci::LD_H_B_0x60: cpu.SetH(cpu.RegB()); return result_1_4;
+		case ci::LD_H_C_0x61: cpu.SetH(cpu.RegC()); return result_1_4;
+		case ci::LD_H_D_0x62: cpu.SetH(cpu.RegD()); return result_1_4;
+		case ci::LD_H_E_0x63: cpu.SetH(cpu.RegE()); return result_1_4;
+		case ci::LD_H_H_0x64: cpu.SetH(cpu.RegH()); return result_1_4;
+		case ci::LD_H_L_0x65: cpu.SetH(cpu.RegL()); return result_1_4;
+		case ci::LD_H_mHL_0x66: cpu.SetH(memory.Read(cpu.RegHL())); return result_1_8;
+
+		// destination L
+		case ci::LD_L_B_0x68: cpu.SetL(cpu.RegB()); return result_1_4;
+		case ci::LD_L_C_0x69: cpu.SetL(cpu.RegC()); return result_1_4;
+		case ci::LD_L_D_0x6A: cpu.SetL(cpu.RegD()); return result_1_4;
+		case ci::LD_L_E_0x6B: cpu.SetL(cpu.RegE()); return result_1_4;
+		case ci::LD_L_H_0x6C: cpu.SetL(cpu.RegH()); return result_1_4;
+		case ci::LD_L_L_0x6D: cpu.SetL(cpu.RegL()); return result_1_4;
+		case ci::LD_L_mHL_0x6E: cpu.SetL(memory.Read(cpu.RegHL())); return result_1_8;
+
+		// destination (HL)
+		case ci::LD_mHL_B_0x70: memory.Write(cpu.RegHL(), cpu.RegB()); return result_1_8;
+		case ci::LD_mHL_C_0x71: memory.Write(cpu.RegHL(), cpu.RegC()); return result_1_8;
+		case ci::LD_mHL_D_0x72: memory.Write(cpu.RegHL(), cpu.RegD()); return result_1_8;
+		case ci::LD_mHL_E_0x73: memory.Write(cpu.RegHL(), cpu.RegE()); return result_1_8;
+		case ci::LD_mHL_H_0x74: memory.Write(cpu.RegHL(), cpu.RegH()); return result_1_8;
+		case ci::LD_mHL_L_0x75: memory.Write(cpu.RegHL(), cpu.RegL()); return result_1_8;
+		case ci::LD_mHL_d8_0x36: memory.Write(cpu.RegHL(), memory.Read(cpu.PC() + 1)); return result_2_12;
+
+		default:
+		assert(false);
+		return CPUOperationResult::Invalid();
+		}
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateLD_ma16_SP(HWEnv& env)
 	{
 		const uint16 a16 = env.GetMemory().Read16(env.GetCPU().PC() + 1);
@@ -503,7 +584,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::INC_SP_0x33: return operateINC_XX(env, instr);
 		case ci::INC_mHL_0x34: return operateINC_mHL(env);
 		case ci::DEC_mHL_0x35: return operateDEC_mHL(env);
-		case ci::LD_mHL_d8_0x36: break;
+		case ci::LD_mHL_d8_0x36: return operateLD_X_X(env, instr);
 		case ci::SCF_0x37: break;
 		case ci::JR_C_r8_0x38: return operateJR_X_r8(env, instr);
 		case ci::ADD_HL_SP_0x39: return operateADD_HL_XX(env, instr);
@@ -513,60 +594,60 @@ namespace GBEmu::HW::CPUOperation
 		case ci::DEC_A_0x3D: return operateDEC_X(env, instr);
 		case ci::LD_A_md8_0x3E: return operateLD_A_X(env, instr);
 		case ci::CCF_0x3F: break;
-		case ci::LD_B_B_0x40: break;
-		case ci::LD_B_C_0x41: break;
-		case ci::LD_B_D_0x42: break;
-		case ci::LD_B_E_0x43: break;
-		case ci::LD_B_H_0x44: break;
-		case ci::LD_B_L_0x45: break;
-		case ci::LD_B_HL_0x46: break;
+		case ci::LD_B_B_0x40: return operateLD_X_X(env, instr);
+		case ci::LD_B_C_0x41: return operateLD_X_X(env, instr);
+		case ci::LD_B_D_0x42: return operateLD_X_X(env, instr);
+		case ci::LD_B_E_0x43: return operateLD_X_X(env, instr);
+		case ci::LD_B_H_0x44: return operateLD_X_X(env, instr);
+		case ci::LD_B_L_0x45: return operateLD_X_X(env, instr);
+		case ci::LD_B_mHL_0x46: return operateLD_X_X(env, instr);
 		case ci::LD_B_A_0x47: return operateLD_X_A(env, instr);
-		case ci::LD_C_B_0x48: break;
-		case ci::LD_C_C_0x49: break;
-		case ci::LD_C_D_0x4A: break;
-		case ci::LD_C_E_0x4B: break;
-		case ci::LD_C_H_0x4C: break;
-		case ci::LD_C_L_0x4D: break;
-		case ci::LD_C_HL_0x4E: break;
+		case ci::LD_C_B_0x48: return operateLD_X_X(env, instr);
+		case ci::LD_C_C_0x49: return operateLD_X_X(env, instr);
+		case ci::LD_C_D_0x4A: return operateLD_X_X(env, instr);
+		case ci::LD_C_E_0x4B: return operateLD_X_X(env, instr);
+		case ci::LD_C_H_0x4C: return operateLD_X_X(env, instr);
+		case ci::LD_C_L_0x4D: return operateLD_X_X(env, instr);
+		case ci::LD_C_mHL_0x4E: return operateLD_X_X(env, instr);
 		case ci::LD_C_A_0x4F: return operateLD_X_A(env, instr);
-		case ci::LD_D_B_0x50: break;
-		case ci::LD_D_C_0x51: break;
-		case ci::LD_D_D_0x52: break;
-		case ci::LD_D_E_0x53: break;
-		case ci::LD_D_H_0x54: break;
-		case ci::LD_D_L_0x55: break;
-		case ci::LD_D_HL_0x56: break;
+		case ci::LD_D_B_0x50: return operateLD_X_X(env, instr);
+		case ci::LD_D_C_0x51: return operateLD_X_X(env, instr);
+		case ci::LD_D_D_0x52: return operateLD_X_X(env, instr);
+		case ci::LD_D_E_0x53: return operateLD_X_X(env, instr);
+		case ci::LD_D_H_0x54: return operateLD_X_X(env, instr);
+		case ci::LD_D_L_0x55: return operateLD_X_X(env, instr);
+		case ci::LD_D_mHL_0x56: return operateLD_X_X(env, instr);
 		case ci::LD_D_A_0x57: return operateLD_X_A(env, instr);
-		case ci::LD_E_B_0x58: break;
-		case ci::LD_E_C_0x59: break;
-		case ci::LD_E_D_0x5A: break;
-		case ci::LD_E_E_0x5B: break;
-		case ci::LD_E_H_0x5C: break;
-		case ci::LD_E_L_0x5D: break;
-		case ci::LD_E_HL_0x5E: break;
+		case ci::LD_E_B_0x58: return operateLD_X_X(env, instr);
+		case ci::LD_E_C_0x59: return operateLD_X_X(env, instr);
+		case ci::LD_E_D_0x5A: return operateLD_X_X(env, instr);
+		case ci::LD_E_E_0x5B: return operateLD_X_X(env, instr);
+		case ci::LD_E_H_0x5C: return operateLD_X_X(env, instr);
+		case ci::LD_E_L_0x5D: return operateLD_X_X(env, instr);
+		case ci::LD_E_mHL_0x5E: return operateLD_X_X(env, instr);
 		case ci::LD_E_A_0x5F: return operateLD_X_A(env, instr);
-		case ci::LD_H_B_0x60: break;
-		case ci::LD_H_C_0x61: break;
-		case ci::LD_H_D_0x62: break;
-		case ci::LD_H_E_0x63: break;
-		case ci::LD_H_H_0x64: break;
-		case ci::LD_H_L_0x65: break;
-		case ci::LD_H_HL_0x66: break;
+		case ci::LD_H_B_0x60: return operateLD_X_X(env, instr);
+		case ci::LD_H_C_0x61: return operateLD_X_X(env, instr);
+		case ci::LD_H_D_0x62: return operateLD_X_X(env, instr);
+		case ci::LD_H_E_0x63: return operateLD_X_X(env, instr);
+		case ci::LD_H_H_0x64: return operateLD_X_X(env, instr);
+		case ci::LD_H_L_0x65: return operateLD_X_X(env, instr);
+		case ci::LD_H_mHL_0x66: return operateLD_X_X(env, instr);
 		case ci::LD_H_A_0x67: return operateLD_X_A(env, instr);
-		case ci::LD_L_B_0x68: break;
-		case ci::LD_L_C_0x69: break;
-		case ci::LD_L_D_0x6A: break;
-		case ci::LD_L_E_0x6B: break;
-		case ci::LD_L_H_0x6C: break;
-		case ci::LD_L_L_0x6D: break;
-		case ci::LD_L_HL_0x6E: break;
+		case ci::LD_L_B_0x68: return operateLD_X_X(env, instr);
+		case ci::LD_L_C_0x69: return operateLD_X_X(env, instr);
+		case ci::LD_L_D_0x6A: return operateLD_X_X(env, instr);
+		case ci::LD_L_E_0x6B: return operateLD_X_X(env, instr);
+		case ci::LD_L_H_0x6C: return operateLD_X_X(env, instr);
+		case ci::LD_L_L_0x6D: return operateLD_X_X(env, instr);
+		case ci::LD_L_mHL_0x6E: return operateLD_X_X(env, instr);
 		case ci::LD_L_A_0x6F: return operateLD_X_A(env, instr);
-		case ci::LD_HL_B_0x70: break;
-		case ci::LD_HL_C_0x71: break;
-		case ci::LD_HL_D_0x72: break;
-		case ci::LD_HL_E_0x73: break;
-		case ci::LD_HL_H_0x74: break;
-		case ci::LD_HL_L_0x75: break;
+		case ci::LD_mHL_B_0x70: return operateLD_X_X(env, instr);
+		case ci::LD_mHL_C_0x71: return operateLD_X_X(env, instr);
+		case ci::LD_mHL_D_0x72: return operateLD_X_X(env, instr);
+		case ci::LD_mHL_E_0x73: return operateLD_X_X(env, instr);
+		case ci::LD_mHL_H_0x74: return operateLD_X_X(env, instr);
+		case ci::LD_mHL_L_0x75: return operateLD_X_X(env, instr);
 		case ci::HALT_0x76: break;
 		case ci::LD_mHL_A_0x77: return operateLD_X_A(env, instr);
 		case ci::LD_A_B_0x78: return operateLD_A_X(env, instr);
