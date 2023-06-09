@@ -298,6 +298,7 @@ namespace GBEmu::HW::CPUOperation
 	[[nodiscard]]
 	CPUOperationResult operateRLA(HWEnv& env)
 	{
+		// 0x0F
 		auto&& cpu = env.GetCPU();
 
 		const uint8 bit7 = cpu.RegA() >> 7;
@@ -307,6 +308,20 @@ namespace GBEmu::HW::CPUOperation
 
 		// 資料によっては、Z: Set if result is zero となっているのものあるのでしっかりテストしたい
 		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{false, false, false, bit7 == 1});
+	}
+
+	[[nodiscard]]
+	CPUOperationResult operateRRA(HWEnv& env)
+	{
+		// 0x1F
+		auto&& cpu = env.GetCPU();
+
+		const uint8 bit0 = cpu.RegA() &0b1;
+		const uint8 carry = static_cast<uint8>(cpu.FlagC());
+
+		cpu.SetA((cpu.RegA() >> 1) | (carry << 7));
+
+		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{false, false, false, bit0 == 0b1});
 	}
 
 	[[nodiscard]]
@@ -335,7 +350,7 @@ namespace GBEmu::HW::CPUOperation
 			undefined8();
 
 		const bool h = ((cpu.RegHL() & 0x7fff) + (src & 0x7fff)) > 0x7fff; // bit11からオーバーフローした場合にセット
-		const bool c = ((cpu.RegHL() & 0xffff) + (src & 0xffff)) > 0xffff; // bit11からオーバーフローした場合にセット
+		const bool c = ((cpu.RegHL() & 0xffff) + (src & 0xffff)) > 0xffff; // bit15からオーバーフローした場合にセット
 
 		cpu.SetHL(cpu.RegHL() + src);
 
@@ -398,7 +413,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::INC_E_0x1C: return operateINC_X(env, instr);
 		case ci::DEC_E_0x1D: return operateDEC_X(env, instr);
 		case ci::LD_E_d8_0x1E: return operateLD_X_d8(env, instr);;
-		case ci::RRA_0x1F: break;
+		case ci::RRA_0x1F: return operateRRA(env);
 		case ci::JR_NZ_r8_0x20: return operateJR_X_r8(env, instr);
 		case ci::LD_HL_d16_0x21: return operateLD_XX_d16(env, instr);
 		case ci::LDI_mHL_A_0x22: break;
