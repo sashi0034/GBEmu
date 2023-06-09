@@ -14,10 +14,10 @@ namespace GBEmu::HW
 
 	struct CPUOperationResult
 	{
-		const uint8 ByteLength;
-		const uint8 CycleCount;
-		const Optional<CPUOperationZNHC> Flag;
-		const Optional<uint16> NextPC;
+		uint8 ByteLength;
+		uint8 CycleCount;
+		Optional<CPUOperationZNHC> Flag;
+		Optional<uint16> NextPC;
 
 		[[nodiscard]]
 		CPUOperationResult(uint8 byteLength, uint8 cycleCount) :
@@ -60,6 +60,6 @@ namespace GBEmu::HW
 
 	namespace CPUOperation
 	{
-		CPUOperationResult OperateInstruction(HWEnv& env, CPUInstruction instr);
+		const CPUOperationResult OperateInstruction(HWEnv& env, CPUInstruction instr);
 	};
 }
