@@ -416,7 +416,7 @@
     <ClInclude Include="GBEmu\DebugParam.h" />
     <ClInclude Include="GBEmu\EmuConfig.h" />
     <ClInclude Include="GBEmu\EmuFlowchart.h" />
-    <ClInclude Include="GBEmu\HWLogger.h" />
+    <ClInclude Include="GBEmu\EmuLogger.h" />
     <ClInclude Include="GBEmu\HW\Cartridge.h" />
     <ClInclude Include="GBEmu\HW\CPU.h" />
     <ClInclude Include="GBEmu\HW\CPUInstruction.h" />
