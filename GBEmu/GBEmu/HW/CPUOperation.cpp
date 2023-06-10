@@ -515,6 +515,42 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateADC_A_X(HWEnv& env, CPUInstruction instr)
+	{
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+
+		const auto result_1_4 = CPUOperationResult(1, 4);
+
+		using std::pair;
+		pair<const uint8, CPUOperationResult> dispatch =
+			instr == ci::ADC_A_A_0x8F ? pair{ cpu.RegA(), result_1_4 } :
+			instr == ci::ADC_A_B_0x88 ? pair{ cpu.RegB(), result_1_4 } :
+			instr == ci::ADC_A_C_0x89 ? pair{ cpu.RegC(), result_1_4 } :
+			instr == ci::ADC_A_D_0x8A ? pair{ cpu.RegD(), result_1_4 } :
+			instr == ci::ADC_A_E_0x8B ? pair{ cpu.RegE(), result_1_4 } :
+			instr == ci::ADC_A_H_0x8C ? pair{ cpu.RegH(), result_1_4 } :
+			instr == ci::ADC_A_L_0x8D ? pair{ cpu.RegL(), result_1_4 } :
+			instr == ci::ADC_A_mHL_0x8E ?
+				pair{ memory.Read(cpu.RegHL()), CPUOperationResult(1, 8) } :
+			instr == ci::ADC_A_d8_0xCE ?
+				pair{ memory.Read(cpu.PC() + 1), CPUOperationResult(2, 8) } :
+			pair{ undefined8(), CPUOperationResult::Invalid() };
+
+		const uint8 add = dispatch.first;
+		const uint8 carry = (uint8)cpu.FlagC();
+
+		const bool h = ((cpu.RegA() & 0xF) + (add & 0xF) + carry) > 0xF; // bit3からオーバーフローした場合にセット
+		const bool c = ((cpu.RegA() & 0xFF) + (add & 0xFF) + carry) > 0xFF; // bit7からオーバーフローした場合にセット
+
+		cpu.SetA(cpu.RegA() + add + carry);
+
+		dispatch.second.Flag = CPUOperationZNHC{cpu.RegA() == 0, false, h, c};
+
+		return dispatch.second;
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateJR_X_r8(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -758,14 +794,14 @@ namespace GBEmu::HW::CPUOperation
 		case ci::ADD_A_L_0x85: return operateADD_A_X(env, instr);
 		case ci::ADD_A_mHL_0x86: return operateADD_A_X(env, instr);
 		case ci::ADD_A_A_0x87: return operateADD_A_X(env, instr);
-		case ci::ADC_A_B_0x88: break;
-		case ci::ADC_A_C_0x89: break;
-		case ci::ADC_A_D_0x8A: break;
-		case ci::ADC_A_E_0x8B: break;
-		case ci::ADC_A_H_0x8C: break;
-		case ci::ADC_A_L_0x8D: break;
-		case ci::ADC_A_HL_0x8E: break;
-		case ci::ADC_A_A_0x8F: break;
+		case ci::ADC_A_B_0x88: return operateADC_A_X(env, instr);
+		case ci::ADC_A_C_0x89: return operateADC_A_X(env, instr);
+		case ci::ADC_A_D_0x8A: return operateADC_A_X(env, instr);
+		case ci::ADC_A_E_0x8B: return operateADC_A_X(env, instr);
+		case ci::ADC_A_H_0x8C: return operateADC_A_X(env, instr);
+		case ci::ADC_A_L_0x8D: return operateADC_A_X(env, instr);
+		case ci::ADC_A_mHL_0x8E: return operateADC_A_X(env, instr);
+		case ci::ADC_A_A_0x8F: return operateADC_A_X(env, instr);
 		case ci::SUB_B_0x90: break;
 		case ci::SUB_C_0x91: break;
 		case ci::SUB_D_0x92: break;
@@ -828,7 +864,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::PREFIX_0xCB: break;
 		case ci::CALL_Z_a16_0xCC: break;
 		case ci::CALL_a16_0xCD: break;
-		case ci::ADC_A_d8_0xCE: break;
+		case ci::ADC_A_d8_0xCE: return operateADC_A_X(env, instr);
 		case ci::RST_08H_0xCF: break;
 		case ci::RET_NC_0xD0: break;
 		case ci::POP_DE_0xD1: break;
