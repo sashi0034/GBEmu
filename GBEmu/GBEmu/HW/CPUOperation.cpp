@@ -300,6 +300,15 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateLD_SP_HL(HWEnv& env)
+	{
+		// 0xF9
+		auto&& cpu = env.GetCPU();
+		cpu.SetSP(cpu.RegHL());
+		return CPUOperationResult(1, 8);
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateLD_HL_SPir8(HWEnv& env)
 	{
 		// 0xF8
@@ -1353,7 +1362,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::OR_A_d8_0xF6: return operateOR_A_X(env, instr);
 		case ci::RST_30h_0xF7: return operateRST_XXh(env, instr);
 		case ci::LD_HL_SPir8_0xF8: return operateLD_HL_SPir8(env);
-		case ci::LD_SP_HL_0xF9: break;
+		case ci::LD_SP_HL_0xF9: return operateLD_SP_HL(env);
 		case ci::LD_A_ma16_0xFA: return operateLD_A_X(env, instr);
 		case ci::EI_0xFB: break;
 		case ci::Reserved_0xFC: return CPUOperationResult::Default();
