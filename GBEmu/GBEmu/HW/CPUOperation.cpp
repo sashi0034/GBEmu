@@ -813,6 +813,30 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateRST_XXh(HWEnv& env, CPUInstruction instr)
+	{
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+
+		const uint16 addr =
+			instr == ci::RST_00h_0xC7 ? 0x00 :
+			instr == ci::RST_08h_0xCF ? 0x08 :
+			instr == ci::RST_10h_0xD7 ? 0x10 :
+			instr == ci::RST_18h_0xDF ? 0x18 :
+			instr == ci::RST_20h_0xE7 ? 0x20 :
+			instr == ci::RST_28h_0xEF ? 0x28 :
+			instr == ci::RST_30h_0xF7 ? 0x30 :
+			instr == ci::RST_38h_0xFF ? 0x38 :
+			undefined8();
+
+		constexpr uint16 bytes = 1;
+		memory.Write(cpu.SP() - 1, (cpu.PC() + bytes) >> 8);
+		memory.Write(cpu.SP() - 2, (cpu.PC() + bytes) & 0xFF);
+		cpu.SetSP(cpu.SP() - 2);
+		return CPUOperationResult::ByJump(bytes, 16, addr);
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operatePUSH_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -1177,7 +1201,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::CALL_NZ_a16_0xC4: return operateCALL_X_a16(env, instr);
 		case ci::PUSH_BC_0xC5: return operatePUSH_XX(env, instr);
 		case ci::ADD_A_d8_0xC6: return operateADD_A_X(env, instr);
-		case ci::RST_00H_0xC7: break;
+		case ci::RST_00h_0xC7: return operateRST_XXh(env, instr);
 		case ci::RET_Z_0xC8: return operateRET_X(env, instr);
 		case ci::RET_0xC9: return operateRET_X(env, instr);
 		case ci::JP_Z_a16_0xCA: return operateJP_X_a16(env, instr);;
@@ -1185,7 +1209,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::CALL_Z_a16_0xCC: return operateCALL_X_a16(env, instr);
 		case ci::CALL_a16_0xCD: return operateCALL_X_a16(env, instr);
 		case ci::ADC_A_d8_0xCE: return operateADC_A_X(env, instr);
-		case ci::RST_08H_0xCF: break;
+		case ci::RST_08h_0xCF: return operateRST_XXh(env, instr);
 		case ci::RET_NC_0xD0: return operateRET_X(env, instr);
 		case ci::POP_DE_0xD1: return operatePOP_XX(env, instr);
 		case ci::JP_NC_a16_0xD2: return operateJP_X_a16(env, instr);;
@@ -1193,7 +1217,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::CALL_NC_a16_0xD4: return operateCALL_X_a16(env, instr);
 		case ci::PUSH_DE_0xD5: return operatePUSH_XX(env, instr);;
 		case ci::SUB_A_d8_0xD6: return operateSUB_A_X(env, instr);
-		case ci::RST_10H_0xD7: break;
+		case ci::RST_10h_0xD7: return operateRST_XXh(env, instr);
 		case ci::RET_C_0xD8: return operateRET_X(env, instr);
 		case ci::RETI_0xD9: break;
 		case ci::JP_C_a16_0xDA: return operateJP_X_a16(env, instr);;
@@ -1201,7 +1225,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::CALL_C_a16_0xDC: return operateCALL_X_a16(env, instr);
 		case ci::Reserved_0xDD: return CPUOperationResult::Default();
 		case ci::SBC_A_d8_0xDE: return operateSBC_A_X(env, instr);
-		case ci::RST_18H_0xDF: break;
+		case ci::RST_18h_0xDF: return operateRST_XXh(env, instr);
 		case ci::LDH_a8_A_0xE0: break;
 		case ci::POP_HL_0xE1: return operatePOP_XX(env, instr);
 		case ci::LD_mC_A_0xE2: break;
@@ -1209,7 +1233,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::Reserved_0xE4: return CPUOperationResult::Default();
 		case ci::PUSH_HL_0xE5: return operatePUSH_XX(env, instr);;
 		case ci::AND_A_d8_0xE6: return operateAND_A_X(env, instr);
-		case ci::RST_20H_0xE7: break;
+		case ci::RST_20h_0xE7: return operateRST_XXh(env, instr);
 		case ci::ADD_SP_r8_0xE8: break;
 		case ci::JP_HL_0xE9: break;
 		case ci::LD_ma16_A_0xEA: return operateLD_X_A(env, instr);
@@ -1217,15 +1241,15 @@ namespace GBEmu::HW::CPUOperation
 		case ci::Reserved_0xEC: return CPUOperationResult::Default();
 		case ci::Reserved_0xED: return CPUOperationResult::Default();
 		case ci::XOR_A_d8_0xEE: return operateXOR_A_X(env, instr);
-		case ci::RST_28H_0xEF: break;
+		case ci::RST_28h_0xEF: return operateRST_XXh(env, instr);
 		case ci::LDH_A_a8_0xF0: break;
 		case ci::POP_AF_0xF1: return operatePOP_XX(env, instr);
 		case ci::LD_A_mC_0xF2: break;
 		case ci::DI_0xF3: break;
 		case ci::Reserved_0xF4: return CPUOperationResult::Default();
-		case ci::PUSH_AF_0xF5: return operatePUSH_XX(env, instr);;
+		case ci::PUSH_AF_0xF5: return operatePUSH_XX(env, instr);
 		case ci::OR_A_d8_0xF6: return operateOR_A_X(env, instr);
-		case ci::RST_30H_0xF7: break;
+		case ci::RST_30h_0xF7: return operateRST_XXh(env, instr);
 		case ci::LD_HL_SP_r8_0xF8: break;
 		case ci::LD_SP_HL_0xF9: break;
 		case ci::LD_A_ma16_0xFA: return operateLD_A_X(env, instr);
@@ -1233,7 +1257,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::Reserved_0xFC: return CPUOperationResult::Default();
 		case ci::Reserved_0xFD: return CPUOperationResult::Default();
 		case ci::CP_A_d8_0xFE: return operateCP_A_X(env, instr);
-		case ci::RST_38H_0xFF: break;
+		case ci::RST_38h_0xFF: return operateRST_XXh(env, instr);
 		default: ;
 		}
 
