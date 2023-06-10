@@ -280,6 +280,28 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateLDH_X_X(HWEnv& env, CPUInstruction instr)
+	{
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+		const uint8 a8 = memory.Read(cpu.PC() + 1);
+		constexpr uint16 addr_0xFF00 = 0xFF00;
+
+		switch (instr)
+		{
+		case ci::LDH_a8_A_0xE0:
+			memory.Write(addr_0xFF00 + a8, cpu.RegA());
+			return CPUOperationResult(2, 12);
+		case ci::LDH_A_a8_0xF0:
+			cpu.SetA(memory.Read(addr_0xFF00 + a8));
+			return CPUOperationResult(2, 12);
+		default:
+			assert(false);
+			return CPUOperationResult::Invalid();
+		}
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateINC_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -1237,7 +1259,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::Reserved_0xDD: return CPUOperationResult::Default();
 		case ci::SBC_A_d8_0xDE: return operateSBC_A_X(env, instr);
 		case ci::RST_18h_0xDF: return operateRST_XXh(env, instr);
-		case ci::LDH_a8_A_0xE0: break;
+		case ci::LDH_a8_A_0xE0: return operateLDH_X_X(env, instr);
 		case ci::POP_HL_0xE1: return operatePOP_XX(env, instr);
 		case ci::LD_mC_A_0xE2: break;
 		case ci::Reserved_0xE3: return CPUOperationResult::Default();
@@ -1253,7 +1275,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::Reserved_0xED: return CPUOperationResult::Default();
 		case ci::XOR_A_d8_0xEE: return operateXOR_A_X(env, instr);
 		case ci::RST_28h_0xEF: return operateRST_XXh(env, instr);
-		case ci::LDH_A_a8_0xF0: break;
+		case ci::LDH_A_a8_0xF0: return operateLDH_X_X(env, instr);
 		case ci::POP_AF_0xF1: return operatePOP_XX(env, instr);
 		case ci::LD_A_mC_0xF2: break;
 		case ci::DI_0xF3: break;
