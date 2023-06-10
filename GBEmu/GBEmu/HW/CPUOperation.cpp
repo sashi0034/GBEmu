@@ -986,7 +986,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		const uint16 sp = cpu.SP();
 		cpu.SetSP(sp + 2);
-		cpu.SetIME(true);
+		cpu.RequestEnableIME();
 		return CPUOperationResult::ByJump(1, 16, env.GetMemory().Read16(sp));
 	}
 
@@ -1048,7 +1048,7 @@ namespace GBEmu::HW::CPUOperation
 	{
 		// 0xF3
 		auto&& cpu = env.GetCPU();
-		cpu.SetIME(false);
+		cpu.DisableIME();
 		return CPUOperationResult(1, 4);
 	}
 

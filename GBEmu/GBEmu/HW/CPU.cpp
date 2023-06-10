@@ -9,9 +9,19 @@ namespace GBEmu::HW
 {
 	CPUCycle CPU::StepOperation(HWEnv& env)
 	{
+		// EIの効果は1命令分だけ遅れる
+		if (m_imeRequested)
+		{
+			m_imeRequested = false;
+			m_imeFlag = true;
+		}
+
 		// HALTされているとき、割り込みまで進まない
-		constexpr int haltCycle = 4;
-		if (m_state != CPUState::Running) return CPUCycle{haltCycle};
+		if (m_state != CPUState::Running)
+		{
+			constexpr int haltCycle = 4;
+			return CPUCycle{haltCycle};
+		}
 
 		auto [isPrefixedCB, code] = fetchInstruction(env);
 

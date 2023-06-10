@@ -87,7 +87,8 @@ namespace GBEmu::HW
 		CPUState State() const { return m_state; }
 
 		bool IME() const { return m_imeFlag; }
-		void SetIME(bool flag) { m_imeFlag = flag; }
+		void DisableIME() { m_imeFlag = false; }
+		void RequestEnableIME() { m_imeRequested = true; };
 	private:
 		uint16 m_pc{};
 		uint16 m_sp{};
@@ -105,6 +106,7 @@ namespace GBEmu::HW
 
 		// Interrupt Master Enable Flag
 		bool m_imeFlag{};
+		bool m_imeRequested{};
 
 		static void setRegXX(uint8& reg1, uint8& reg2, uint16 value)
 		{
