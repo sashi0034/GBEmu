@@ -1020,6 +1020,15 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateDI(HWEnv& env)
+	{
+		// 0xF3
+		auto&& cpu = env.GetCPU();
+		cpu.SetIME(false);
+		return CPUOperationResult(1, 4);
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateDAA(HWEnv& env)
 	{
 		// 0x27
@@ -1323,7 +1332,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LDH_A_a8_0xF0: return operateLDH_X_X(env, instr);
 		case ci::POP_AF_0xF1: return operatePOP_XX(env, instr);
 		case ci::LD_A_mC_0xF2: return operateLD_A_mC(env);
-		case ci::DI_0xF3: break;
+		case ci::DI_0xF3: return operateDI(env);
 		case ci::Reserved_0xF4: return CPUOperationResult::Default();
 		case ci::PUSH_AF_0xF5: return operatePUSH_XX(env, instr);
 		case ci::OR_A_d8_0xF6: return operateOR_A_X(env, instr);
