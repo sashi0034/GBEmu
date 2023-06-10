@@ -562,7 +562,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const uint8 r8 = memory.Read(cpu.PC() + 1);
+		const int8 r8 = static_cast<int8>(memory.Read(cpu.PC() + 1));
 		const uint16 sp = cpu.SP();
 
 		const bool h = ((sp & 0xF) + (r8 & 0xF)) > 0xF; // bit3からオーバーフローした場合にセット
@@ -808,7 +808,7 @@ namespace GBEmu::HW::CPUOperation
 	CPUOperationResult operateJR_X_r8(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
-		const uint8 r8 = env.GetMemory().Read(cpu.PC() + 1);
+		const int8 r8 = static_cast<int8>(env.GetMemory().Read(cpu.PC() + 1));
 
 		const bool toJump =
 			instr == ci::JR_r8_0x18 ? true :
