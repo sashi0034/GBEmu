@@ -87,6 +87,7 @@ namespace GBEmu::HW
 		CPUState State() const { return m_state; }
 
 		bool IME() const { return m_imeFlag; }
+		void SetIME(bool flag) { m_imeFlag = flag; }
 	private:
 		uint16 m_pc{};
 		uint16 m_sp{};

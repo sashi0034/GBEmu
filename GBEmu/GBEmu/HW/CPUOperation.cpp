@@ -889,6 +889,17 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateRETI(HWEnv& env)
+	{
+		// 0xD9
+		auto&& cpu = env.GetCPU();
+		const uint16 sp = cpu.SP();
+		cpu.SetSP(sp + 2);
+		cpu.SetIME(true);
+		return CPUOperationResult::ByJump(1, 16, env.GetMemory().Read16(sp));
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operatePOP_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -1219,7 +1230,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::SUB_A_d8_0xD6: return operateSUB_A_X(env, instr);
 		case ci::RST_10h_0xD7: return operateRST_XXh(env, instr);
 		case ci::RET_C_0xD8: return operateRET_X(env, instr);
-		case ci::RETI_0xD9: break;
+		case ci::RETI_0xD9: return operateRETI(env);
 		case ci::JP_C_a16_0xDA: return operateJP_X_a16(env, instr);;
 		case ci::Reserved_0xDB: return CPUOperationResult::Default();
 		case ci::CALL_C_a16_0xDC: return operateCALL_X_a16(env, instr);
