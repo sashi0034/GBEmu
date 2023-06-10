@@ -759,10 +759,29 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::JR_C_r8_0x38 ? cpu.FlagC() :
 			undefined8();
 
+		constexpr int bytes = 2;
 		return toJump
 			// 命令実行時では、このPCは命令実行前のPCを指しているので、nextPCにはbyteLengthを足しておく
-			? CPUOperationResult::ByJump(2, 12, cpu.PC() + 2 + r8)
-			: CPUOperationResult(2, 8);
+			? CPUOperationResult::ByJump(bytes, 12, cpu.PC() + bytes + r8)
+			: CPUOperationResult(bytes, 8);
+	}
+
+	[[nodiscard]]
+	CPUOperationResult operateJP_X_a16(HWEnv& env, CPUInstruction instr)
+	{
+		auto&& cpu = env.GetCPU();
+
+		const bool toJump =
+			instr == ci::JP_a16_0xC3 ? true :
+			instr == ci::JP_NZ_a16_0xC2 ? (cpu.FlagZ() == false) :
+			instr == ci::JP_Z_a16_0xCA ? cpu.FlagZ() :
+			instr == ci::JP_NC_a16_0xD2 ? (cpu.FlagC() == false) :
+			instr == ci::JP_C_a16_0xDA ? cpu.FlagC() :
+			undefined8();
+
+		return toJump
+			? CPUOperationResult::ByJump(3, 16, env.GetMemory().Read16(cpu.PC() + 1))
+			: CPUOperationResult(3, 12);
 	}
 
 	[[nodiscard]]
@@ -1104,15 +1123,15 @@ namespace GBEmu::HW::CPUOperation
 		case ci::CP_A_A_0xBF: return operateCP_A_X(env, instr);
 		case ci::RET_NZ_0xC0: return operateRET_X(env, instr);
 		case ci::POP_BC_0xC1: return operatePOP_XX(env, instr);
-		case ci::JP_NZ_a16_0xC2: break;
-		case ci::JP_a16_0xC3: break;
+		case ci::JP_NZ_a16_0xC2: return operateJP_X_a16(env, instr);
+		case ci::JP_a16_0xC3: return operateJP_X_a16(env, instr);
 		case ci::CALL_NZ_a16_0xC4: break;
 		case ci::PUSH_BC_0xC5: break;
 		case ci::ADD_A_d8_0xC6: return operateADD_A_X(env, instr);
 		case ci::RST_00H_0xC7: break;
 		case ci::RET_Z_0xC8: return operateRET_X(env, instr);
 		case ci::RET_0xC9: return operateRET_X(env, instr);
-		case ci::JP_Z_a16_0xCA: break;
+		case ci::JP_Z_a16_0xCA: return operateJP_X_a16(env, instr);;
 		case ci::Prefix_0xCB: assert(false); return CPUOperationResult::Invalid();
 		case ci::CALL_Z_a16_0xCC: break;
 		case ci::CALL_a16_0xCD: break;
@@ -1120,7 +1139,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::RST_08H_0xCF: break;
 		case ci::RET_NC_0xD0: return operateRET_X(env, instr);
 		case ci::POP_DE_0xD1: return operatePOP_XX(env, instr);
-		case ci::JP_NC_a16_0xD2: break;
+		case ci::JP_NC_a16_0xD2: return operateJP_X_a16(env, instr);;
 		case ci::Reserved_0xD3: return CPUOperationResult::Default();
 		case ci::CALL_NC_a16_0xD4: break;
 		case ci::PUSH_DE_0xD5: break;
@@ -1128,7 +1147,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::RST_10H_0xD7: break;
 		case ci::RET_C_0xD8: return operateRET_X(env, instr);
 		case ci::RETI_0xD9: break;
-		case ci::JP_C_a16_0xDA: break;
+		case ci::JP_C_a16_0xDA: return operateJP_X_a16(env, instr);;
 		case ci::Reserved_0xDB: return CPUOperationResult::Default();
 		case ci::CALL_C_a16_0xDC: break;
 		case ci::Reserved_0xDD: return CPUOperationResult::Default();
