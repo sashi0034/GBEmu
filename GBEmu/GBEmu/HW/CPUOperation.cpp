@@ -835,6 +835,14 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateJP_HL(HWEnv& env)
+	{
+		// 0xE9
+		auto&& cpu = env.GetCPU();
+		return CPUOperationResult::ByJump(1, 4, cpu.RegHL());
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateCALL_X_a16(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -1296,7 +1304,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::AND_A_d8_0xE6: return operateAND_A_X(env, instr);
 		case ci::RST_20h_0xE7: return operateRST_XXh(env, instr);
 		case ci::ADD_SP_r8_0xE8: return operateADD_SP_r8(env);
-		case ci::JP_HL_0xE9: break;
+		case ci::JP_HL_0xE9: return operateJP_HL(env);
 		case ci::LD_ma16_A_0xEA: return operateLD_X_A(env, instr);
 		case ci::Reserved_0xEB: return CPUOperationResult::Default();
 		case ci::Reserved_0xEC: return CPUOperationResult::Default();
