@@ -291,6 +291,15 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateLD_A_mC(HWEnv& env)
+	{
+		// 0xF2
+		auto&& cpu = env.GetCPU();
+		cpu.SetA(env.GetMemory().Read(addr_0xFF00 + cpu.RegC()));
+		return CPUOperationResult(1, 8);
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateLDH_X_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -1313,7 +1322,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::RST_28h_0xEF: return operateRST_XXh(env, instr);
 		case ci::LDH_A_a8_0xF0: return operateLDH_X_X(env, instr);
 		case ci::POP_AF_0xF1: return operatePOP_XX(env, instr);
-		case ci::LD_A_mC_0xF2: break;
+		case ci::LD_A_mC_0xF2: return operateLD_A_mC(env);
 		case ci::DI_0xF3: break;
 		case ci::Reserved_0xF4: return CPUOperationResult::Default();
 		case ci::PUSH_AF_0xF5: return operatePUSH_XX(env, instr);
