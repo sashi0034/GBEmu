@@ -797,6 +797,32 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operatePOP_XX(HWEnv& env, CPUInstruction instr)
+	{
+		auto&& cpu = env.GetCPU();
+
+		const uint16 r16 = env.GetMemory().Read16(cpu.SP());
+
+		switch (instr)
+		{
+		case ci::POP_AF_0xF1:
+			cpu.SetAF(r16 & 0xFFF0); break; // Fはフラグ部分4~7bitのみに影響を与える
+		case ci::POP_BC_0xC1:
+			cpu.SetBC(r16); break;
+		case ci::POP_DE_0xD1:
+			cpu.SetDE(r16); break;
+		case ci::POP_HL_0xE1:
+			cpu.SetHL(r16); break;
+		default:
+			assert(false);
+		}
+
+		cpu.SetSP(cpu.SP() + 2);
+
+		return CPUOperationResult(1, 12);
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateCPL(HWEnv& env)
 	{
 		// 0x2F
@@ -1077,7 +1103,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::CP_A_mHL_0xBE: return operateCP_A_X(env, instr);
 		case ci::CP_A_A_0xBF: return operateCP_A_X(env, instr);
 		case ci::RET_NZ_0xC0: return operateRET_X(env, instr);
-		case ci::POP_BC_0xC1: break;
+		case ci::POP_BC_0xC1: return operatePOP_XX(env, instr);
 		case ci::JP_NZ_a16_0xC2: break;
 		case ci::JP_a16_0xC3: break;
 		case ci::CALL_NZ_a16_0xC4: break;
@@ -1093,7 +1119,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::ADC_A_d8_0xCE: return operateADC_A_X(env, instr);
 		case ci::RST_08H_0xCF: break;
 		case ci::RET_NC_0xD0: return operateRET_X(env, instr);
-		case ci::POP_DE_0xD1: break;
+		case ci::POP_DE_0xD1: return operatePOP_XX(env, instr);
 		case ci::JP_NC_a16_0xD2: break;
 		case ci::Reserved_0xD3: return CPUOperationResult::Default();
 		case ci::CALL_NC_a16_0xD4: break;
@@ -1109,7 +1135,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::SBC_A_d8_0xDE: return operateSBC_A_X(env, instr);
 		case ci::RST_18H_0xDF: break;
 		case ci::LDH_a8_A_0xE0: break;
-		case ci::POP_HL_0xE1: break;
+		case ci::POP_HL_0xE1: return operatePOP_XX(env, instr);
 		case ci::LD_mC_A_0xE2: break;
 		case ci::Reserved_0xE3: return CPUOperationResult::Default();
 		case ci::Reserved_0xE4: return CPUOperationResult::Default();
@@ -1125,7 +1151,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::XOR_A_d8_0xEE: return operateXOR_A_X(env, instr);
 		case ci::RST_28H_0xEF: break;
 		case ci::LDH_A_a8_0xF0: break;
-		case ci::POP_AF_0xF1: break;
+		case ci::POP_AF_0xF1: return operatePOP_XX(env, instr);
 		case ci::LD_A_mC_0xF2: break;
 		case ci::DI_0xF3: break;
 		case ci::Reserved_0xF4: return CPUOperationResult::Default();
