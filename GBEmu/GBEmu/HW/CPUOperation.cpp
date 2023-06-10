@@ -652,6 +652,36 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateXOR_A_X(HWEnv& env, CPUInstruction instr)
+	{
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+
+		const auto result_1_4 = CPUOperationResult(1, 4);
+
+		using std::pair;
+		pair<const uint8, CPUOperationResult> dispatch =
+			instr == ci::XOR_A_A_0xAF ? pair{ cpu.RegA(), result_1_4 } :
+			instr == ci::XOR_A_B_0xA8 ? pair{ cpu.RegB(), result_1_4 } :
+			instr == ci::XOR_A_C_0xA9 ? pair{ cpu.RegC(), result_1_4 } :
+			instr == ci::XOR_A_D_0xAA ? pair{ cpu.RegD(), result_1_4 } :
+			instr == ci::XOR_A_E_0xAB ? pair{ cpu.RegE(), result_1_4 } :
+			instr == ci::XOR_A_H_0xAC ? pair{ cpu.RegH(), result_1_4 } :
+			instr == ci::XOR_A_L_0xAD ? pair{ cpu.RegL(), result_1_4 } :
+			instr == ci::XOR_A_mHL_0xAE ?
+				pair{ memory.Read(cpu.RegHL()), CPUOperationResult(1, 8) } :
+			instr == ci::XOR_A_d8_0xEE ?
+				pair{ memory.Read(cpu.PC() + 1), CPUOperationResult(2, 8) } :
+			pair{ undefined8(), CPUOperationResult::Invalid() };
+
+		cpu.SetA(cpu.RegA() ^ dispatch.first);
+
+		dispatch.second.Flag = CPUOperationZNHC{cpu.RegA() == 0, false, false, false};
+
+		return dispatch.second;
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateJR_X_r8(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -927,14 +957,14 @@ namespace GBEmu::HW::CPUOperation
 		case ci::AND_A_L_0xA5: return operateAND_A_X(env, instr);
 		case ci::AND_A_mHL_0xA6: return operateAND_A_X(env, instr);
 		case ci::AND_A_A_0xA7: return operateAND_A_X(env, instr);
-		case ci::XOR_B_0xA8: break;
-		case ci::XOR_C_0xA9: break;
-		case ci::XOR_D_0xAA: break;
-		case ci::XOR_E_0xAB: break;
-		case ci::XOR_H_0xAC: break;
-		case ci::XOR_L_0xAD: break;
-		case ci::XOR_HL_0xAE: break;
-		case ci::XOR_A_0xAF: break;
+		case ci::XOR_A_B_0xA8: return operateXOR_A_X(env, instr);
+		case ci::XOR_A_C_0xA9: return operateXOR_A_X(env, instr);
+		case ci::XOR_A_D_0xAA: return operateXOR_A_X(env, instr);
+		case ci::XOR_A_E_0xAB: return operateXOR_A_X(env, instr);
+		case ci::XOR_A_H_0xAC: return operateXOR_A_X(env, instr);
+		case ci::XOR_A_L_0xAD: return operateXOR_A_X(env, instr);
+		case ci::XOR_A_mHL_0xAE: return operateXOR_A_X(env, instr);
+		case ci::XOR_A_A_0xAF: return operateXOR_A_X(env, instr);
 		case ci::OR_B_0xB0: break;
 		case ci::OR_C_0xB1: break;
 		case ci::OR_D_0xB2: break;
@@ -997,7 +1027,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::Reserved_0xEB: return CPUOperationResult::Default();
 		case ci::Reserved_0xEC: return CPUOperationResult::Default();
 		case ci::Reserved_0xED: return CPUOperationResult::Default();
-		case ci::XOR_d8_0xEE: break;
+		case ci::XOR_A_d8_0xEE: return operateXOR_A_X(env, instr);
 		case ci::RST_28H_0xEF: break;
 		case ci::LDH_A_a8_0xF0: break;
 		case ci::POP_AF_0xF1: break;
