@@ -300,6 +300,21 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateLD_HL_SPir8(HWEnv& env)
+	{
+		// 0xF8
+		auto&& cpu = env.GetCPU();
+		const int8 r8 = static_cast<int8>(env.GetMemory().Read(cpu.PC() + 1));
+
+		const bool h = ((cpu.SP() & 0xF) + (r8 & 0xF)) > 0xF; // bit3からオーバーフローした場合にセット
+		const bool c = ((cpu.SP() & 0xFF) + (r8 & 0xFF)) > 0xFF; // bit7からオーバーフローした場合にセット
+
+		cpu.SetHL(cpu.SP() + r8);
+
+		return CPUOperationResult::ByCalc(2, 12, CPUOperationZNHC{false, false, h, c});
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateLDH_X_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -1337,7 +1352,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::PUSH_AF_0xF5: return operatePUSH_XX(env, instr);
 		case ci::OR_A_d8_0xF6: return operateOR_A_X(env, instr);
 		case ci::RST_30h_0xF7: return operateRST_XXh(env, instr);
-		case ci::LD_HL_SP_r8_0xF8: break;
+		case ci::LD_HL_SPir8_0xF8: return operateLD_HL_SPir8(env);
 		case ci::LD_SP_HL_0xF9: break;
 		case ci::LD_A_ma16_0xFA: return operateLD_A_X(env, instr);
 		case ci::EI_0xFB: break;
