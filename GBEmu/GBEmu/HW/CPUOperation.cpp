@@ -1053,6 +1053,15 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateEI(HWEnv& env)
+	{
+		// 0xFB
+		auto&& cpu = env.GetCPU();
+		cpu.RequestEnableIME();
+		return CPUOperationResult(1, 4);
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateDAA(HWEnv& env)
 	{
 		// 0x27
@@ -1364,7 +1373,7 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_HL_SPir8_0xF8: return operateLD_HL_SPir8(env);
 		case ci::LD_SP_HL_0xF9: return operateLD_SP_HL(env);
 		case ci::LD_A_ma16_0xFA: return operateLD_A_X(env, instr);
-		case ci::EI_0xFB: break;
+		case ci::EI_0xFB: return operateEI(env);
 		case ci::Reserved_0xFC: return CPUOperationResult::Default();
 		case ci::Reserved_0xFD: return CPUOperationResult::Default();
 		case ci::CP_A_d8_0xFE: return operateCP_A_X(env, instr);

@@ -23,6 +23,7 @@ namespace GBEmu::HW
 			return CPUCycle{haltCycle};
 		}
 
+		// 命令フェッチ
 		auto [isPrefixedCB, code] = fetchInstruction(env);
 
 		// 命令実行
