@@ -11,7 +11,7 @@ namespace GBEmu::HW::CPUOperation
 
 	constexpr uint16 addr_0xFF00 = 0xFF00;
 
-	uint8 undefined8()
+	inline uint8 undefined8()
 	{
 		assert(false);
 		return 0;
@@ -953,7 +953,7 @@ namespace GBEmu::HW::CPUOperation
 	{
 		auto&& cpu = env.GetCPU();
 
-		using tuple = std::tuple<bool, int, int>;
+		using tuple = std::tuple<bool, uint8, uint8>;
 		const auto [toRet, cycleOnRet, cycleOnSkip] =
 			instr == ci::RET_0xC9 ?
 				tuple{true, 16, 16} :

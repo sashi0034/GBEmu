@@ -6,6 +6,6 @@ namespace GBEmu::HW
 {
 	namespace CPUOperationCB
 	{
-		CPUOperationResult OperateInstructionCB(HWEnv& ENV, CPUInstructionCB instr);
+		const CPUOperationResult OperateInstructionCB(HWEnv& env, CPUInstructionCB instr);
 	};
 }
