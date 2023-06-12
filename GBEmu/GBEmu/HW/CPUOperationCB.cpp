@@ -234,7 +234,7 @@ namespace GBEmu::HW::CPUOperationCB
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const uint8 before = cpu.RegHL();
+		const uint8 before = memory.Read(cpu.RegHL());
 		const uint8 after = before << 1;
 
 		const bool z = after == 0;
@@ -278,7 +278,7 @@ namespace GBEmu::HW::CPUOperationCB
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const uint8 before = cpu.RegHL();
+		const uint8 before = memory.Read(cpu.RegHL());
 		const uint8 after = (before >> 1) | (before & (1 << 7));
 
 		const bool z = after == 0;
