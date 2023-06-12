@@ -290,6 +290,32 @@ namespace GBEmu::HW::CPUOperationCB
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateSRL_X(HWEnv& env, CPUInstructionCB instr)
+	{
+		auto&& cpu = env.GetCPU();
+
+		const CPUReg8 reg =
+			instr == ci::SRL_A_0x3F ? CPUReg8::A :
+			instr == ci::SRL_B_0x38 ? CPUReg8::B :
+			instr == ci::SRL_C_0x39 ? CPUReg8::C :
+			instr == ci::SRL_D_0x3A ? CPUReg8::D :
+			instr == ci::SRL_E_0x3B ? CPUReg8::E :
+			instr == ci::SRL_H_0x3C ? CPUReg8::H :
+			instr == ci::SRL_L_0x3D ? CPUReg8::L :
+			undefined8();
+
+		const uint8 before = cpu.GetReg8(reg);
+		const uint8 after = before >> 1;
+
+		const bool z = after == 0;
+		const bool c = before & 0b1;
+
+		cpu.SetReg8(reg, after);
+
+		return CPUOperationResult::ByCalc(2, 8, CPUOperationZNHC{z, false, false, c});
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateSWAP_X(HWEnv& env, CPUInstructionCB instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -394,14 +420,14 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::SWAP_L_0x35: return operateSWAP_X(env, instr);
 		case ci::SWAP_HL_0x36: return operateSWAP_mHL(env);
 		case ci::SWAP_A_0x37: return operateSWAP_X(env, instr);
-		case ci::SRL_B_0x38: break;
-		case ci::SRL_C_0x39: break;
-		case ci::SRL_D_0x3A: break;
-		case ci::SRL_E_0x3B: break;
-		case ci::SRL_H_0x3C: break;
-		case ci::SRL_L_0x3D: break;
+		case ci::SRL_B_0x38: return operateSRL_X(env, instr);
+		case ci::SRL_C_0x39: return operateSRL_X(env, instr);
+		case ci::SRL_D_0x3A: return operateSRL_X(env, instr);
+		case ci::SRL_E_0x3B: return operateSRL_X(env, instr);
+		case ci::SRL_H_0x3C: return operateSRL_X(env, instr);
+		case ci::SRL_L_0x3D: return operateSRL_X(env, instr);
 		case ci::SRL_HL_0x3E: break;
-		case ci::SRL_A_0x3F: break;
+		case ci::SRL_A_0x3F: return operateSRL_X(env, instr);
 		case ci::BIT_0_B_0x40: break;
 		case ci::BIT_0_C_0x41: break;
 		case ci::BIT_0_D_0x42: break;
