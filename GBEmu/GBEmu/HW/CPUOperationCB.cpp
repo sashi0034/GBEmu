@@ -13,6 +13,12 @@ namespace GBEmu::HW::CPUOperationCB
 		return 0;
 	}
 
+	inline CPUReg8 undefinedReg8()
+	{
+		assert(false);
+		return CPUReg8::Invalid;
+	}
+
 	[[nodiscard]]
 	CPUOperationResult operateRLC_X(HWEnv& env, CPUInstructionCB instr)
 	{
@@ -26,7 +32,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::RLC_E_0x03 ? CPUReg8::E :
 			instr == ci::RLC_H_0x04 ? CPUReg8::H :
 			instr == ci::RLC_L_0x05 ? CPUReg8::L :
-			undefined8();
+			undefinedReg8();
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 bit7 = before >> 7;
@@ -70,7 +76,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::RRC_E_0x0B ? CPUReg8::E :
 			instr == ci::RRC_H_0x0C ? CPUReg8::H :
 			instr == ci::RRC_L_0x0D ? CPUReg8::L :
-			undefined8();
+			undefinedReg8();
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 bit0 = before & 0b1;
@@ -114,7 +120,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::RL_E_0x13 ? CPUReg8::E :
 			instr == ci::RL_H_0x14 ? CPUReg8::H :
 			instr == ci::RL_L_0x15 ? CPUReg8::L :
-			undefined8();
+			undefinedReg8();
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 bit7 = before >> 7;
@@ -164,7 +170,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::RR_E_0x1B ? CPUReg8::E :
 			instr == ci::RR_H_0x1C ? CPUReg8::H :
 			instr == ci::RR_L_0x1D ? CPUReg8::L :
-			undefined8();
+			undefinedReg8();
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 bit0 = before & 0b1;
@@ -214,7 +220,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::SLA_E_0x23 ? CPUReg8::E :
 			instr == ci::SLA_H_0x24 ? CPUReg8::H :
 			instr == ci::SLA_L_0x25 ? CPUReg8::L :
-			undefined8();
+			undefinedReg8();
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 after = before << 1;
@@ -258,7 +264,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::SRA_E_0x2B ? CPUReg8::E :
 			instr == ci::SRA_H_0x2C ? CPUReg8::H :
 			instr == ci::SRA_L_0x2D ? CPUReg8::L :
-			undefined8();
+			undefinedReg8();
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 after = (before >> 1) | (before & (1 << 7));
@@ -302,7 +308,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::SRL_E_0x3B ? CPUReg8::E :
 			instr == ci::SRL_H_0x3C ? CPUReg8::H :
 			instr == ci::SRL_L_0x3D ? CPUReg8::L :
-			undefined8();
+			undefinedReg8();
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 after = before >> 1;
@@ -346,7 +352,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::SWAP_E_0x33 ? CPUReg8::E :
 			instr == ci::SWAP_H_0x34 ? CPUReg8::H :
 			instr == ci::SWAP_L_0x35 ? CPUReg8::L :
-			undefined8();
+			undefinedReg8();
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 after = (before >> 4) | (before << 4);
@@ -393,7 +399,7 @@ namespace GBEmu::HW::CPUOperationCB
 			r8 == 3 ? CPUReg8::E :
 			r8 == 4 ? CPUReg8::H :
 			r8 == 5 ? CPUReg8::L :
-			undefined8();
+			undefinedReg8();
 
 		const uint8 value = cpu.GetReg8(reg);
 		const bool z = (value & (1 << u3)) == 0;
