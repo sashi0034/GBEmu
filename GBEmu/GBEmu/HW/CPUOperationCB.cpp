@@ -271,6 +271,24 @@ namespace GBEmu::HW::CPUOperationCB
 		return CPUOperationResult::ByCalc(2, 8, CPUOperationZNHC{z, false, false, c});
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateSRA_mHL(HWEnv& env)
+	{
+		// 0x2E
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+
+		const uint8 before = cpu.RegHL();
+		const uint8 after = (before >> 1) | (before & (1 << 7));
+
+		const bool z = after == 0;
+		const bool c = before & 0b1;
+
+		memory.Write(cpu.RegHL(), after);
+
+		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, c});
+	}
+
 
 	const CPUOperationResult OperateInstructionCB(HWEnv& env, CPUInstructionCB instr)
 	{
@@ -322,7 +340,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::SRA_E_0x2B: return operateSRA_X(env, instr);
 		case ci::SRA_H_0x2C: return operateSRA_X(env, instr);
 		case ci::SRA_L_0x2D: return operateSRA_X(env, instr);
-		case ci::SRA_HL_0x2E: break;
+		case ci::SRA_mHL_0x2E: return operateSRA_mHL(env);
 		case ci::SRA_A_0x2F: return operateSRA_X(env, instr);
 		case ci::SWAP_B_0x30: break;
 		case ci::SWAP_C_0x31: break;
