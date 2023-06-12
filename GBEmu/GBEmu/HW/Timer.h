@@ -11,7 +11,7 @@ namespace GBEmu::HW
 		void StepCycle(HWEnv& env);
 	private:
 		uint16 m_divDetail{};
-		Array<int> m_timaOverflowedCountdown{};
+		Optional<int> m_timaOverflowedCountdown = none;
 
 		uint8 getTima(Memory& memory);
 		void setTima(Memory& memory, uint8 value);

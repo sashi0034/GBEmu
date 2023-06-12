@@ -56,24 +56,22 @@ namespace GBEmu::HW
 		// オーバーフロー
 		// TIMAがオーバーフローした後の1マシンサイクルでは、TIMAの値がTMAからの値ではなく0x00になる
 		setTima(memory, memory.Read(0x00));
-		m_timaOverflowedCountdown.push_back(HWParam::MachineCycle); // Timer割り込みを遅延実行
+		m_timaOverflowedCountdown = HWParam::MachineCycle; // Timer割り込みを遅延実行
+		// TIMA周波数はいずれも十分大きいから、m_timaOverflowedCountdownを直接上書きして大丈夫
 	}
 
 	void Timer::checkUpdateTimaOverflowedCountdown(Memory& memory)
 	{
-		if (m_timaOverflowedCountdown.isEmpty()) return;
+		if (m_timaOverflowedCountdown == none) return;
 
-		for (int i=m_timaOverflowedCountdown.size() - 1; i>=0; --i)
-		{
-			m_timaOverflowedCountdown[i] = m_timaOverflowedCountdown[i] - 1;
-			if (m_timaOverflowedCountdown[i] > 0) continue;
-			m_timaOverflowedCountdown.remove_at(i);
+		m_timaOverflowedCountdown = m_timaOverflowedCountdown.value() - 1;
+		if (m_timaOverflowedCountdown.value() > 0) return;;
+		m_timaOverflowedCountdown = none;
 
-			// Timer割り込み要求
-			memory.Write(IF_0xFF0F, memory.Read(IF_0xFF0F) | HWParam::InterruptTimer);
+		// Timer割り込み要求
+		memory.Write(IF_0xFF0F, memory.Read(IF_0xFF0F) | HWParam::InterruptTimer);
 
-			// TIMAをTMAの値にする
-			setTima(memory, memory.Read(TMA_0xFF06));
-		}
+		// TIMAをTMAの値にする
+		setTima(memory, memory.Read(TMA_0xFF06));
 	}
 }
