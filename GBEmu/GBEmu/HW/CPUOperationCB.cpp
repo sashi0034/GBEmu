@@ -444,6 +444,20 @@ namespace GBEmu::HW::CPUOperationCB
 		return CPUOperationResult(2, 8);
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateRES_N_mHL(HWEnv& env, CPUInstructionCB instr)
+	{
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+
+		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::RES_0_B_0x80)) / 8;
+
+		const uint8 value = memory.Read(cpu.RegHL());
+		memory.Write(cpu.RegHL(), value & (~(1 << u3)));
+
+		return CPUOperationResult(2, 16);
+	}
+
 
 	const CPUOperationResult OperateInstructionCB(HWEnv& env, CPUInstructionCB instr)
 	{
@@ -583,7 +597,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::RES_0_E_0x83: return operateRES_N_X(env, instr);
 		case ci::RES_0_H_0x84: return operateRES_N_X(env, instr);
 		case ci::RES_0_L_0x85: return operateRES_N_X(env, instr);
-		case ci::RES_0_HL_0x86: break;
+		case ci::RES_0_mHL_0x86: return operateRES_N_mHL(env, instr);
 		case ci::RES_0_A_0x87: return operateRES_N_X(env, instr);
 		case ci::RES_1_B_0x88: return operateRES_N_X(env, instr);
 		case ci::RES_1_C_0x89: return operateRES_N_X(env, instr);
@@ -591,7 +605,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::RES_1_E_0x8B: return operateRES_N_X(env, instr);
 		case ci::RES_1_H_0x8C: return operateRES_N_X(env, instr);
 		case ci::RES_1_L_0x8D: return operateRES_N_X(env, instr);
-		case ci::RES_1_HL_0x8E: break;
+		case ci::RES_1_mHL_0x8E: return operateRES_N_mHL(env, instr);
 		case ci::RES_1_A_0x8F: return operateRES_N_X(env, instr);
 		case ci::RES_2_B_0x90: return operateRES_N_X(env, instr);
 		case ci::RES_2_C_0x91: return operateRES_N_X(env, instr);
@@ -599,7 +613,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::RES_2_E_0x93: return operateRES_N_X(env, instr);
 		case ci::RES_2_H_0x94: return operateRES_N_X(env, instr);
 		case ci::RES_2_L_0x95: return operateRES_N_X(env, instr);
-		case ci::RES_2_HL_0x96: break;
+		case ci::RES_2_mHL_0x96: return operateRES_N_mHL(env, instr);
 		case ci::RES_2_A_0x97: return operateRES_N_X(env, instr);
 		case ci::RES_3_B_0x98: return operateRES_N_X(env, instr);
 		case ci::RES_3_C_0x99: return operateRES_N_X(env, instr);
@@ -607,7 +621,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::RES_3_E_0x9B: return operateRES_N_X(env, instr);
 		case ci::RES_3_H_0x9C: return operateRES_N_X(env, instr);
 		case ci::RES_3_L_0x9D: return operateRES_N_X(env, instr);
-		case ci::RES_3_HL_0x9E: break;
+		case ci::RES_3_mHL_0x9E: return operateRES_N_mHL(env, instr);
 		case ci::RES_3_A_0x9F: return operateRES_N_X(env, instr);
 		case ci::RES_4_B_0xA0: return operateRES_N_X(env, instr);
 		case ci::RES_4_C_0xA1: return operateRES_N_X(env, instr);
@@ -615,7 +629,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::RES_4_E_0xA3: return operateRES_N_X(env, instr);
 		case ci::RES_4_H_0xA4: return operateRES_N_X(env, instr);
 		case ci::RES_4_L_0xA5: return operateRES_N_X(env, instr);
-		case ci::RES_4_HL_0xA6: break;
+		case ci::RES_4_mHL_0xA6: return operateRES_N_mHL(env, instr);
 		case ci::RES_4_A_0xA7: return operateRES_N_X(env, instr);
 		case ci::RES_5_B_0xA8: return operateRES_N_X(env, instr);
 		case ci::RES_5_C_0xA9: return operateRES_N_X(env, instr);
@@ -623,7 +637,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::RES_5_E_0xAB: return operateRES_N_X(env, instr);
 		case ci::RES_5_H_0xAC: return operateRES_N_X(env, instr);
 		case ci::RES_5_L_0xAD: return operateRES_N_X(env, instr);
-		case ci::RES_5_HL_0xAE: break;
+		case ci::RES_5_mHL_0xAE: return operateRES_N_mHL(env, instr);
 		case ci::RES_5_A_0xAF: return operateRES_N_X(env, instr);
 		case ci::RES_6_B_0xB0: return operateRES_N_X(env, instr);
 		case ci::RES_6_C_0xB1: return operateRES_N_X(env, instr);
@@ -631,7 +645,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::RES_6_E_0xB3: return operateRES_N_X(env, instr);
 		case ci::RES_6_H_0xB4: return operateRES_N_X(env, instr);
 		case ci::RES_6_L_0xB5: return operateRES_N_X(env, instr);
-		case ci::RES_6_HL_0xB6: break;
+		case ci::RES_6_mHL_0xB6: return operateRES_N_mHL(env, instr);
 		case ci::RES_6_A_0xB7: return operateRES_N_X(env, instr);
 		case ci::RES_7_B_0xB8: return operateRES_N_X(env, instr);
 		case ci::RES_7_C_0xB9: return operateRES_N_X(env, instr);
@@ -639,7 +653,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::RES_7_E_0xBB: return operateRES_N_X(env, instr);
 		case ci::RES_7_H_0xBC: return operateRES_N_X(env, instr);
 		case ci::RES_7_L_0xBD: return operateRES_N_X(env, instr);
-		case ci::RES_7_HL_0xBE: break;
+		case ci::RES_7_mHL_0xBE: return operateRES_N_mHL(env, instr);
 		case ci::RES_7_A_0xBF: return operateRES_N_X(env, instr);
 		case ci::SET_0_B_0xC0: break;
 		case ci::SET_0_C_0xC1: break;
