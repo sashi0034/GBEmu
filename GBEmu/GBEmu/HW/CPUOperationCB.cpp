@@ -420,6 +420,30 @@ namespace GBEmu::HW::CPUOperationCB
 		return CPUOperationResult::ByCalc(2, 12, CPUOperationZNHC{z, false, true, cpu.FlagC()});
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateRES_N_X(HWEnv& env, CPUInstructionCB instr)
+	{
+		auto&& cpu = env.GetCPU();
+
+		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::RES_0_B_0x80)) / 8;
+		const uint8 r8 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::RES_0_B_0x80)) % 8;
+
+		const CPUReg8 reg =
+			r8 == 7 ? CPUReg8::A :
+			r8 == 0 ? CPUReg8::B :
+			r8 == 1 ? CPUReg8::C :
+			r8 == 2 ? CPUReg8::D :
+			r8 == 3 ? CPUReg8::E :
+			r8 == 4 ? CPUReg8::H :
+			r8 == 5 ? CPUReg8::L :
+			undefinedReg8();
+
+		const uint8 value = cpu.GetReg8(reg);
+		cpu.SetReg8(reg, value & (~(1 << u3)));
+
+		return CPUOperationResult(2, 8);
+	}
+
 
 	const CPUOperationResult OperateInstructionCB(HWEnv& env, CPUInstructionCB instr)
 	{
@@ -553,70 +577,70 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::BIT_7_L_0x7D: return operateBIT_N_X(env, instr);
 		case ci::BIT_7_mHL_0x7E: return operateBIT_N_mHL(env, instr);
 		case ci::BIT_7_A_0x7F: return operateBIT_N_X(env, instr);
-		case ci::RES_0_B_0x80: break;
-		case ci::RES_0_C_0x81: break;
-		case ci::RES_0_D_0x82: break;
-		case ci::RES_0_E_0x83: break;
-		case ci::RES_0_H_0x84: break;
-		case ci::RES_0_L_0x85: break;
+		case ci::RES_0_B_0x80: return operateRES_N_X(env, instr);
+		case ci::RES_0_C_0x81: return operateRES_N_X(env, instr);
+		case ci::RES_0_D_0x82: return operateRES_N_X(env, instr);
+		case ci::RES_0_E_0x83: return operateRES_N_X(env, instr);
+		case ci::RES_0_H_0x84: return operateRES_N_X(env, instr);
+		case ci::RES_0_L_0x85: return operateRES_N_X(env, instr);
 		case ci::RES_0_HL_0x86: break;
-		case ci::RES_0_A_0x87: break;
-		case ci::RES_1_B_0x88: break;
-		case ci::RES_1_C_0x89: break;
-		case ci::RES_1_D_0x8A: break;
-		case ci::RES_1_E_0x8B: break;
-		case ci::RES_1_H_0x8C: break;
-		case ci::RES_1_L_0x8D: break;
+		case ci::RES_0_A_0x87: return operateRES_N_X(env, instr);
+		case ci::RES_1_B_0x88: return operateRES_N_X(env, instr);
+		case ci::RES_1_C_0x89: return operateRES_N_X(env, instr);
+		case ci::RES_1_D_0x8A: return operateRES_N_X(env, instr);
+		case ci::RES_1_E_0x8B: return operateRES_N_X(env, instr);
+		case ci::RES_1_H_0x8C: return operateRES_N_X(env, instr);
+		case ci::RES_1_L_0x8D: return operateRES_N_X(env, instr);
 		case ci::RES_1_HL_0x8E: break;
-		case ci::RES_1_A_0x8F: break;
-		case ci::RES_2_B_0x90: break;
-		case ci::RES_2_C_0x91: break;
-		case ci::RES_2_D_0x92: break;
-		case ci::RES_2_E_0x93: break;
-		case ci::RES_2_H_0x94: break;
-		case ci::RES_2_L_0x95: break;
+		case ci::RES_1_A_0x8F: return operateRES_N_X(env, instr);
+		case ci::RES_2_B_0x90: return operateRES_N_X(env, instr);
+		case ci::RES_2_C_0x91: return operateRES_N_X(env, instr);
+		case ci::RES_2_D_0x92: return operateRES_N_X(env, instr);
+		case ci::RES_2_E_0x93: return operateRES_N_X(env, instr);
+		case ci::RES_2_H_0x94: return operateRES_N_X(env, instr);
+		case ci::RES_2_L_0x95: return operateRES_N_X(env, instr);
 		case ci::RES_2_HL_0x96: break;
-		case ci::RES_2_A_0x97: break;
-		case ci::RES_3_B_0x98: break;
-		case ci::RES_3_C_0x99: break;
-		case ci::RES_3_D_0x9A: break;
-		case ci::RES_3_E_0x9B: break;
-		case ci::RES_3_H_0x9C: break;
-		case ci::RES_3_L_0x9D: break;
+		case ci::RES_2_A_0x97: return operateRES_N_X(env, instr);
+		case ci::RES_3_B_0x98: return operateRES_N_X(env, instr);
+		case ci::RES_3_C_0x99: return operateRES_N_X(env, instr);
+		case ci::RES_3_D_0x9A: return operateRES_N_X(env, instr);
+		case ci::RES_3_E_0x9B: return operateRES_N_X(env, instr);
+		case ci::RES_3_H_0x9C: return operateRES_N_X(env, instr);
+		case ci::RES_3_L_0x9D: return operateRES_N_X(env, instr);
 		case ci::RES_3_HL_0x9E: break;
-		case ci::RES_3_A_0x9F: break;
-		case ci::RES_4_B_0xA0: break;
-		case ci::RES_4_C_0xA1: break;
-		case ci::RES_4_D_0xA2: break;
-		case ci::RES_4_E_0xA3: break;
-		case ci::RES_4_H_0xA4: break;
-		case ci::RES_4_L_0xA5: break;
+		case ci::RES_3_A_0x9F: return operateRES_N_X(env, instr);
+		case ci::RES_4_B_0xA0: return operateRES_N_X(env, instr);
+		case ci::RES_4_C_0xA1: return operateRES_N_X(env, instr);
+		case ci::RES_4_D_0xA2: return operateRES_N_X(env, instr);
+		case ci::RES_4_E_0xA3: return operateRES_N_X(env, instr);
+		case ci::RES_4_H_0xA4: return operateRES_N_X(env, instr);
+		case ci::RES_4_L_0xA5: return operateRES_N_X(env, instr);
 		case ci::RES_4_HL_0xA6: break;
-		case ci::RES_4_A_0xA7: break;
-		case ci::RES_5_B_0xA8: break;
-		case ci::RES_5_C_0xA9: break;
-		case ci::RES_5_D_0xAA: break;
-		case ci::RES_5_E_0xAB: break;
-		case ci::RES_5_H_0xAC: break;
-		case ci::RES_5_L_0xAD: break;
+		case ci::RES_4_A_0xA7: return operateRES_N_X(env, instr);
+		case ci::RES_5_B_0xA8: return operateRES_N_X(env, instr);
+		case ci::RES_5_C_0xA9: return operateRES_N_X(env, instr);
+		case ci::RES_5_D_0xAA: return operateRES_N_X(env, instr);
+		case ci::RES_5_E_0xAB: return operateRES_N_X(env, instr);
+		case ci::RES_5_H_0xAC: return operateRES_N_X(env, instr);
+		case ci::RES_5_L_0xAD: return operateRES_N_X(env, instr);
 		case ci::RES_5_HL_0xAE: break;
-		case ci::RES_5_A_0xAF: break;
-		case ci::RES_6_B_0xB0: break;
-		case ci::RES_6_C_0xB1: break;
-		case ci::RES_6_D_0xB2: break;
-		case ci::RES_6_E_0xB3: break;
-		case ci::RES_6_H_0xB4: break;
-		case ci::RES_6_L_0xB5: break;
+		case ci::RES_5_A_0xAF: return operateRES_N_X(env, instr);
+		case ci::RES_6_B_0xB0: return operateRES_N_X(env, instr);
+		case ci::RES_6_C_0xB1: return operateRES_N_X(env, instr);
+		case ci::RES_6_D_0xB2: return operateRES_N_X(env, instr);
+		case ci::RES_6_E_0xB3: return operateRES_N_X(env, instr);
+		case ci::RES_6_H_0xB4: return operateRES_N_X(env, instr);
+		case ci::RES_6_L_0xB5: return operateRES_N_X(env, instr);
 		case ci::RES_6_HL_0xB6: break;
-		case ci::RES_6_A_0xB7: break;
-		case ci::RES_7_B_0xB8: break;
-		case ci::RES_7_C_0xB9: break;
-		case ci::RES_7_D_0xBA: break;
-		case ci::RES_7_E_0xBB: break;
-		case ci::RES_7_H_0xBC: break;
-		case ci::RES_7_L_0xBD: break;
+		case ci::RES_6_A_0xB7: return operateRES_N_X(env, instr);
+		case ci::RES_7_B_0xB8: return operateRES_N_X(env, instr);
+		case ci::RES_7_C_0xB9: return operateRES_N_X(env, instr);
+		case ci::RES_7_D_0xBA: return operateRES_N_X(env, instr);
+		case ci::RES_7_E_0xBB: return operateRES_N_X(env, instr);
+		case ci::RES_7_H_0xBC: return operateRES_N_X(env, instr);
+		case ci::RES_7_L_0xBD: return operateRES_N_X(env, instr);
 		case ci::RES_7_HL_0xBE: break;
-		case ci::RES_7_A_0xBF: break;
+		case ci::RES_7_A_0xBF: return operateRES_N_X(env, instr);
 		case ci::SET_0_B_0xC0: break;
 		case ci::SET_0_C_0xC1: break;
 		case ci::SET_0_D_0xC2: break;
