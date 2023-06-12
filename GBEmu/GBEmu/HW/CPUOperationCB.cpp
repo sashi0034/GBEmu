@@ -377,6 +377,30 @@ namespace GBEmu::HW::CPUOperationCB
 		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, false});
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateBIT_N_X(HWEnv& env, CPUInstructionCB instr)
+	{
+		auto&& cpu = env.GetCPU();
+
+		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::BIT_0_B_0x40)) / 8;
+		const uint8 r8 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::BIT_0_B_0x40)) % 8;
+
+		const CPUReg8 reg =
+			r8 == 7 ? CPUReg8::A :
+			r8 == 0 ? CPUReg8::B :
+			r8 == 1 ? CPUReg8::C :
+			r8 == 2 ? CPUReg8::D :
+			r8 == 3 ? CPUReg8::E :
+			r8 == 4 ? CPUReg8::H :
+			r8 == 5 ? CPUReg8::L :
+			undefined8();
+
+		const uint8 value = cpu.GetReg8(reg);
+		const bool z = (value & (1 << u3)) == 0;
+
+		return CPUOperationResult::ByCalc(2, 8, CPUOperationZNHC{z, false, true, cpu.FlagC()});
+	}
+
 
 	const CPUOperationResult OperateInstructionCB(HWEnv& env, CPUInstructionCB instr)
 	{
@@ -446,70 +470,70 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::SRL_L_0x3D: return operateSRL_X(env, instr);
 		case ci::SRL_mHL_0x3E: return operateSRL_mHL(env);
 		case ci::SRL_A_0x3F: return operateSRL_X(env, instr);
-		case ci::BIT_0_B_0x40: break;
-		case ci::BIT_0_C_0x41: break;
-		case ci::BIT_0_D_0x42: break;
-		case ci::BIT_0_E_0x43: break;
-		case ci::BIT_0_H_0x44: break;
-		case ci::BIT_0_L_0x45: break;
+		case ci::BIT_0_B_0x40: return operateBIT_N_X(env, instr);
+		case ci::BIT_0_C_0x41: return operateBIT_N_X(env, instr);
+		case ci::BIT_0_D_0x42: return operateBIT_N_X(env, instr);
+		case ci::BIT_0_E_0x43: return operateBIT_N_X(env, instr);
+		case ci::BIT_0_H_0x44: return operateBIT_N_X(env, instr);
+		case ci::BIT_0_L_0x45: return operateBIT_N_X(env, instr);
 		case ci::BIT_0_HL_0x46: break;
-		case ci::BIT_0_A_0x47: break;
-		case ci::BIT_1_B_0x48: break;
-		case ci::BIT_1_C_0x49: break;
-		case ci::BIT_1_D_0x4A: break;
-		case ci::BIT_1_E_0x4B: break;
-		case ci::BIT_1_H_0x4C: break;
-		case ci::BIT_1_L_0x4D: break;
+		case ci::BIT_0_A_0x47: return operateBIT_N_X(env, instr);
+		case ci::BIT_1_B_0x48: return operateBIT_N_X(env, instr);
+		case ci::BIT_1_C_0x49: return operateBIT_N_X(env, instr);
+		case ci::BIT_1_D_0x4A: return operateBIT_N_X(env, instr);
+		case ci::BIT_1_E_0x4B: return operateBIT_N_X(env, instr);
+		case ci::BIT_1_H_0x4C: return operateBIT_N_X(env, instr);
+		case ci::BIT_1_L_0x4D: return operateBIT_N_X(env, instr);
 		case ci::BIT_1_HL_0x4E: break;
-		case ci::BIT_1_A_0x4F: break;
-		case ci::BIT_2_B_0x50: break;
-		case ci::BIT_2_C_0x51: break;
-		case ci::BIT_2_D_0x52: break;
-		case ci::BIT_2_E_0x53: break;
-		case ci::BIT_2_H_0x54: break;
-		case ci::BIT_2_L_0x55: break;
+		case ci::BIT_1_A_0x4F: return operateBIT_N_X(env, instr);
+		case ci::BIT_2_B_0x50: return operateBIT_N_X(env, instr);
+		case ci::BIT_2_C_0x51: return operateBIT_N_X(env, instr);
+		case ci::BIT_2_D_0x52: return operateBIT_N_X(env, instr);
+		case ci::BIT_2_E_0x53: return operateBIT_N_X(env, instr);
+		case ci::BIT_2_H_0x54: return operateBIT_N_X(env, instr);
+		case ci::BIT_2_L_0x55: return operateBIT_N_X(env, instr);
 		case ci::BIT_2_HL_0x56: break;
-		case ci::BIT_2_A_0x57: break;
-		case ci::BIT_3_B_0x58: break;
-		case ci::BIT_3_C_0x59: break;
-		case ci::BIT_3_D_0x5A: break;
-		case ci::BIT_3_E_0x5B: break;
-		case ci::BIT_3_H_0x5C: break;
-		case ci::BIT_3_L_0x5D: break;
+		case ci::BIT_2_A_0x57: return operateBIT_N_X(env, instr);
+		case ci::BIT_3_B_0x58: return operateBIT_N_X(env, instr);
+		case ci::BIT_3_C_0x59: return operateBIT_N_X(env, instr);
+		case ci::BIT_3_D_0x5A: return operateBIT_N_X(env, instr);
+		case ci::BIT_3_E_0x5B: return operateBIT_N_X(env, instr);
+		case ci::BIT_3_H_0x5C: return operateBIT_N_X(env, instr);
+		case ci::BIT_3_L_0x5D: return operateBIT_N_X(env, instr);
 		case ci::BIT_3_HL_0x5E: break;
-		case ci::BIT_3_A_0x5F: break;
-		case ci::BIT_4_B_0x60: break;
-		case ci::BIT_4_C_0x61: break;
-		case ci::BIT_4_D_0x62: break;
-		case ci::BIT_4_E_0x63: break;
-		case ci::BIT_4_H_0x64: break;
-		case ci::BIT_4_L_0x65: break;
+		case ci::BIT_3_A_0x5F: return operateBIT_N_X(env, instr);
+		case ci::BIT_4_B_0x60: return operateBIT_N_X(env, instr);
+		case ci::BIT_4_C_0x61: return operateBIT_N_X(env, instr);
+		case ci::BIT_4_D_0x62: return operateBIT_N_X(env, instr);
+		case ci::BIT_4_E_0x63: return operateBIT_N_X(env, instr);
+		case ci::BIT_4_H_0x64: return operateBIT_N_X(env, instr);
+		case ci::BIT_4_L_0x65: return operateBIT_N_X(env, instr);
 		case ci::BIT_4_HL_0x66: break;
-		case ci::BIT_4_A_0x67: break;
-		case ci::BIT_5_B_0x68: break;
-		case ci::BIT_5_C_0x69: break;
-		case ci::BIT_5_D_0x6A: break;
-		case ci::BIT_5_E_0x6B: break;
-		case ci::BIT_5_H_0x6C: break;
-		case ci::BIT_5_L_0x6D: break;
+		case ci::BIT_4_A_0x67: return operateBIT_N_X(env, instr);
+		case ci::BIT_5_B_0x68: return operateBIT_N_X(env, instr);
+		case ci::BIT_5_C_0x69: return operateBIT_N_X(env, instr);
+		case ci::BIT_5_D_0x6A: return operateBIT_N_X(env, instr);
+		case ci::BIT_5_E_0x6B: return operateBIT_N_X(env, instr);
+		case ci::BIT_5_H_0x6C: return operateBIT_N_X(env, instr);
+		case ci::BIT_5_L_0x6D: return operateBIT_N_X(env, instr);
 		case ci::BIT_5_HL_0x6E: break;
-		case ci::BIT_5_A_0x6F: break;
-		case ci::BIT_6_B_0x70: break;
-		case ci::BIT_6_C_0x71: break;
-		case ci::BIT_6_D_0x72: break;
-		case ci::BIT_6_E_0x73: break;
-		case ci::BIT_6_H_0x74: break;
-		case ci::BIT_6_L_0x75: break;
+		case ci::BIT_5_A_0x6F: return operateBIT_N_X(env, instr);
+		case ci::BIT_6_B_0x70: return operateBIT_N_X(env, instr);
+		case ci::BIT_6_C_0x71: return operateBIT_N_X(env, instr);
+		case ci::BIT_6_D_0x72: return operateBIT_N_X(env, instr);
+		case ci::BIT_6_E_0x73: return operateBIT_N_X(env, instr);
+		case ci::BIT_6_H_0x74: return operateBIT_N_X(env, instr);
+		case ci::BIT_6_L_0x75: return operateBIT_N_X(env, instr);
 		case ci::BIT_6_HL_0x76: break;
-		case ci::BIT_6_A_0x77: break;
-		case ci::BIT_7_B_0x78: break;
-		case ci::BIT_7_C_0x79: break;
-		case ci::BIT_7_D_0x7A: break;
-		case ci::BIT_7_E_0x7B: break;
-		case ci::BIT_7_H_0x7C: break;
-		case ci::BIT_7_L_0x7D: break;
+		case ci::BIT_6_A_0x77: return operateBIT_N_X(env, instr);
+		case ci::BIT_7_B_0x78: return operateBIT_N_X(env, instr);
+		case ci::BIT_7_C_0x79: return operateBIT_N_X(env, instr);
+		case ci::BIT_7_D_0x7A: return operateBIT_N_X(env, instr);
+		case ci::BIT_7_E_0x7B: return operateBIT_N_X(env, instr);
+		case ci::BIT_7_H_0x7C: return operateBIT_N_X(env, instr);
+		case ci::BIT_7_L_0x7D: return operateBIT_N_X(env, instr);
 		case ci::BIT_7_HL_0x7E: break;
-		case ci::BIT_7_A_0x7F: break;
+		case ci::BIT_7_A_0x7F: return operateBIT_N_X(env, instr);
 		case ci::RES_0_B_0x80: break;
 		case ci::RES_0_C_0x81: break;
 		case ci::RES_0_D_0x82: break;
