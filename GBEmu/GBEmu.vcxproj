@@ -210,6 +210,8 @@
     <ClCompile Include="GBEmu\HW\MBC.cpp" />
     <ClCompile Include="GBEmu\HW\Memory.cpp" />
     <ClCompile Include="GBEmu\HW\MemoryAddress.cpp" />
+    <ClCompile Include="GBEmu\HW\HWParams.cpp" />
+    <ClCompile Include="GBEmu\HW\Timer.cpp" />
     <ClCompile Include="GBEmu\Util\Range.cpp" />
     <ClCompile Include="GBEmu\Util\Utils.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -428,6 +430,8 @@
     <ClInclude Include="GBEmu\HW\MBC.h" />
     <ClInclude Include="GBEmu\HW\Memory.h" />
     <ClInclude Include="GBEmu\HW\MemoryAddress.h" />
+    <ClInclude Include="GBEmu\HW\HWParams.h" />
+    <ClInclude Include="GBEmu\HW\Timer.h" />
     <ClInclude Include="GBEmu\Util\Range.h" />
     <ClInclude Include="GBEmu\Util\Utils.h" />
     <ClInclude Include="stdafx.h" />

@@ -14,6 +14,8 @@ namespace GBEmu::HW
 		void Write(uint16 addr, uint8 data);
 		void Write16(uint16 addr, uint16 data16);
 
+		void WriteDirect(uint16 addr, uint8 data);
+
 		void LoadCartridge(const FilePath& cartridgePath);
 
 		static constexpr int MemorySize = 0x10000;

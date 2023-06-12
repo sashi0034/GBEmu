@@ -1100,8 +1100,8 @@ namespace GBEmu::HW::CPUOperation
 		}
 		else
 		{
-			const uint8 interruptEnable = memory.Read(MemoryAddress::InterruptEnable);
-			const uint8 interruptFlag = memory.Read(MemoryAddress::InterruptFlag);
+			const uint8 interruptEnable = memory.Read(MemoryAddress::IE_0xFFFF);
+			const uint8 interruptFlag = memory.Read(MemoryAddress::IF_0xFF0F);
 			if ((interruptEnable & interruptFlag) != 0)
 			{
 				// https://github.com/pokemium/gb-docs-ja/blob/main/cpu/instruction/misc.md#halt

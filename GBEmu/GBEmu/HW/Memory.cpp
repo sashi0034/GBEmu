@@ -76,6 +76,11 @@ namespace GBEmu::HW
 		Write(addr + 1, (data16 >> 8) & 0xFF);
 	}
 
+	void Memory::WriteDirect(uint16 addr, uint8 data)
+	{
+		m_memory[addr] = data;
+	}
+
 
 	void Memory::LoadCartridge(const FilePath& cartridgePath)
 	{
