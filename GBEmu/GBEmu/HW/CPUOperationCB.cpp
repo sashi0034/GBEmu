@@ -289,6 +289,32 @@ namespace GBEmu::HW::CPUOperationCB
 		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, c});
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateSWAP_X(HWEnv& env, CPUInstructionCB instr)
+	{
+		auto&& cpu = env.GetCPU();
+
+		const CPUReg8 reg =
+			instr == ci::SWAP_A_0x37 ? CPUReg8::A :
+			instr == ci::SWAP_B_0x30 ? CPUReg8::B :
+			instr == ci::SWAP_C_0x31 ? CPUReg8::C :
+			instr == ci::SWAP_D_0x32 ? CPUReg8::D :
+			instr == ci::SWAP_E_0x33 ? CPUReg8::E :
+			instr == ci::SWAP_H_0x34 ? CPUReg8::H :
+			instr == ci::SWAP_L_0x35 ? CPUReg8::L :
+			undefined8();
+
+		const uint8 before = cpu.GetReg8(reg);
+		const uint8 after = (before >> 4) | (before << 4);
+
+		const bool z = after == 0;
+
+		cpu.SetReg8(reg, after);
+
+		// ドキュメントによっては、N, H, Cが不変となっているので確認したい
+		return CPUOperationResult::ByCalc(2, 8, CPUOperationZNHC{z, false, false, false});
+	}
+
 
 	const CPUOperationResult OperateInstructionCB(HWEnv& env, CPUInstructionCB instr)
 	{
@@ -342,14 +368,14 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::SRA_L_0x2D: return operateSRA_X(env, instr);
 		case ci::SRA_mHL_0x2E: return operateSRA_mHL(env);
 		case ci::SRA_A_0x2F: return operateSRA_X(env, instr);
-		case ci::SWAP_B_0x30: break;
-		case ci::SWAP_C_0x31: break;
-		case ci::SWAP_D_0x32: break;
-		case ci::SWAP_E_0x33: break;
-		case ci::SWAP_H_0x34: break;
-		case ci::SWAP_L_0x35: break;
+		case ci::SWAP_B_0x30: return operateSWAP_X(env, instr);
+		case ci::SWAP_C_0x31: return operateSWAP_X(env, instr);
+		case ci::SWAP_D_0x32: return operateSWAP_X(env, instr);
+		case ci::SWAP_E_0x33: return operateSWAP_X(env, instr);
+		case ci::SWAP_H_0x34: return operateSWAP_X(env, instr);
+		case ci::SWAP_L_0x35: return operateSWAP_X(env, instr);
 		case ci::SWAP_HL_0x36: break;
-		case ci::SWAP_A_0x37: break;
+		case ci::SWAP_A_0x37: return operateSWAP_X(env, instr);
 		case ci::SRL_B_0x38: break;
 		case ci::SRL_C_0x39: break;
 		case ci::SRL_D_0x3A: break;
