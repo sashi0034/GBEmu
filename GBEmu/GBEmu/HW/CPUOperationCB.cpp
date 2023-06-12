@@ -316,6 +316,24 @@ namespace GBEmu::HW::CPUOperationCB
 	}
 
 	[[nodiscard]]
+	CPUOperationResult operateSRL_mHL(HWEnv& env)
+	{
+		// 0x3E
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+
+		const uint8 before = memory.Read(cpu.RegHL());
+		const uint8 after = before >> 1;
+
+		const bool z = after == 0;
+		const bool c = before & 0b1;
+
+		memory.Write(cpu.RegHL(), after);
+
+		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, c});
+	}
+
+	[[nodiscard]]
 	CPUOperationResult operateSWAP_X(HWEnv& env, CPUInstructionCB instr)
 	{
 		auto&& cpu = env.GetCPU();
@@ -426,7 +444,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::SRL_E_0x3B: return operateSRL_X(env, instr);
 		case ci::SRL_H_0x3C: return operateSRL_X(env, instr);
 		case ci::SRL_L_0x3D: return operateSRL_X(env, instr);
-		case ci::SRL_HL_0x3E: break;
+		case ci::SRL_mHL_0x3E: return operateSRL_mHL(env);
 		case ci::SRL_A_0x3F: return operateSRL_X(env, instr);
 		case ci::BIT_0_B_0x40: break;
 		case ci::BIT_0_C_0x41: break;
