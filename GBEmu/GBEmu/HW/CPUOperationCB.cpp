@@ -401,6 +401,19 @@ namespace GBEmu::HW::CPUOperationCB
 		return CPUOperationResult::ByCalc(2, 8, CPUOperationZNHC{z, false, true, cpu.FlagC()});
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateBIT_N_mHL(HWEnv& env, CPUInstructionCB instr)
+	{
+		auto&& cpu = env.GetCPU();
+
+		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::BIT_0_B_0x40)) / 8;
+
+		const uint8 value = env.GetMemory().Read(cpu.RegHL());
+		const bool z = (value & (1 << u3)) == 0;
+
+		return CPUOperationResult::ByCalc(2, 12, CPUOperationZNHC{z, false, true, cpu.FlagC()});
+	}
+
 
 	const CPUOperationResult OperateInstructionCB(HWEnv& env, CPUInstructionCB instr)
 	{
@@ -476,7 +489,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::BIT_0_E_0x43: return operateBIT_N_X(env, instr);
 		case ci::BIT_0_H_0x44: return operateBIT_N_X(env, instr);
 		case ci::BIT_0_L_0x45: return operateBIT_N_X(env, instr);
-		case ci::BIT_0_HL_0x46: break;
+		case ci::BIT_0_mHL_0x46: return operateBIT_N_mHL(env, instr);
 		case ci::BIT_0_A_0x47: return operateBIT_N_X(env, instr);
 		case ci::BIT_1_B_0x48: return operateBIT_N_X(env, instr);
 		case ci::BIT_1_C_0x49: return operateBIT_N_X(env, instr);
@@ -484,7 +497,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::BIT_1_E_0x4B: return operateBIT_N_X(env, instr);
 		case ci::BIT_1_H_0x4C: return operateBIT_N_X(env, instr);
 		case ci::BIT_1_L_0x4D: return operateBIT_N_X(env, instr);
-		case ci::BIT_1_HL_0x4E: break;
+		case ci::BIT_1_mHL_0x4E: return operateBIT_N_mHL(env, instr);
 		case ci::BIT_1_A_0x4F: return operateBIT_N_X(env, instr);
 		case ci::BIT_2_B_0x50: return operateBIT_N_X(env, instr);
 		case ci::BIT_2_C_0x51: return operateBIT_N_X(env, instr);
@@ -492,7 +505,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::BIT_2_E_0x53: return operateBIT_N_X(env, instr);
 		case ci::BIT_2_H_0x54: return operateBIT_N_X(env, instr);
 		case ci::BIT_2_L_0x55: return operateBIT_N_X(env, instr);
-		case ci::BIT_2_HL_0x56: break;
+		case ci::BIT_2_mHL_0x56:return operateBIT_N_mHL(env, instr);
 		case ci::BIT_2_A_0x57: return operateBIT_N_X(env, instr);
 		case ci::BIT_3_B_0x58: return operateBIT_N_X(env, instr);
 		case ci::BIT_3_C_0x59: return operateBIT_N_X(env, instr);
@@ -500,7 +513,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::BIT_3_E_0x5B: return operateBIT_N_X(env, instr);
 		case ci::BIT_3_H_0x5C: return operateBIT_N_X(env, instr);
 		case ci::BIT_3_L_0x5D: return operateBIT_N_X(env, instr);
-		case ci::BIT_3_HL_0x5E: break;
+		case ci::BIT_3_mHL_0x5E: return operateBIT_N_mHL(env, instr);
 		case ci::BIT_3_A_0x5F: return operateBIT_N_X(env, instr);
 		case ci::BIT_4_B_0x60: return operateBIT_N_X(env, instr);
 		case ci::BIT_4_C_0x61: return operateBIT_N_X(env, instr);
@@ -508,7 +521,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::BIT_4_E_0x63: return operateBIT_N_X(env, instr);
 		case ci::BIT_4_H_0x64: return operateBIT_N_X(env, instr);
 		case ci::BIT_4_L_0x65: return operateBIT_N_X(env, instr);
-		case ci::BIT_4_HL_0x66: break;
+		case ci::BIT_4_mHL_0x66: return operateBIT_N_mHL(env, instr);
 		case ci::BIT_4_A_0x67: return operateBIT_N_X(env, instr);
 		case ci::BIT_5_B_0x68: return operateBIT_N_X(env, instr);
 		case ci::BIT_5_C_0x69: return operateBIT_N_X(env, instr);
@@ -516,7 +529,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::BIT_5_E_0x6B: return operateBIT_N_X(env, instr);
 		case ci::BIT_5_H_0x6C: return operateBIT_N_X(env, instr);
 		case ci::BIT_5_L_0x6D: return operateBIT_N_X(env, instr);
-		case ci::BIT_5_HL_0x6E: break;
+		case ci::BIT_5_mHL_0x6E: return operateBIT_N_mHL(env, instr);
 		case ci::BIT_5_A_0x6F: return operateBIT_N_X(env, instr);
 		case ci::BIT_6_B_0x70: return operateBIT_N_X(env, instr);
 		case ci::BIT_6_C_0x71: return operateBIT_N_X(env, instr);
@@ -524,7 +537,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::BIT_6_E_0x73: return operateBIT_N_X(env, instr);
 		case ci::BIT_6_H_0x74: return operateBIT_N_X(env, instr);
 		case ci::BIT_6_L_0x75: return operateBIT_N_X(env, instr);
-		case ci::BIT_6_HL_0x76: break;
+		case ci::BIT_6_mHL_0x76: return operateBIT_N_mHL(env, instr);
 		case ci::BIT_6_A_0x77: return operateBIT_N_X(env, instr);
 		case ci::BIT_7_B_0x78: return operateBIT_N_X(env, instr);
 		case ci::BIT_7_C_0x79: return operateBIT_N_X(env, instr);
@@ -532,7 +545,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::BIT_7_E_0x7B: return operateBIT_N_X(env, instr);
 		case ci::BIT_7_H_0x7C: return operateBIT_N_X(env, instr);
 		case ci::BIT_7_L_0x7D: return operateBIT_N_X(env, instr);
-		case ci::BIT_7_HL_0x7E: break;
+		case ci::BIT_7_mHL_0x7E: return operateBIT_N_mHL(env, instr);
 		case ci::BIT_7_A_0x7F: return operateBIT_N_X(env, instr);
 		case ci::RES_0_B_0x80: break;
 		case ci::RES_0_C_0x81: break;
