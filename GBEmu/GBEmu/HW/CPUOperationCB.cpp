@@ -315,6 +315,24 @@ namespace GBEmu::HW::CPUOperationCB
 		return CPUOperationResult::ByCalc(2, 8, CPUOperationZNHC{z, false, false, false});
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateSWAP_mHL(HWEnv& env)
+	{
+		// 0x36
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+
+		const uint8 before = memory.Read(cpu.RegHL());
+		const uint8 after = (before >> 4) | (before << 4);
+
+		const bool z = after == 0;
+
+		memory.Write(cpu.RegHL(), after);
+
+		// ドキュメントによっては、N, H, Cが不変となっているので確認したい
+		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, false});
+	}
+
 
 	const CPUOperationResult OperateInstructionCB(HWEnv& env, CPUInstructionCB instr)
 	{
@@ -374,7 +392,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::SWAP_E_0x33: return operateSWAP_X(env, instr);
 		case ci::SWAP_H_0x34: return operateSWAP_X(env, instr);
 		case ci::SWAP_L_0x35: return operateSWAP_X(env, instr);
-		case ci::SWAP_HL_0x36: break;
+		case ci::SWAP_HL_0x36: return operateSWAP_mHL(env);
 		case ci::SWAP_A_0x37: return operateSWAP_X(env, instr);
 		case ci::SRL_B_0x38: break;
 		case ci::SRL_C_0x39: break;
