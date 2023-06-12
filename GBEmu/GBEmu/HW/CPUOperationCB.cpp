@@ -151,6 +151,35 @@ namespace GBEmu::HW::CPUOperationCB
 		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, c});
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateRR_X(HWEnv& env, CPUInstructionCB instr)
+	{
+		auto&& cpu = env.GetCPU();
+
+		const CPUReg8 reg =
+			instr == ci::RR_A_0x1F ? CPUReg8::A :
+			instr == ci::RR_B_0x18 ? CPUReg8::B :
+			instr == ci::RR_C_0x19 ? CPUReg8::C :
+			instr == ci::RR_D_0x1A ? CPUReg8::D :
+			instr == ci::RR_E_0x1B ? CPUReg8::E :
+			instr == ci::RR_H_0x1C ? CPUReg8::H :
+			instr == ci::RR_L_0x1D ? CPUReg8::L :
+			undefined8();
+
+		const uint8 before = cpu.GetReg8(reg);
+		const uint8 bit0 = before & 0b1;
+		const uint8 carry = cpu.FlagC();
+
+		const uint8 after = (before >> 1) | (carry << 7);
+
+		const bool z = after == 0;
+		const bool c = bit0 == 1;
+
+		cpu.SetReg8(reg, after);
+
+		return CPUOperationResult::ByCalc(2, 8, CPUOperationZNHC{z, false, false, c});
+	}
+
 
 	const CPUOperationResult OperateInstructionCB(HWEnv& env, CPUInstructionCB instr)
 	{
@@ -180,14 +209,14 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::RL_L_0x15: return operateRL_X(env, instr);
 		case ci::RL_mHL_0x16: return operateRL_mHL(env);
 		case ci::RL_A_0x17: return operateRL_X(env, instr);
-		case ci::RR_B_0x18: break;
-		case ci::RR_C_0x19: break;
-		case ci::RR_D_0x1A: break;
-		case ci::RR_E_0x1B: break;
-		case ci::RR_H_0x1C: break;
-		case ci::RR_L_0x1D: break;
+		case ci::RR_B_0x18: return operateRR_X(env, instr);
+		case ci::RR_C_0x19: return operateRR_X(env, instr);
+		case ci::RR_D_0x1A: return operateRR_X(env, instr);
+		case ci::RR_E_0x1B: return operateRR_X(env, instr);
+		case ci::RR_H_0x1C: return operateRR_X(env, instr);
+		case ci::RR_L_0x1D: return operateRR_X(env, instr);
 		case ci::RR_HL_0x1E: break;
-		case ci::RR_A_0x1F: break;
+		case ci::RR_A_0x1F: return operateRR_X(env, instr);
 		case ci::SLA_B_0x20: break;
 		case ci::SLA_C_0x21: break;
 		case ci::SLA_D_0x22: break;
