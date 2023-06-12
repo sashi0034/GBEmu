@@ -458,6 +458,30 @@ namespace GBEmu::HW::CPUOperationCB
 		return CPUOperationResult(2, 16);
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateSET_N_X(HWEnv& env, CPUInstructionCB instr)
+	{
+		auto&& cpu = env.GetCPU();
+
+		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::SET_0_B_0xC0)) / 8;
+		const uint8 r8 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::SET_0_B_0xC0)) % 8;
+
+		const CPUReg8 reg =
+			r8 == 7 ? CPUReg8::A :
+			r8 == 0 ? CPUReg8::B :
+			r8 == 1 ? CPUReg8::C :
+			r8 == 2 ? CPUReg8::D :
+			r8 == 3 ? CPUReg8::E :
+			r8 == 4 ? CPUReg8::H :
+			r8 == 5 ? CPUReg8::L :
+			undefinedReg8();
+
+		const uint8 value = cpu.GetReg8(reg);
+		cpu.SetReg8(reg, value | (1 << u3));
+
+		return CPUOperationResult(2, 8);
+	}
+
 
 	const CPUOperationResult OperateInstructionCB(HWEnv& env, CPUInstructionCB instr)
 	{
@@ -655,70 +679,70 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::RES_7_L_0xBD: return operateRES_N_X(env, instr);
 		case ci::RES_7_mHL_0xBE: return operateRES_N_mHL(env, instr);
 		case ci::RES_7_A_0xBF: return operateRES_N_X(env, instr);
-		case ci::SET_0_B_0xC0: break;
-		case ci::SET_0_C_0xC1: break;
-		case ci::SET_0_D_0xC2: break;
-		case ci::SET_0_E_0xC3: break;
-		case ci::SET_0_H_0xC4: break;
-		case ci::SET_0_L_0xC5: break;
+		case ci::SET_0_B_0xC0: return operateSET_N_X(env, instr);
+		case ci::SET_0_C_0xC1: return operateSET_N_X(env, instr);
+		case ci::SET_0_D_0xC2: return operateSET_N_X(env, instr);
+		case ci::SET_0_E_0xC3: return operateSET_N_X(env, instr);
+		case ci::SET_0_H_0xC4: return operateSET_N_X(env, instr);
+		case ci::SET_0_L_0xC5: return operateSET_N_X(env, instr);
 		case ci::SET_0_HL_0xC6: break;
-		case ci::SET_0_A_0xC7: break;
-		case ci::SET_1_B_0xC8: break;
-		case ci::SET_1_C_0xC9: break;
-		case ci::SET_1_D_0xCA: break;
-		case ci::SET_1_E_0xCB: break;
-		case ci::SET_1_H_0xCC: break;
-		case ci::SET_1_L_0xCD: break;
+		case ci::SET_0_A_0xC7: return operateSET_N_X(env, instr);
+		case ci::SET_1_B_0xC8: return operateSET_N_X(env, instr);
+		case ci::SET_1_C_0xC9: return operateSET_N_X(env, instr);
+		case ci::SET_1_D_0xCA: return operateSET_N_X(env, instr);
+		case ci::SET_1_E_0xCB: return operateSET_N_X(env, instr);
+		case ci::SET_1_H_0xCC: return operateSET_N_X(env, instr);
+		case ci::SET_1_L_0xCD: return operateSET_N_X(env, instr);
 		case ci::SET_1_HL_0xCE: break;
-		case ci::SET_1_A_0xCF: break;
-		case ci::SET_2_B_0xD0: break;
-		case ci::SET_2_C_0xD1: break;
-		case ci::SET_2_D_0xD2: break;
-		case ci::SET_2_E_0xD3: break;
-		case ci::SET_2_H_0xD4: break;
-		case ci::SET_2_L_0xD5: break;
+		case ci::SET_1_A_0xCF: return operateSET_N_X(env, instr);
+		case ci::SET_2_B_0xD0: return operateSET_N_X(env, instr);
+		case ci::SET_2_C_0xD1: return operateSET_N_X(env, instr);
+		case ci::SET_2_D_0xD2: return operateSET_N_X(env, instr);
+		case ci::SET_2_E_0xD3: return operateSET_N_X(env, instr);
+		case ci::SET_2_H_0xD4: return operateSET_N_X(env, instr);
+		case ci::SET_2_L_0xD5: return operateSET_N_X(env, instr);
 		case ci::SET_2_HL_0xD6: break;
-		case ci::SET_2_A_0xD7: break;
-		case ci::SET_3_B_0xD8: break;
-		case ci::SET_3_C_0xD9: break;
-		case ci::SET_3_D_0xDA: break;
-		case ci::SET_3_E_0xDB: break;
-		case ci::SET_3_H_0xDC: break;
-		case ci::SET_3_L_0xDD: break;
+		case ci::SET_2_A_0xD7: return operateSET_N_X(env, instr);
+		case ci::SET_3_B_0xD8: return operateSET_N_X(env, instr);
+		case ci::SET_3_C_0xD9: return operateSET_N_X(env, instr);
+		case ci::SET_3_D_0xDA: return operateSET_N_X(env, instr);
+		case ci::SET_3_E_0xDB: return operateSET_N_X(env, instr);
+		case ci::SET_3_H_0xDC: return operateSET_N_X(env, instr);
+		case ci::SET_3_L_0xDD: return operateSET_N_X(env, instr);
 		case ci::SET_3_HL_0xDE: break;
-		case ci::SET_3_A_0xDF: break;
-		case ci::SET_4_B_0xE0: break;
-		case ci::SET_4_C_0xE1: break;
-		case ci::SET_4_D_0xE2: break;
-		case ci::SET_4_E_0xE3: break;
-		case ci::SET_4_H_0xE4: break;
-		case ci::SET_4_L_0xE5: break;
+		case ci::SET_3_A_0xDF: return operateSET_N_X(env, instr);
+		case ci::SET_4_B_0xE0: return operateSET_N_X(env, instr);
+		case ci::SET_4_C_0xE1: return operateSET_N_X(env, instr);
+		case ci::SET_4_D_0xE2: return operateSET_N_X(env, instr);
+		case ci::SET_4_E_0xE3: return operateSET_N_X(env, instr);
+		case ci::SET_4_H_0xE4: return operateSET_N_X(env, instr);
+		case ci::SET_4_L_0xE5: return operateSET_N_X(env, instr);
 		case ci::SET_4_HL_0xE6: break;
-		case ci::SET_4_A_0xE7: break;
-		case ci::SET_5_B_0xE8: break;
-		case ci::SET_5_C_0xE9: break;
-		case ci::SET_5_D_0xEA: break;
-		case ci::SET_5_E_0xEB: break;
-		case ci::SET_5_H_0xEC: break;
-		case ci::SET_5_L_0xED: break;
+		case ci::SET_4_A_0xE7: return operateSET_N_X(env, instr);
+		case ci::SET_5_B_0xE8: return operateSET_N_X(env, instr);
+		case ci::SET_5_C_0xE9: return operateSET_N_X(env, instr);
+		case ci::SET_5_D_0xEA: return operateSET_N_X(env, instr);
+		case ci::SET_5_E_0xEB: return operateSET_N_X(env, instr);
+		case ci::SET_5_H_0xEC: return operateSET_N_X(env, instr);
+		case ci::SET_5_L_0xED: return operateSET_N_X(env, instr);
 		case ci::SET_5_HL_0xEE: break;
-		case ci::SET_5_A_0xEF: break;
-		case ci::SET_6_B_0xF0: break;
-		case ci::SET_6_C_0xF1: break;
-		case ci::SET_6_D_0xF2: break;
-		case ci::SET_6_E_0xF3: break;
-		case ci::SET_6_H_0xF4: break;
-		case ci::SET_6_L_0xF5: break;
+		case ci::SET_5_A_0xEF: return operateSET_N_X(env, instr);
+		case ci::SET_6_B_0xF0: return operateSET_N_X(env, instr);
+		case ci::SET_6_C_0xF1: return operateSET_N_X(env, instr);
+		case ci::SET_6_D_0xF2: return operateSET_N_X(env, instr);
+		case ci::SET_6_E_0xF3: return operateSET_N_X(env, instr);
+		case ci::SET_6_H_0xF4: return operateSET_N_X(env, instr);
+		case ci::SET_6_L_0xF5: return operateSET_N_X(env, instr);
 		case ci::SET_6_HL_0xF6: break;
-		case ci::SET_6_A_0xF7: break;
-		case ci::SET_7_B_0xF8: break;
-		case ci::SET_7_C_0xF9: break;
-		case ci::SET_7_D_0xFA: break;
-		case ci::SET_7_E_0xFB: break;
-		case ci::SET_7_H_0xFC: break;
-		case ci::SET_7_L_0xFD: break;
+		case ci::SET_6_A_0xF7: return operateSET_N_X(env, instr);
+		case ci::SET_7_B_0xF8: return operateSET_N_X(env, instr);
+		case ci::SET_7_C_0xF9: return operateSET_N_X(env, instr);
+		case ci::SET_7_D_0xFA: return operateSET_N_X(env, instr);
+		case ci::SET_7_E_0xFB: return operateSET_N_X(env, instr);
+		case ci::SET_7_H_0xFC: return operateSET_N_X(env, instr);
+		case ci::SET_7_L_0xFD: return operateSET_N_X(env, instr);
 		case ci::SET_7_HL_0xFE: break;
-		case ci::SET_7_A_0xFF: break;
+		case ci::SET_7_A_0xFF: return operateSET_N_X(env, instr);
 		default: ;
 		}
 
