@@ -36,7 +36,7 @@ namespace GBEmu::HW::CPUOperationCB
 
 		cpu.SetReg8(reg, (before << 1) | bit7);
 
-		return CPUOperationResult::ByCalc(2, 4, CPUOperationZNHC{z, false, false, c});
+		return CPUOperationResult::ByCalc(2, 8, CPUOperationZNHC{z, false, false, c});
 	}
 
 	[[nodiscard]]
@@ -80,7 +80,7 @@ namespace GBEmu::HW::CPUOperationCB
 
 		cpu.SetReg8(reg, (before >> 1) | (bit0 << 7));
 
-		return CPUOperationResult::ByCalc(2, 4, CPUOperationZNHC{z, false, false, c});
+		return CPUOperationResult::ByCalc(2, 8, CPUOperationZNHC{z, false, false, c});
 	}
 
 	[[nodiscard]]
@@ -127,7 +127,7 @@ namespace GBEmu::HW::CPUOperationCB
 
 		cpu.SetReg8(reg, after);
 
-		return CPUOperationResult::ByCalc(2, 4, CPUOperationZNHC{z, false, false, c});
+		return CPUOperationResult::ByCalc(2, 8, CPUOperationZNHC{z, false, false, c});
 	}
 
 	[[nodiscard]]
