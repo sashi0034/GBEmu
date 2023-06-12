@@ -180,6 +180,27 @@ namespace GBEmu::HW::CPUOperationCB
 		return CPUOperationResult::ByCalc(2, 8, CPUOperationZNHC{z, false, false, c});
 	}
 
+	[[nodiscard]]
+	CPUOperationResult operateRR_mHL(HWEnv& env)
+	{
+		// 0x1E
+		auto&& cpu = env.GetCPU();
+		auto&& memory = env.GetMemory();
+
+		const uint8 before = memory.Read(cpu.RegHL());
+		const uint8 bit0 = before & 0b1;
+		const uint8 carry = cpu.FlagC();
+
+		const uint8 after = (before >> 1) | (carry << 7);
+
+		const bool z = after == 0;
+		const bool c = bit0 == 1;
+
+		memory.Write(cpu.RegHL(), after);
+
+		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, c});
+	}
+
 
 	const CPUOperationResult OperateInstructionCB(HWEnv& env, CPUInstructionCB instr)
 	{
@@ -215,7 +236,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::RR_E_0x1B: return operateRR_X(env, instr);
 		case ci::RR_H_0x1C: return operateRR_X(env, instr);
 		case ci::RR_L_0x1D: return operateRR_X(env, instr);
-		case ci::RR_HL_0x1E: break;
+		case ci::RR_HL_0x1E: return operateRR_mHL(env);
 		case ci::RR_A_0x1F: return operateRR_X(env, instr);
 		case ci::SLA_B_0x20: break;
 		case ci::SLA_C_0x21: break;
