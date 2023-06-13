@@ -4,7 +4,7 @@ namespace GBEmu::HW
 {
 	namespace MemoryAddress
 	{
-		enum : uint8 {
+		enum : uint16 {
 			RomBank00Start = 0x0000,
 			RomBank00End = 0x3fff,
 
