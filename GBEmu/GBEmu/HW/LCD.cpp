@@ -111,6 +111,18 @@ namespace GBEmu::HW
 		return m_memoryRef.Read(0xFF4A);
 	}
 
+	uint8 LCD::BGPaletteData(uint8 colorNumber) const
+	{
+		const uint8 bgp = m_memoryRef.Read(0xFF47);
+		return (bgp >> (colorNumber * 2)) & 0b11;
+	}
+
+	uint8 LCD::ObjectPaletteData(bool isUseOBP1, uint8 colorNumber) const
+	{
+		const uint8 obp = m_memoryRef.Read(isUseOBP1 ? 0xFF49 : 0xFF48);
+		return (obp >> (colorNumber * 2)) & 0b11;
+	}
+
 	uint8 LCD::lcdc() const
 	{
 		return m_memoryRef.Read(LCDC_0xFF40);
