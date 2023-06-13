@@ -4,6 +4,14 @@
 
 namespace GBEmu::HW
 {
+	enum class PPUMode : uint8
+	{
+		OAMSearch = 2,
+		PixelTransfer = 3,
+		HBlank = 0,
+		VBlank = 1,
+	};
+
 	struct PPUResult
 	{
 

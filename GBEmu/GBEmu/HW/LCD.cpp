@@ -49,8 +49,45 @@ namespace GBEmu::HW
 		return lcdc() & (1 << 0);
 	}
 
+	bool LCD::IsLYCoincidenceInterruptEnable() const
+	{
+		return stat() & (1 << 6);
+	}
+
+	bool LCD::IsOAMInterruptEnable() const
+	{
+		return stat() & (1 << 5);
+	}
+
+	bool LCD::IsVBlankInterruptEnable() const
+	{
+		return stat() & (1 << 4);
+	}
+
+	bool LCD::IsHBlankInterruptEnable() const
+	{
+		return stat() & (1 << 3);
+	}
+
+	bool LCD::LYCoincidenceFlag() const
+	{
+		return stat() & (1 << 2);
+	}
+
+	void LCD::WriteMode(PPUMode mode)
+	{
+		m_memoryRef.Write(
+			STAT_0xFF41,
+			(stat() & ~0b11) | (IsLCDDisplayEnable() ? static_cast<uint8>(mode) : 0));
+	}
+
 	uint8 LCD::lcdc() const
 	{
 		return m_memoryRef.Read(LCDC_0xFF40);
+	}
+
+	uint8 LCD::stat() const
+	{
+		return m_memoryRef.Read(STAT_0xFF41);
 	}
 }

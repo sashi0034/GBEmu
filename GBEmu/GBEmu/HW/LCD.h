@@ -4,6 +4,8 @@ namespace GBEmu::HW
 {
 	class Memory;
 
+	enum class PPUMode;
+
 	class LCD
 	{
 	public:
@@ -19,8 +21,16 @@ namespace GBEmu::HW
 		bool IsOBJDisplayEnable() const;
 		bool IsBGAndWindowEnable() const;
 
+		// STAT
+		bool IsLYCoincidenceInterruptEnable() const;
+		bool IsOAMInterruptEnable() const;
+		bool IsVBlankInterruptEnable() const;
+		bool IsHBlankInterruptEnable() const;
+		bool LYCoincidenceFlag() const;
+		void WriteMode(PPUMode mode);
 	private:
 		uint8 lcdc() const;
+		uint8 stat() const;
 		Memory& m_memoryRef;
 	};
 }

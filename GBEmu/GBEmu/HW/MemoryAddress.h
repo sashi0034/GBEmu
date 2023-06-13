@@ -50,6 +50,7 @@ namespace GBEmu::HW
 			TAC_0xFF07 = 0xFF07,
 
 			LCDC_0xFF40 = 0xFF40,
+			STAT_0xFF41 = 0xFF41,
 
 			IF_0xFF0F = 0xFF0F, // IF: Interrupt Flag
 			IE_0xFFFF = 0xFFFF, // IE: Interrupt Enable
