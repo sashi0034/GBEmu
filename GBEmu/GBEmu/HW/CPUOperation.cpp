@@ -106,13 +106,13 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_L_A_0x6F:
 			cpu.SetL(a); return cycle4;
 		case ci::LD_mBC_A_0x02:
-			memory.Write(cpu.RegBC(), a); return cycle8;
+			memory.Write(env, cpu.RegBC(), a); return cycle8;
 		case ci::LD_mDE_A_0x12:
-			memory.Write(cpu.RegDE(), a); return cycle8;
+			memory.Write(env, cpu.RegDE(), a); return cycle8;
 		case ci::LD_mHL_A_0x77:
-			memory.Write(cpu.RegHL(), a); return cycle8;
+			memory.Write(env, cpu.RegHL(), a); return cycle8;
 		case ci::LD_ma16_A_0xEA:
-			memory.Write(memory.Read16(cpu.PC() + 1), a); return cycle16;
+			memory.Write(env, memory.Read16(cpu.PC() + 1), a); return cycle16;
 		default:
 			assert(false);
 			return CPUOperationResult::Invalid();
@@ -219,13 +219,13 @@ namespace GBEmu::HW::CPUOperation
 		case ci::LD_L_mHL_0x6E: cpu.SetL(memory.Read(cpu.RegHL())); return result_1_8;
 
 		// destination (HL)
-		case ci::LD_mHL_B_0x70: memory.Write(cpu.RegHL(), cpu.RegB()); return result_1_8;
-		case ci::LD_mHL_C_0x71: memory.Write(cpu.RegHL(), cpu.RegC()); return result_1_8;
-		case ci::LD_mHL_D_0x72: memory.Write(cpu.RegHL(), cpu.RegD()); return result_1_8;
-		case ci::LD_mHL_E_0x73: memory.Write(cpu.RegHL(), cpu.RegE()); return result_1_8;
-		case ci::LD_mHL_H_0x74: memory.Write(cpu.RegHL(), cpu.RegH()); return result_1_8;
-		case ci::LD_mHL_L_0x75: memory.Write(cpu.RegHL(), cpu.RegL()); return result_1_8;
-		case ci::LD_mHL_d8_0x36: memory.Write(cpu.RegHL(), memory.Read(cpu.PC() + 1)); return result_2_12;
+		case ci::LD_mHL_B_0x70: memory.Write(env, cpu.RegHL(), cpu.RegB()); return result_1_8;
+		case ci::LD_mHL_C_0x71: memory.Write(env, cpu.RegHL(), cpu.RegC()); return result_1_8;
+		case ci::LD_mHL_D_0x72: memory.Write(env, cpu.RegHL(), cpu.RegD()); return result_1_8;
+		case ci::LD_mHL_E_0x73: memory.Write(env, cpu.RegHL(), cpu.RegE()); return result_1_8;
+		case ci::LD_mHL_H_0x74: memory.Write(env, cpu.RegHL(), cpu.RegH()); return result_1_8;
+		case ci::LD_mHL_L_0x75: memory.Write(env, cpu.RegHL(), cpu.RegL()); return result_1_8;
+		case ci::LD_mHL_d8_0x36: memory.Write(env, cpu.RegHL(), memory.Read(cpu.PC() + 1)); return result_2_12;
 
 		default:
 		assert(false);
@@ -237,7 +237,7 @@ namespace GBEmu::HW::CPUOperation
 	CPUOperationResult operateLD_ma16_SP(HWEnv& env)
 	{
 		const uint16 a16 = env.GetMemory().Read16(env.GetCPU().PC() + 1);
-		env.GetMemory().Write16(a16, env.GetCPU().SP());
+		env.GetMemory().Write16(env, a16, env.GetCPU().SP());
 		return CPUOperationResult(3, 20);
 	}
 
@@ -246,7 +246,7 @@ namespace GBEmu::HW::CPUOperation
 	{
 		// 0x22
 		auto&& cpu = env.GetCPU();
-		env.GetMemory().Write(cpu.RegHL(), cpu.RegA());
+		env.GetMemory().Write(env, cpu.RegHL(), cpu.RegA());
 		cpu.SetHL(cpu.RegHL() + 1);
 		return CPUOperationResult(1, 8);
 	}
@@ -266,7 +266,7 @@ namespace GBEmu::HW::CPUOperation
 	{
 		// 0x32
 		auto&& cpu = env.GetCPU();
-		env.GetMemory().Write(cpu.RegHL(), cpu.RegA());
+		env.GetMemory().Write(env, cpu.RegHL(), cpu.RegA());
 		cpu.SetHL(cpu.RegHL() - 1);
 		return CPUOperationResult(1, 8);
 	}
@@ -286,7 +286,7 @@ namespace GBEmu::HW::CPUOperation
 	{
 		// 0xE2
 		auto&& cpu = env.GetCPU();
-		env.GetMemory().Write(addr_0xFF00 + cpu.RegC(), cpu.RegA());
+		env.GetMemory().Write(env, addr_0xFF00 + cpu.RegC(), cpu.RegA());
 		return CPUOperationResult(1, 8);
 	}
 
@@ -333,7 +333,7 @@ namespace GBEmu::HW::CPUOperation
 		switch (instr)
 		{
 		case ci::LDH_a8_A_0xE0:
-			memory.Write(addr_0xFF00 + a8, cpu.RegA());
+			memory.Write(env, addr_0xFF00 + a8, cpu.RegA());
 			return CPUOperationResult(2, 12);
 		case ci::LDH_A_a8_0xF0:
 			cpu.SetA(memory.Read(addr_0xFF00 + a8));
@@ -402,7 +402,7 @@ namespace GBEmu::HW::CPUOperation
 		const bool h = (before & 0xF) == 0xF;
 
 		const uint8 after = before + 1;
-		env.GetMemory().Write(cpu.RegHL(), after);
+		env.GetMemory().Write(env, cpu.RegHL(), after);
 		const bool z = after == 0;
 
 		return CPUOperationResult::ByCalc(1,12, CPUOperationZNHC{z, false, h, cpu.FlagC()});
@@ -464,7 +464,7 @@ namespace GBEmu::HW::CPUOperation
 		const bool h = (before & 0xF) == 0xF;
 
 		const uint8 after = before - 1;
-		env.GetMemory().Write(cpu.RegHL(), after);
+		env.GetMemory().Write(env, cpu.RegHL(), after);
 		const bool z = after == 0;
 
 		return CPUOperationResult::ByCalc(1, 12, CPUOperationZNHC{z, false, h, cpu.FlagC()});
@@ -892,8 +892,8 @@ namespace GBEmu::HW::CPUOperation
 		constexpr uint16 bytes = 3;
 		if (toCall)
 		{
-			memory.Write(cpu.SP() - 1, (cpu.PC() + bytes) >> 8);
-			memory.Write(cpu.SP() - 2, (cpu.PC() + bytes) & 0xFF);
+			memory.Write(env, cpu.SP() - 1, (cpu.PC() + bytes) >> 8);
+			memory.Write(env, cpu.SP() - 2, (cpu.PC() + bytes) & 0xFF);
 			cpu.SetSP(cpu.SP() - 2);
 			return CPUOperationResult::ByJump(bytes, 24, env.GetMemory().Read16(cpu.PC() + 1));
 		}
@@ -921,8 +921,8 @@ namespace GBEmu::HW::CPUOperation
 			undefined8();
 
 		constexpr uint16 bytes = 1;
-		memory.Write(cpu.SP() - 1, (cpu.PC() + bytes) >> 8);
-		memory.Write(cpu.SP() - 2, (cpu.PC() + bytes) & 0xFF);
+		memory.Write(env, cpu.SP() - 1, (cpu.PC() + bytes) >> 8);
+		memory.Write(env, cpu.SP() - 2, (cpu.PC() + bytes) & 0xFF);
 		cpu.SetSP(cpu.SP() - 2);
 		return CPUOperationResult::ByJump(bytes, 16, addr);
 	}
@@ -941,8 +941,8 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::PUSH_HL_0xE5 ? tuple{cpu.RegH(), cpu.RegL()} :
 			tuple{undefined8(), undefined8()};
 
-		memory.Write(cpu.SP() - 1, data1);
-		memory.Write(cpu.SP() - 2, data2);
+		memory.Write(env, cpu.SP() - 1, data1);
+		memory.Write(env, cpu.SP() - 2, data2);
 		cpu.SetSP(cpu.SP() - 2);
 
 		return CPUOperationResult(1, 16);

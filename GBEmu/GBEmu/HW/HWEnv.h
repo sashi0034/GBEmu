@@ -8,6 +8,7 @@ namespace GBEmu::HW
 {
 	class CPU;
 	class Memory;
+	class PPU;
 
 	class HWEnv
 	{

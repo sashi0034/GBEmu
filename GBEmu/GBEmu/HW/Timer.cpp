@@ -29,7 +29,7 @@ namespace GBEmu::HW
 
 		checkIncTima(memory, timaFreq, isTimaEnable);
 
-		checkUpdateTimaOverflowedCountdown(memory);
+		checkUpdateTimaOverflowedCountdown(env, memory);
 	}
 
 	uint8 Timer::getTima(Memory& memory)
@@ -60,7 +60,7 @@ namespace GBEmu::HW
 		// TIMA周波数はいずれも十分大きいから、m_timaOverflowedCountdownを直接上書きして大丈夫
 	}
 
-	void Timer::checkUpdateTimaOverflowedCountdown(Memory& memory)
+	void Timer::checkUpdateTimaOverflowedCountdown(HWEnv& env, Memory& memory)
 	{
 		if (m_timaOverflowedCountdown == none) return;
 
@@ -69,7 +69,7 @@ namespace GBEmu::HW
 		m_timaOverflowedCountdown = none;
 
 		// Timer割り込み要求
-		memory.Write(IF_0xFF0F, memory.Read(IF_0xFF0F) | HWParam::InterruptTimer);
+		memory.Write(env, IF_0xFF0F, memory.Read(IF_0xFF0F) | HWParam::InterruptTimer);
 
 		// TIMAをTMAの値にする
 		setTima(memory, memory.Read(TMA_0xFF06));

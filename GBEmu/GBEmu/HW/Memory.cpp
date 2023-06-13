@@ -22,6 +22,7 @@
 
 namespace GBEmu::HW
 {
+	class HWEnv;
 	using namespace MemoryAddress;
 
 	Memory::Memory() :
@@ -53,7 +54,7 @@ namespace GBEmu::HW
 		return Read(addr) | (Read(addr + 1) << 8);
 	}
 
-	void Memory::Write(uint16 addr, uint8 data)
+	void Memory::Write(HWEnv& env, uint16 addr, uint8 data)
 	{
 		if (RangeUint16(RomBank00Start, RomBankNNEnd).IsBetween(addr) ||
 			RangeUint16(ExternalRamStart, ExternalRamEnd).IsBetween(addr))
@@ -68,7 +69,7 @@ namespace GBEmu::HW
 		else if (RangeUint16(EchoWorkRamStart, EchoWorkRamEnd).IsBetween(addr))
 		{
 			HWLogger::Warn(U"accessed mirrored work ram: {}"_fmt(addr));
-			Write(addr- (static_cast<uint8>(EchoWorkRamStart) - static_cast<uint8>(WorkRamBank0Start)), data);
+			Write(env, addr- (static_cast<uint8>(EchoWorkRamStart) - static_cast<uint8>(WorkRamBank0Start)), data);
 		}
 		else if (RangeUint16(IOPortsStart, IOPortsEnd).IsBetween(addr))
 		{
@@ -76,10 +77,10 @@ namespace GBEmu::HW
 		}
 	}
 
-	void Memory::Write16(uint16 addr, uint16 data16)
+	void Memory::Write16(HWEnv& env, uint16 addr, uint16 data16)
 	{
-		Write(addr, data16 & 0xFF);
-		Write(addr + 1, (data16 >> 8) & 0xFF);
+		Write(env, addr, data16 & 0xFF);
+		Write(env, addr + 1, (data16 >> 8) & 0xFF);
 	}
 
 	void Memory::WriteDirect(uint16 addr, uint8 data)

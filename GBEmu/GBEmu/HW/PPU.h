@@ -1,9 +1,10 @@
 ﻿#pragma once
-#include "HWEnv.h"
 #include "HWParams.h"
 
 namespace GBEmu::HW
 {
+	class HWEnv;
+
 	enum class PPUMode : uint8
 	{
 		OAMSearch = 2,

@@ -16,6 +16,6 @@ namespace GBEmu::HW
 		uint8 getTima(Memory& memory);
 		void setTima(Memory& memory, uint8 value);
 		void checkIncTima(Memory& memory, int timaFreq, bool isTimaEnable);
-		void checkUpdateTimaOverflowedCountdown(Memory& memory);
+		void checkUpdateTimaOverflowedCountdown(HWEnv& env, Memory& memory);
 	};
 }

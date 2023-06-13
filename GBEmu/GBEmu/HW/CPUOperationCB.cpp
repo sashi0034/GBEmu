@@ -58,7 +58,7 @@ namespace GBEmu::HW::CPUOperationCB
 		const bool z = data == 0;
 		const bool c = bit7 == 1;
 
-		memory.Write(cpu.RegHL(), (data << 1) | bit7);
+		memory.Write(env, cpu.RegHL(), (data << 1) | bit7);
 
 		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, c});
 	}
@@ -102,7 +102,7 @@ namespace GBEmu::HW::CPUOperationCB
 		const bool z = data == 0;
 		const bool c = bit0 == 1;
 
-		memory.Write(cpu.RegHL(), (data >> 1) | (bit0 << 7));
+		memory.Write(env, cpu.RegHL(), (data >> 1) | (bit0 << 7));
 
 		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, c});
 	}
@@ -152,7 +152,7 @@ namespace GBEmu::HW::CPUOperationCB
 		const bool z = after == 0;
 		const bool c = bit7 == 1;
 
-		memory.Write(cpu.RegHL(), after);
+		memory.Write(env, cpu.RegHL(), after);
 
 		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, c});
 	}
@@ -202,7 +202,7 @@ namespace GBEmu::HW::CPUOperationCB
 		const bool z = after == 0;
 		const bool c = bit0 == 1;
 
-		memory.Write(cpu.RegHL(), after);
+		memory.Write(env, cpu.RegHL(), after);
 
 		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, c});
 	}
@@ -246,7 +246,7 @@ namespace GBEmu::HW::CPUOperationCB
 		const bool z = after == 0;
 		const bool c = before & (1 << 7);
 
-		memory.Write(cpu.RegHL(), after);
+		memory.Write(env, cpu.RegHL(), after);
 
 		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, c});
 	}
@@ -290,7 +290,7 @@ namespace GBEmu::HW::CPUOperationCB
 		const bool z = after == 0;
 		const bool c = before & 0b1;
 
-		memory.Write(cpu.RegHL(), after);
+		memory.Write(env, cpu.RegHL(), after);
 
 		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, c});
 	}
@@ -334,7 +334,7 @@ namespace GBEmu::HW::CPUOperationCB
 		const bool z = after == 0;
 		const bool c = before & 0b1;
 
-		memory.Write(cpu.RegHL(), after);
+		memory.Write(env, cpu.RegHL(), after);
 
 		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, c});
 	}
@@ -377,7 +377,7 @@ namespace GBEmu::HW::CPUOperationCB
 
 		const bool z = after == 0;
 
-		memory.Write(cpu.RegHL(), after);
+		memory.Write(env, cpu.RegHL(), after);
 
 		// ドキュメントによっては、N, H, Cが不変となっているので確認したい
 		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{z, false, false, false});
@@ -453,7 +453,7 @@ namespace GBEmu::HW::CPUOperationCB
 		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::RES_0_B_0x80)) / 8;
 
 		const uint8 value = memory.Read(cpu.RegHL());
-		memory.Write(cpu.RegHL(), value & (~(1 << u3)));
+		memory.Write(env, cpu.RegHL(), value & (~(1 << u3)));
 
 		return CPUOperationResult(2, 16);
 	}
@@ -491,7 +491,7 @@ namespace GBEmu::HW::CPUOperationCB
 		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::SET_0_B_0xC0)) / 8;
 
 		const uint8 value = memory.Read(cpu.RegHL());
-		memory.Write(cpu.RegHL(), value | (1 << u3));
+		memory.Write(env, cpu.RegHL(), value | (1 << u3));
 
 		return CPUOperationResult(2, 16);
 	}

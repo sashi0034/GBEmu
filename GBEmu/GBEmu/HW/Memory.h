@@ -4,6 +4,8 @@
 
 namespace GBEmu::HW
 {
+	class HWEnv;
+
 	class Memory
 	{
 	public:
@@ -14,8 +16,8 @@ namespace GBEmu::HW
 		uint8 Read(uint16 addr);
 		uint16 Read16(uint16 addr);
 
-		void Write(uint16 addr, uint8 data);
-		void Write16(uint16 addr, uint16 data16);
+		void Write(HWEnv& env, uint16 addr, uint8 data);
+		void Write16(HWEnv& env, uint16 addr, uint16 data16);
 
 		void WriteDirect(uint16 addr, uint8 data);
 

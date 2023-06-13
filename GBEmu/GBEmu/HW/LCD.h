@@ -3,8 +3,9 @@
 namespace GBEmu::HW
 {
 	class Memory;
+	class HWEnv;
 
-	enum class PPUMode;
+	enum class PPUMode : uint8;
 
 	class LCD
 	{
@@ -27,7 +28,7 @@ namespace GBEmu::HW
 		bool IsVBlankInterruptEnable() const;
 		bool IsHBlankInterruptEnable() const;
 		bool LYCoincidenceFlag() const;
-		void WriteMode(PPUMode mode);
+		void WriteMode(HWEnv& env, PPUMode mode);
 
 		// position and scrolling
 		uint8 SY() const;

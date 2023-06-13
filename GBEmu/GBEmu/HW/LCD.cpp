@@ -74,10 +74,9 @@ namespace GBEmu::HW
 		return stat() & (1 << 2);
 	}
 
-	void LCD::WriteMode(PPUMode mode)
+	void LCD::WriteMode(HWEnv& env, PPUMode mode)
 	{
-		m_memoryRef.Write(
-			STAT_0xFF41,
+		m_memoryRef.Write(env, STAT_0xFF41,
 			(stat() & ~0b11) | (IsLCDDisplayEnable() ? static_cast<uint8>(mode) : 0));
 	}
 
