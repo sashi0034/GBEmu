@@ -9,6 +9,16 @@ namespace GBEmu::HW
 	class CPU;
 	class Memory;
 	class PPU;
+	class IHWEnvMemory;
+
+	class IHWEnvMemory
+	{
+	public:
+		explicit IHWEnvMemory(HWEnv& env) : m_env(env){}
+		PPU& GetPPU();
+	private:
+		HWEnv& m_env;
+	};
 
 	class HWEnv
 	{
@@ -25,9 +35,14 @@ namespace GBEmu::HW
 		{
 			return m_ppu;
 		}
+
+		operator IHWEnvMemory&() {return m_ihwEnvMemory; }
 	private:
 		CPU m_cpu{};
 		Memory m_memory{};
-		PPU m_ppu;
+		PPU m_ppu{};
+
+		// interface
+		IHWEnvMemory m_ihwEnvMemory{*this};
 	};
 }
