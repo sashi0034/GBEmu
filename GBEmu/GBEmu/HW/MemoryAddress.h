@@ -52,6 +52,8 @@ namespace GBEmu::HW
 			LCDC_0xFF40 = 0xFF40,
 			STAT_0xFF41 = 0xFF41,
 
+			LY_0xFF44 = 0xFF44,
+
 			IF_0xFF0F = 0xFF0F, // IF: Interrupt Flag
 			IE_0xFFFF = 0xFFFF, // IE: Interrupt Enable
 		};

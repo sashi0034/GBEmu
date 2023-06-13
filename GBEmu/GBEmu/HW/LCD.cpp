@@ -81,6 +81,36 @@ namespace GBEmu::HW
 			(stat() & ~0b11) | (IsLCDDisplayEnable() ? static_cast<uint8>(mode) : 0));
 	}
 
+	uint8 LCD::SY() const
+	{
+		return m_memoryRef.Read(0xFF42);
+	}
+
+	uint8 LCD::SX() const
+	{
+		return m_memoryRef.Read(0xFF43);
+	}
+
+	uint8 LCD::LY() const
+	{
+		return m_memoryRef.Read(LY_0xFF44);
+	}
+
+	uint8 LCD::LYC() const
+	{
+		return m_memoryRef.Read(0xFF45);
+	}
+
+	uint8 LCD::WX() const
+	{
+		return m_memoryRef.Read(0xFF4B);
+	}
+
+	uint8 LCD::WY() const
+	{
+		return m_memoryRef.Read(0xFF4A);
+	}
+
 	uint8 LCD::lcdc() const
 	{
 		return m_memoryRef.Read(LCDC_0xFF40);

@@ -28,6 +28,14 @@ namespace GBEmu::HW
 		bool IsHBlankInterruptEnable() const;
 		bool LYCoincidenceFlag() const;
 		void WriteMode(PPUMode mode);
+
+		// position and scrolling
+		uint8 SY() const;
+		uint8 SX() const;
+		uint8 LY() const;
+		uint8 LYC() const;
+		uint8 WX() const;
+		uint8 WY() const;
 	private:
 		uint8 lcdc() const;
 		uint8 stat() const;
