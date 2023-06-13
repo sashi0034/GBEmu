@@ -24,9 +24,15 @@ namespace GBEmu::HW
 {
 	using namespace MemoryAddress;
 
-	Memory::Memory()
+	Memory::Memory() :
+		m_lcd(*this)
 	{
 		m_memory.resize(MemorySize);
+	}
+
+	LCD& Memory::GetLCD()
+	{
+		return m_lcd;
 	}
 
 	uint8 Memory::Read(uint16 addr)

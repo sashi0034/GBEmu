@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Cartridge.h"
+#include "LCD.h"
 
 namespace GBEmu::HW
 {
@@ -7,6 +8,8 @@ namespace GBEmu::HW
 	{
 	public:
 		Memory();
+
+		LCD& GetLCD();
 
 		uint8 Read(uint16 addr);
 		uint16 Read16(uint16 addr);
@@ -22,6 +25,8 @@ namespace GBEmu::HW
 
 	private:
 		Cartridge m_cartridge{};
+
+		LCD m_lcd;
 
 		Array<uint8> m_memory{};
 

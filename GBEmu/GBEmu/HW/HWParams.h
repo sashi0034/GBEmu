@@ -11,5 +11,7 @@ namespace GBEmu::HW
 		constexpr int InterruptTimer = 1 << 2;
 		constexpr int InterruptSTAT = 1 << 1;
 		constexpr int InterruptVBlank = 1 << 0;
+
+		constexpr Size DisplayResolution{160, 144};
 	};
 }

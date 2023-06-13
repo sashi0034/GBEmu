@@ -2,6 +2,7 @@
 
 #include "CPU.h"
 #include "Memory.h"
+#include "PPU.h"
 
 namespace GBEmu::HW
 {
@@ -19,8 +20,13 @@ namespace GBEmu::HW
 		{
 			return m_memory;
 		}
+		PPU& GetPPU()
+		{
+			return m_ppu;
+		}
 	private:
 		CPU m_cpu{};
 		Memory m_memory{};
+		PPU m_ppu;
 	};
 }

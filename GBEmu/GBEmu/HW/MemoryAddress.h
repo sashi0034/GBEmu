@@ -20,6 +20,24 @@ namespace GBEmu::HW
 			WorkRamBank1Start = 0xD000,
 			WorkRamBank1End = 0xDFFF,
 
+			BGAndWindowTileData0Start_0x8800 = 0x8800,
+			BGAndWindowTileData0End_0x97FF = 0x97FF,
+
+			BGAndWindowTileData1Start_0x8000 = 0x8000,
+			BGAndWindowTileData1End_0x8FFF = 0x8FFF,
+
+			BGTimeMapDisplay0Start_0x9800 = 0x9800,
+			BGTimeMapDisplay0End_0x9BFF = 0x9BFF,
+
+			BGTimeMapDisplay1Start_0x9C00 = 0x9C00,
+			BGTimeMapDisplay1End_0x9FFF = 0x9FFF,
+
+			TimeMap0Start_0x9800 = 0x9800,
+			TimeMap0End_0x9BFF = 0x9BFF,
+
+			TimeMap1Start_0x9C00 = 0x9C00,
+			TimeMap1End_0x9FFF = 0x9FFF,
+
 			EchoWorkRamStart = 0xE000,
 			EchoWorkRamEnd = 0xFDFF,
 
@@ -30,6 +48,8 @@ namespace GBEmu::HW
 			TIMA_0xFF05 = 0xFF05,
 			TMA_0xFF06 = 0xFF06,
 			TAC_0xFF07 = 0xFF07,
+
+			LCDC_0xFF40 = 0xFF40,
 
 			IF_0xFF0F = 0xFF0F, // IF: Interrupt Flag
 			IE_0xFFFF = 0xFFFF, // IE: Interrupt Enable
