@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "HWParams.h"
+#include "LCD.h"
 
 namespace GBEmu::HW
 {
@@ -18,6 +19,8 @@ namespace GBEmu::HW
 
 	};
 
+	struct OAMData;
+
 	class PPU
 	{
 	public:
@@ -28,5 +31,11 @@ namespace GBEmu::HW
 		RenderTexture m_bitmap{HWParam::DisplayResolution, ColorF{1.0}};
 
 		int m_dotIndex{};
+		PPUMode m_mode = PPUMode::OAMSearch;
+		Array<OAMData> m_oamBuffer{};
+
+		static void updateLY(HWEnv& env, LCD& lcd, int dotIndex);
+		static PPUMode updateMode(HWEnv& env, LCD& lcd, int dotIndex);
+		static Array<OAMData> scanOAM(HWEnv& env, LCD& lcd);
 	};
 }

@@ -41,6 +41,9 @@ namespace GBEmu::HW
 			EchoWorkRamStart = 0xE000,
 			EchoWorkRamEnd = 0xFDFF,
 
+			OAMStart_0xFE00 = 0xFE00,
+			OAMEnd_0xFE9F = 0xFE9F,
+
 			IOPortsStart = 0xFF00,
 			IOPortsEnd = 0xFF7F,
 
