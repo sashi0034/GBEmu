@@ -57,7 +57,10 @@ namespace GBEmu::HW
 		// 割り込みチェック
 		checkInterrupt(env, lcd, isModeChanged);
 
-		return PPUResult{isModeChanged && m_mode == PPUMode::VBlank};
+		return PPUResult{
+			isModeChanged && m_mode == PPUMode::VBlank,
+			m_dotCycle == 0
+		};
 	}
 
 	void PPU::Draw(const Point& pos, double scale) const

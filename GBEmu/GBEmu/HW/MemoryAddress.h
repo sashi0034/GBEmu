@@ -8,6 +8,12 @@ namespace GBEmu::HW
 			RomBank00Start = 0x0000,
 			RomBank00End = 0x3fff,
 
+			InterruptVBlank_0x0040 = 0x0040,
+			InterruptSTAT_0x0048 = 0x0048,
+			InterruptTimer_0x0050 = 0x0050,
+			InterruptSerial_0x0058 = 0x0058,
+			InterruptJoypad_0x0060 = 0x0060,
+
 			RomBankNNStart = 0x4000,
 			RomBankNNEnd = 0x7fff,
 

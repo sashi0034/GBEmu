@@ -76,6 +76,10 @@ namespace GBEmu::HW
 		{
 			writeIO(env, addr, data);
 		}
+		else
+		{
+			m_memory[addr] = data;
+		}
 	}
 
 	void Memory::Write16(HWEnv& env, uint16 addr, uint16 data16)
@@ -133,6 +137,7 @@ namespace GBEmu::HW
 			{
 				m_memory[OAMStart_0xFE00 + offset] = Read(src + offset);
 			}
+			m_memory[addr] = 0xFF;
 		}
 		// TODO: 他のも
 		else

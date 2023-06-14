@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Memory.h"
 
 namespace GBEmu::HW
 {
@@ -116,6 +117,9 @@ namespace GBEmu::HW
 
 		[[nodiscard]]
 		static uint8 applyFlagZNHC(uint8 regF, CPUOperationZNHC flag);
+
+		Optional<CPUCycle> checkInterrupt(HWEnv& env);
+		Optional<CPUCycle> handleInterrupt(HWEnv& env, Memory& memory, uint8 interruptEnable, uint8 interruptFlag, uint16 interruptAddr, int interruptBit);
 
 		CPUInstructionProperty fetchInstruction(HWEnv& env) const;
 

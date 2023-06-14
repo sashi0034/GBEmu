@@ -17,6 +17,7 @@ namespace GBEmu::HW
 	struct PPUResult
 	{
 		bool IsEnteredVBlank;
+		bool IsDotCycleCompleted;
 	};
 
 	// Object Attribute Memory

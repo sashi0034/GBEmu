@@ -4,9 +4,12 @@
 #include "CPUOperation.h"
 #include "CPUOperationCB.h"
 #include "HWLogger.h"
+#include "MemoryAddress.h"
 
 namespace GBEmu::HW
 {
+	using namespace MemoryAddress;
+
 	CPUCycle CPU::StepOperation(HWEnv& env)
 	{
 		// EIの効果は1命令分だけ遅れる
@@ -15,6 +18,10 @@ namespace GBEmu::HW
 			m_imeRequested = false;
 			m_imeFlag = true;
 		}
+
+		// 割り込みチェック
+		const auto interrupt = checkInterrupt(env);
+		if (interrupt.has_value()) return interrupt.value();
 
 		// HALTされているとき、割り込みまで進まない
 		if (m_state != CPUState::Running)
@@ -42,6 +49,58 @@ namespace GBEmu::HW
 		if (opResult.Flag.has_value()) m_regF = applyFlagZNHC(m_regF, opResult.Flag.value());
 
 		return CPUCycle{opResult.CycleCount};
+	}
+
+	Optional<CPUCycle> CPU::checkInterrupt(HWEnv& env)
+	{
+		auto&& memory = env.GetMemory();
+
+		if (m_imeFlag == false) return none;
+
+		const uint8 interruptEnable = memory.Read(IE_0xFFFF);
+		const uint8 interruptFlag = memory.Read(IF_0xFF0F);
+
+		static const std::array<uint16, 5> interruptAddress{
+			InterruptVBlank_0x0040,
+			InterruptSTAT_0x0048,
+			InterruptTimer_0x0050,
+			InterruptSerial_0x0058,
+			InterruptJoypad_0x0060
+		};
+
+		for (int i=0; i<interruptAddress.size(); ++i)
+		{
+			auto result =
+				handleInterrupt(env, memory, interruptEnable, interruptFlag, interruptAddress[i], i);
+			if (result.has_value()) return result;
+		}
+		return none;
+	}
+
+	Optional<CPUCycle> CPU::handleInterrupt(
+		HWEnv& env, Memory& memory,
+		uint8 interruptEnable, uint8 interruptFlag,
+		uint16 interruptAddr, int interruptBit)
+	{
+		const auto maskedFlag = interruptEnable & interruptFlag;
+		const bool isInterrupt = maskedFlag & (1 << interruptBit);
+		if (isInterrupt == false) return none;
+
+		// 割り込み無効化
+		m_imeFlag = false;
+		memory.Write(env, IF_0xFF0F, interruptFlag & ~(1 << interruptBit));
+
+		// PCをスタックにプッシュ
+		memory.WriteDirect(m_sp - 2, m_pc);
+		m_sp -= 2;
+
+		// 割り込み先へジャンプ
+		m_pc = interruptAddr;
+
+		m_state = CPUState::Running;
+
+		// 割り込みは5マシンサイクルを消費
+		return CPUCycle(20);
 	}
 
 	uint8 CPU::GetReg8(CPUReg8 kind) const
