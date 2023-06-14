@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Timer.h"
 
+#include "HWEnv.h"
 #include "MemoryAddress.h"
 #include "HWParams.h"
 
@@ -30,6 +31,11 @@ namespace GBEmu::HW
 		checkIncTima(memory, timaFreq, isTimaEnable);
 
 		checkUpdateTimaOverflowedCountdown(env, memory);
+	}
+
+	void Timer::ResetDIV()
+	{
+		m_divDetail = 0;
 	}
 
 	uint8 Timer::getTima(Memory& memory)

@@ -1,14 +1,17 @@
 ﻿#pragma once
-#include "HWEnv.h"
 
 namespace GBEmu::HW
 {
+	class HWEnv;
+	class Memory;
+
 	class Timer
 	{
 	public:
 		Timer() = default;
 
 		void StepCycle(HWEnv& env);
+		void ResetDIV();
 	private:
 		uint16 m_divDetail{};
 		Optional<int> m_timaOverflowedCountdown = none;

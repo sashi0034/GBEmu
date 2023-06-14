@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Memory.h"
 
+#include "HWEnv.h"
 #include "MemoryAddress.h"
 #include "HWLogger.h"
 #include "GBEmu/Util/Range.h"
@@ -73,7 +74,7 @@ namespace GBEmu::HW
 		}
 		else if (RangeUint16(IOPortsStart_0xFF00, IOPortsEnd_0xFF7F).IsBetween(addr))
 		{
-			// TODO: IO関連メソッドを作る
+			writeIO(env, addr, data);
 		}
 	}
 
@@ -101,6 +102,43 @@ namespace GBEmu::HW
 		const auto cartridgeHeader = loadCartridgeHeader(cartridgeData);
 
 		m_cartridge = Cartridge(cartridgeHeader, cartridgeData);
+	}
+
+	void Memory::writeIO(HWEnv& env, uint16 addr, uint8 data)
+	{
+		// 0xFF00 - 0xFF7F
+
+		if (addr == JOYP_0xFF00)
+		{
+			env.GetJoypad().Update(*this, data);
+		}
+		else if (addr == DIV_0xFF04)
+		{
+			env.GetTimer().ResetDIV();
+		}
+		else if (addr == TIMA_0xFF05)
+		{
+			// TODO: 割り込み中断?
+			m_memory[addr] = data;
+		}
+		else if (addr == TAC_0xFF07)
+		{
+			m_memory[addr] = 0xF8 | (data & 0xF07);
+		}
+		else if (addr == DMA_0xFF46)
+		{
+			// ROMまたはRAMからOAMへのDMA転送
+			uint16 src = data * 0x100; // 多くのドキュメントには転送元アドレスを0x100で割ると書いてあるが、多分間違ってる
+			for (uint16 offset = 0; offset < 0x100; ++offset)
+			{
+				m_memory[OAMStart_0xFE00 + offset] = Read(src + offset);
+			}
+		}
+		// TODO: 他のも
+		else
+		{
+			m_memory[addr] = data;
+		}
 	}
 
 	CartridgeHeader Memory::loadCartridgeHeader(const Array<uint8>& cartridgeData)

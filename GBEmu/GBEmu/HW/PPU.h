@@ -19,7 +19,21 @@ namespace GBEmu::HW
 		bool IsEnteredVBlank;
 	};
 
-	struct OAMData;
+	// Object Attribute Memory
+	struct OAMData
+	{
+		uint8 Y; // Y-coordinate + 16
+		uint8 X; // X-coordinate + 8
+		uint8 TileIndex;
+		uint8 Flags;
+
+		uint8 ActualY() const {return Y - 16; }
+		uint8 ActualX() const {return X - 8; }
+		bool FlagPriority() const {return (Flags >> 7) & 0b1; };
+		bool FlagYFlip() const {return (Flags >> 6) & 0b1; };
+		bool FlagXFlip() const {return (Flags >> 5) & 0b1; };
+		bool Palette() const {return (Flags >> 4) & 0b1; };
+	};
 
 	class PPU
 	{
@@ -28,7 +42,7 @@ namespace GBEmu::HW
 
 		PPUResult StepCycle(HWEnv& env);
 
-		void Draw(const Point pos, double scale) const;
+		void Draw(const Point& pos, double scale) const;
 	private:
 		int m_dotCycle{};
 		PPUMode m_mode = PPUMode::OAMSearch;

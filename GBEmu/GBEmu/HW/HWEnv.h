@@ -1,8 +1,10 @@
 ﻿#pragma once
 
 #include "CPU.h"
+#include "Joypad.h"
 #include "Memory.h"
 #include "PPU.h"
+#include "Timer.h"
 
 namespace GBEmu::HW
 {
@@ -10,6 +12,8 @@ namespace GBEmu::HW
 	class Memory;
 	class PPU;
 	class IHWEnvMemory;
+	class Joypad;
+	class Timer;
 
 	class IHWEnvMemory
 	{
@@ -35,12 +39,22 @@ namespace GBEmu::HW
 		{
 			return m_ppu;
 		}
+		Joypad& GetJoypad()
+		{
+			return m_joypad;
+		}
+		Timer& GetTimer()
+		{
+			return m_timer;
+		}
 
 		operator IHWEnvMemory&() {return m_ihwEnvMemory; }
 	private:
 		CPU m_cpu{};
 		Memory m_memory{};
 		PPU m_ppu{};
+		Joypad m_joypad{};
+		Timer m_timer{};
 
 		// interface
 		IHWEnvMemory m_ihwEnvMemory{*this};

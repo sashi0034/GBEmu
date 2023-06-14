@@ -61,6 +61,8 @@ namespace GBEmu::HW
 
 			LY_0xFF44 = 0xFF44,
 
+			DMA_0xFF46 = 0xFF46,
+
 			IF_0xFF0F = 0xFF0F, // IF: Interrupt Flag
 			IE_0xFFFF = 0xFFFF, // IE: Interrupt Enable
 		};
