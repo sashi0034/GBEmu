@@ -8,11 +8,12 @@ namespace GBEmu::HW
 {
 	using namespace MemoryAddress;
 
-	constexpr int dotIndexFreq_70224 = 70224;
+	constexpr int dotCycleFreq_70224 = 70224;
 	constexpr int scanLineFreq_456 = 456;
 	constexpr int scanLineSize_144 = 144;
 	constexpr int displayWidth_160 = HWParam::DisplayResolution.x;
 
+	constexpr int oamCapacity_10 = 10;
 	constexpr int oamSearchDuration_80 = 80;
 	constexpr int pixelTransferDuration_289 = 289;
 
@@ -41,23 +42,27 @@ namespace GBEmu::HW
 
 	PPU::PPU()
 	{
-		m_dotIndex = dotIndexFreq_70224 - 52 + 4;
+		m_dotCycle = dotCycleFreq_70224 - 52 + 4;
+		m_oamBuffer.reserve(oamCapacity_10);
 	}
 
 	PPUResult PPU::StepCycle(HWEnv& env)
 	{
 		auto&& lcd = env.GetMemory().GetLCD();
 
-		m_dotIndex = (m_dotIndex + 1) % dotIndexFreq_70224;
-		if (lcd.IsLCDDisplayEnable() == false) m_dotIndex = 0;
+		m_dotCycle = (m_dotCycle + 1) % dotCycleFreq_70224;
+		if (lcd.IsLCDDisplayEnable() == false) m_dotCycle = 0;
 
-		updateLY(env, lcd, m_dotIndex);
+		updateLY(env, lcd, m_dotCycle);
 		const auto modeBefore = m_mode;
-		m_mode = updateMode(env, lcd, m_dotIndex);
+		m_mode = updateMode(env, lcd, m_dotCycle);
+		const bool isModeChanged = modeBefore != m_mode;
 
-		if (m_mode == PPUMode::OAMSearch && (m_dotIndex % scanLineFreq_456) == oamSearchDuration_80 - 1)
+		// モード分岐
+		if (m_mode == PPUMode::OAMSearch && (m_dotCycle % scanLineFreq_456) == oamSearchDuration_80 - 1)
 		{
 			m_oamBuffer = scanOAM(env, lcd);
+			m_fetcherX = 0;
 		}
 		else if (m_mode == PPUMode::PixelTransfer && m_fetcherX < displayWidth_160)
 		{
@@ -65,19 +70,53 @@ namespace GBEmu::HW
 			m_fetcherX++;
 		}
 
-		return PPUResult{};
+		// 割り込みチェック
+		checkInterrupt(env, lcd, isModeChanged);
+
+		return PPUResult{isModeChanged && m_mode == PPUMode::VBlank};
 	}
 
-	void PPU::updateLY(HWEnv& env, LCD& lcd, int dotIndex)
+	void PPU::Draw(const Point pos, double scale) const
 	{
-		const uint8 ly = dotIndex / scanLineFreq_456;
+		RasterizerState rs{RasterizerState::Default2D};
+		rs.scissorEnable = true;
+		const ScopedRenderStates2D renderStates{ rs };
+
+		const Texture texture(m_bitmap);
+		(void)texture.scaled(scale).draw(pos);
+	}
+
+	void PPU::checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged)
+	{
+		auto&& memory = env.GetMemory();
+		uint8 interruptFlag = memory.Read(IF_0xFF0F);
+
+		// VBlank割り込みチェック
+		if (isModeChanged && m_mode == PPUMode::VBlank) { interruptFlag |= HWParam::InterruptVBlank; }
+
+		// STAT割り込みチェック
+		const bool canSTATInterrupt =
+			(lcd.IsLYCoincidenceInterruptEnable() && lcd.LYCoincidenceFlag()) ||
+			(isModeChanged && lcd.IsOAMInterruptEnable()) ||
+			(isModeChanged && lcd.IsHBlankInterruptEnable()) ||
+			(isModeChanged && lcd.IsVBlankInterruptEnable());
+
+		if (canSTATInterrupt && m_canSTATInterruptBefore == false) { interruptFlag |= HWParam::InterruptSTAT; }
+		m_canSTATInterruptBefore = canSTATInterrupt;
+
+		memory.Write(env, IF_0xFF0F, interruptFlag);
+	}
+
+	void PPU::updateLY(HWEnv& env, LCD& lcd, int dotCycle)
+	{
+		const uint8 ly = dotCycle / scanLineFreq_456;
 		lcd.SetLY(env, ly);
 		lcd.UpdateLYCoincidenceFlag(env);
 	}
 
-	PPUMode PPU::updateMode(HWEnv& env, LCD& lcd, int dotIndex)
+	PPUMode PPU::updateMode(HWEnv& env, LCD& lcd, int dotCycle)
 	{
-		const int scan = dotIndex % scanLineFreq_456;
+		const int scan = dotCycle % scanLineFreq_456;
 		const PPUMode mode =
 			lcd.LY() >= scanLineSize_144 ? PPUMode::VBlank :
 			(scan < oamSearchDuration_80) ? PPUMode::OAMSearch :
@@ -129,7 +168,7 @@ namespace GBEmu::HW
 			result.push_back(oam);
 
 			// 10個を超えたら他のOBJは無視
-			if (result.size() >= 10) break;
+			if (result.size() >= oamCapacity_10) break;
 		}
 		return result;
 	}
@@ -198,7 +237,7 @@ namespace GBEmu::HW
 		// 色情報転送
 		bitmap[ly][fetcherX] = displayColor;
 	}
-	
+
 	Color PPU::fetchPixelByMergeOAM(LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, uint8 ly, uint8 tileDataColor)
 	{
 		Color displayColor = displayColorPalette[lcd.BGPaletteData(tileDataColor)];
