@@ -86,12 +86,12 @@ namespace GBEmu::HW
 			0x80 | (stat() & ~0b11) | (IsLCDDisplayEnable() ? static_cast<uint8>(mode) : 0));
 	}
 
-	uint8 LCD::SY() const
+	uint8 LCD::SCY() const
 	{
 		return m_memoryRef.Read(0xFF42);
 	}
 
-	uint8 LCD::SX() const
+	uint8 LCD::SCX() const
 	{
 		return m_memoryRef.Read(0xFF43);
 	}

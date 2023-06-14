@@ -32,8 +32,8 @@ namespace GBEmu::HW
 		void SetMode(HWEnv& env, PPUMode mode);
 
 		// position and scrolling
-		uint8 SY() const;
-		uint8 SX() const;
+		uint8 SCY() const;
+		uint8 SCX() const;
 		uint8 LY() const;
 		void SetLY(HWEnv& env, uint8 ly);
 		uint8 LYC() const;

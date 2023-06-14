@@ -11,6 +11,17 @@ namespace GBEmu::HW
 	constexpr int dotIndexFreq_70224 = 70224;
 	constexpr int scanLineFreq_456 = 456;
 	constexpr int scanLineSize_144 = 144;
+	constexpr int displayWidth_160 = HWParam::DisplayResolution.x;
+
+	constexpr int oamSearchDuration_80 = 80;
+	constexpr int pixelTransferDuration_289 = 289;
+
+	static const std::array<Color, 4> displayColorPalette{
+		Color{ 221, 255, 212 },
+		Palette::Lightgreen,
+		Color{ 29, 114, 61 },
+		Color{ 0, 51, 0 },
+	};
 
 	// Object Attribute Memory
 	struct OAMData
@@ -42,12 +53,16 @@ namespace GBEmu::HW
 
 		updateLY(env, lcd, m_dotIndex);
 		const auto modeBefore = m_mode;
-		const auto modeAfter = updateMode(env, lcd, m_dotIndex);
-		m_mode = modeAfter;
+		m_mode = updateMode(env, lcd, m_dotIndex);
 
-		if (m_mode == PPUMode::OAMSearch && (m_dotIndex % scanLineFreq_456) == 79)
+		if (m_mode == PPUMode::OAMSearch && (m_dotIndex % scanLineFreq_456) == oamSearchDuration_80 - 1)
 		{
 			m_oamBuffer = scanOAM(env, lcd);
+		}
+		else if (m_mode == PPUMode::PixelTransfer && m_fetcherX < displayWidth_160)
+		{
+			scanLineX(env, lcd, m_fetcherX, m_oamBuffer, m_bitmap);
+			m_fetcherX++;
 		}
 
 		return PPUResult{};
@@ -62,12 +77,12 @@ namespace GBEmu::HW
 
 	PPUMode PPU::updateMode(HWEnv& env, LCD& lcd, int dotIndex)
 	{
-		const int x = dotIndex % scanLineFreq_456;
+		const int scan = dotIndex % scanLineFreq_456;
 		const PPUMode mode =
 			lcd.LY() >= scanLineSize_144 ? PPUMode::VBlank :
-			(x < 80) ? PPUMode::OAMSearch :
-			(x < 369) ? PPUMode::PixelTransfer :
-			PPUMode::HBlank;
+			(scan < oamSearchDuration_80) ? PPUMode::OAMSearch :
+			(scan < oamSearchDuration_80 + pixelTransferDuration_289) ? PPUMode::PixelTransfer : // less than 369
+			PPUMode::HBlank; // duration: scanLineFreq - pixelTransferDuration = 456 - 369
 		lcd.SetMode(env, mode);
 
 		return mode;
@@ -113,9 +128,103 @@ namespace GBEmu::HW
 
 			result.push_back(oam);
 
-			// 11個以上のOBJは無視
-			if (result.size() > 10) break;
+			// 10個を超えたら他のOBJは無視
+			if (result.size() >= 10) break;
 		}
 		return result;
+	}
+
+	inline uint16 getTileDataAddress(uint16 baseAddr, uint8 tileId, uint8 row, bool isFlipY = false)
+	{
+		// 1枚のタイルは16バイト (0x10)
+		const int tileOffset = baseAddr == TileDataTableStart_0x8000
+			// 0x8000アドレッシングでは、0x8000をベースポインタとし、符号なしのアドレッシング
+			? tileId * 0x10
+			// 0x8800アドレッシングでは、0x9000をベースポインタとして使用し、符号付きアドレッシング ()
+			: static_cast<int8>(tileId) * 0x10;
+		const int rowOffset = isFlipY ? 2 * (7 - row) : 2 * row;
+		return baseAddr + tileOffset + rowOffset;
+	}
+
+	inline uint8 getTileDataColor(uint16 tileData, int pixelIndex, bool isFlipX = false)
+	{
+		const auto bitShift = isFlipX ? pixelIndex : 7 - pixelIndex;
+		return ((tileData >> bitShift) & 0b1) | (((tileData >> (bitShift + 8)) & 0b1) << 1);
+	}
+
+	void PPU::scanLineX(HWEnv& env, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, Image& bitmap)
+	{
+		auto&& memory = env.GetMemory();
+
+		if (lcd.IsBGAndWindowEnable() == false) return;
+
+		const uint8 ly = lcd.LY();
+		const uint8 scy = lcd.SCY();
+		const uint8 scx = lcd.SCX();
+		const uint8 wy = lcd.WY();
+		const uint8 wx = lcd.WX();
+		const bool isWindowDisplayEnable = lcd.IsWindowDisplayEnable();
+
+		// WX=7, WY=0のときBGを完全に覆うようになる (ハードウェアのバグ(?)により7未満は未定義動作)
+		const int windowFetcherX = fetcherX - (wx - 7);
+		const int windowFetcherY = ly - wy;
+		const bool isWindowFetch = isWindowDisplayEnable && windowFetcherX >= 0 && windowFetcherY >= 0;
+
+		const auto [tileIdAddrBase, tileIdAddrOffsetX, tileIdAddrOffsetY] =
+			isWindowFetch
+			// ウィンドウフェッチ中
+			? std::tuple<uint16, uint16, uint16>{
+				lcd.WindowTileMapDisplayAddress(),
+				windowFetcherX / 8,
+				32 * (windowFetcherY / 8)}
+			// 通常はBG
+			: std::tuple<uint16, uint16, uint16>{
+				lcd.BGTimeMapDisplayAddress(),
+				((fetcherX / 8) + (scx / 8)) & 0x1f,
+				32 * (((ly + scy) & 0xff) / 8)};
+		// タイルID
+		const uint16 tileIdAddr = tileIdAddrBase + ((tileIdAddrOffsetX + tileIdAddrOffsetY) & 0x3FFF);
+
+		// タイルデータ
+		const uint8 tileDataAddr = getTileDataAddress(
+			lcd.BGAndWindowTileDataAddress(),
+			memory.Read(tileIdAddr),
+			isWindowFetch ? (windowFetcherY % 8) : (ly + scy) % 8);
+		const uint8 tileDataColor = getTileDataColor(memory.Read(tileDataAddr), isWindowFetch ? windowFetcherX : fetcherX);
+
+		// BGまたはウィンドウの色をフェッチできたので、OAMもマージしてディスプレイ上の色をフェッチ
+		const Color displayColor = fetchPixelByMergeOAM(lcd, fetcherX, oamBuffer, ly, tileDataColor);
+
+		// 色情報転送
+		bitmap[ly][fetcherX] = displayColor;
+	}
+	
+	Color PPU::fetchPixelByMergeOAM(LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, uint8 ly, uint8 tileDataColor)
+	{
+		Color displayColor = displayColorPalette[lcd.BGPaletteData(tileDataColor)];
+		if (lcd.IsOBJDisplayEnable() == false) return displayColor;
+
+		// OAM中のスプライトをフェッチ
+		for (auto&& oam : oamBuffer)
+		{
+			// 描画範囲X
+			const bool isBetweenX = oam.ActualX() <= fetcherX && fetcherX < oam.ActualX() + 8;
+			if (isBetweenX == false) continue;
+
+			// スプライト左から何ドット目か
+			const int oamX = fetcherX - oam.ActualX();
+
+			// スプライトのタイルデータアドレス
+			const uint16 oamTileDataAddr =
+				getTileDataAddress(TileDataTableStart_0x8000, oam.TileIndex, (ly - oam.ActualY()) % 8, oam.FlagYFlip());
+			const uint8 oamTileDataColor = getTileDataColor(oamTileDataAddr, oamX % 8, oam.FlagXFlip());
+
+			if (oamTileDataColor != 0 && (oam.FlagPriority() && tileDataColor != 0))
+			{
+				// マージ
+				displayColor = displayColorPalette[lcd.ObjectPaletteData(oam.Palette(), oamTileDataColor)];
+			}
+		}
+		return displayColor;
 	}
 }
