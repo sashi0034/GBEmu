@@ -71,7 +71,7 @@ namespace GBEmu::HW
 			HWLogger::Warn(U"accessed mirrored work ram: {}"_fmt(addr));
 			Write(env, addr- (static_cast<uint8>(EchoWorkRamStart) - static_cast<uint8>(WorkRamBank0Start)), data);
 		}
-		else if (RangeUint16(IOPortsStart, IOPortsEnd).IsBetween(addr))
+		else if (RangeUint16(IOPortsStart_0xFF00, IOPortsEnd_0xFF7F).IsBetween(addr))
 		{
 			// TODO: IO関連メソッドを作る
 		}
