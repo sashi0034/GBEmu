@@ -41,6 +41,7 @@ namespace GBEmu::HW
 	class CPU
 	{
 	public:
+		CPU();
 		CPUCycle StepOperation(HWEnv& env);
 
 		void SetSP(uint16 sp) { m_sp = sp; }

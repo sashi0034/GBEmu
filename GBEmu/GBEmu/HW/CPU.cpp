@@ -10,6 +10,16 @@ namespace GBEmu::HW
 {
 	using namespace MemoryAddress;
 
+	CPU::CPU()
+	{
+		SetAF(0x11B0);
+		SetBC(0x0000);
+		SetDE(0x00D8);
+		SetHL(0x014D);
+		m_sp = 0xFFFE;
+		m_pc = 0x0100;
+	}
+
 	CPUCycle CPU::StepOperation(HWEnv& env)
 	{
 		// EIの効果は1命令分だけ遅れる

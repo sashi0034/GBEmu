@@ -14,12 +14,12 @@ namespace GBEmu::HW
 
 		if (type == ct::RomOnly)
 		{
-			return std::make_unique<MBC>(MBCNone());
+			return std::make_unique<MBCNone>(MBCNone());
 		}
 
 		if (type == ct::MBC1 || type == ct::MBC1Ram || type == ct::MBC1RamBattery)
 		{
-			return std::make_unique<MBC>(MBC1());
+			return std::make_unique<MBC1>(MBC1());
 		}
 
 		assert(false);

@@ -65,9 +65,9 @@ namespace GBEmu::HW
 
 	void PPU::Draw(const Point& pos, double scale) const
 	{
-		RasterizerState rs{RasterizerState::Default2D};
-		rs.scissorEnable = true;
-		const ScopedRenderStates2D renderStates{ rs };
+		// RasterizerState rs{RasterizerState::Default2D};
+		// rs.scissorEnable = true;
+		// const ScopedRenderStates2D renderStates{ rs };
 
 		// TODO: 警告消したい
 		Profiler::EnableAssetCreationWarning(false);

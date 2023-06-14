@@ -26,14 +26,14 @@ namespace GBEmu::EmuFlowchart
 
 		env.GetMemory().LoadCartridge(config.CartridgePath);
 
-		const Font font{24};
+		const Font font{16};
 
 		while (System::Update())
 		{
 			HW::HWFrame::EmulateFrame(env);
 			env.GetPPU().Draw(Point{0, 0}, 2);
 
-			(void)font(U"PC: {:X}"_fmt(env.GetCPU().PC())).draw(100, 100);
+			(void)font(U"PC: {:04X}"_fmt(env.GetCPU().PC())).draw(400, 100);
 		}
 	}
 }
