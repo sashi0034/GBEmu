@@ -69,6 +69,8 @@ namespace GBEmu::HW
 		rs.scissorEnable = true;
 		const ScopedRenderStates2D renderStates{ rs };
 
+		// TODO: 警告消したい
+		Profiler::EnableAssetCreationWarning(false);
 		const Texture texture(m_bitmap);
 		(void)texture.scaled(scale).draw(pos);
 	}

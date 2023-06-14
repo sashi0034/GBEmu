@@ -206,6 +206,7 @@
     <ClCompile Include="GBEmu\HW\CPUOperation.cpp" />
     <ClCompile Include="GBEmu\HW\CPUOperationCB.cpp" />
     <ClCompile Include="GBEmu\HW\HWEnv.cpp" />
+    <ClCompile Include="GBEmu\HW\HWFrame.cpp" />
     <ClCompile Include="GBEmu\HW\HWLogger.cpp" />
     <ClCompile Include="GBEmu\HW\Joypad.cpp" />
     <ClCompile Include="GBEmu\HW\LCD.cpp" />
@@ -429,6 +430,7 @@
     <ClInclude Include="GBEmu\HW\CPUOperation.h" />
     <ClInclude Include="GBEmu\HW\CPUOperationCB.h" />
     <ClInclude Include="GBEmu\HW\HWEnv.h" />
+    <ClInclude Include="GBEmu\HW\HWFrame.h" />
     <ClInclude Include="GBEmu\HW\HWLogger.h" />
     <ClInclude Include="GBEmu\HW\Joypad.h" />
     <ClInclude Include="GBEmu\HW\LCD.h" />
