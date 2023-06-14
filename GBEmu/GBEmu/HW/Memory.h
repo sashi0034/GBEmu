@@ -34,6 +34,8 @@ namespace GBEmu::HW
 
 		void writeIO(HWEnv& env, uint16 addr, uint8 data);
 
+		void initMemory();
+
 		static CartridgeHeader loadCartridgeHeader(const Array<uint8>& cartridgeData);
 	};
 }

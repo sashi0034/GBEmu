@@ -106,6 +106,9 @@ namespace GBEmu::HW
 		const auto cartridgeHeader = loadCartridgeHeader(cartridgeData);
 
 		m_cartridge = Cartridge(cartridgeHeader, cartridgeData);
+
+		// メモリ内容を電源投入時のものにする
+		initMemory();
 	}
 
 	void Memory::writeIO(HWEnv& env, uint16 addr, uint8 data)
@@ -144,6 +147,41 @@ namespace GBEmu::HW
 		{
 			m_memory[addr] = data;
 		}
+	}
+
+	void Memory::initMemory()
+	{
+		m_memory[0xFF05] = 0x00; // TIMA
+		m_memory[0xFF06] = 0x00; // TMA
+		m_memory[0xFF07] = 0x00; // TAC
+		m_memory[0xFF10] = 0x80; // NR10
+		m_memory[0xFF11] = 0xBF; // NR11
+		m_memory[0xFF12] = 0xF3; // NR12
+		m_memory[0xFF14] = 0xBF; // NR14
+		m_memory[0xFF16] = 0x3F; // NR21
+		m_memory[0xFF17] = 0x00; // NR22
+		m_memory[0xFF19] = 0xBF; // NR24
+		m_memory[0xFF1A] = 0x7F; // NR30
+		m_memory[0xFF1B] = 0xFF; // NR31
+		m_memory[0xFF1C] = 0x9F; // NR32
+		m_memory[0xFF1E] = 0xBF; // NR33
+		m_memory[0xFF20] = 0xFF; // NR41
+		m_memory[0xFF21] = 0x00; // NR42
+		m_memory[0xFF22] = 0x00; // NR43
+		m_memory[0xFF23] = 0xBF; // NR30
+		m_memory[0xFF24] = 0x77; // NR50
+		m_memory[0xFF25] = 0xF3; // NR51
+		m_memory[0xFF26] = 0xF0; // NR52 // GB: 0xF1, SGB: 0xFD
+		m_memory[0xFF40] = 0x91; // LCDC
+		m_memory[0xFF42] = 0x00; // SCY
+		m_memory[0xFF43] = 0x00; // SCX
+		m_memory[0xFF45] = 0x00; // LYC
+		m_memory[0xFF47] = 0xFC; // BGP
+		m_memory[0xFF48] = 0xFF; // OBP0
+		m_memory[0xFF49] = 0xFF; // OBP1
+		m_memory[0xFF4A] = 0x00; // WY
+		m_memory[0xFF4B] = 0x00; // WX
+		m_memory[0xFFFF] = 0x00; // IE
 	}
 
 	CartridgeHeader Memory::loadCartridgeHeader(const Array<uint8>& cartridgeData)
