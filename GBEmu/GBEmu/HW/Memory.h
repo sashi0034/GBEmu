@@ -20,6 +20,7 @@ namespace GBEmu::HW
 		void Write16(HWEnv& env, uint16 addr, uint16 data16);
 
 		void WriteDirect(uint16 addr, uint8 data);
+		void WriteDirect16(uint16 addr, uint16 data16);
 
 		void LoadCartridge(const FilePath& cartridgePath);
 

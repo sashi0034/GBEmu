@@ -93,6 +93,12 @@ namespace GBEmu::HW
 		m_memory[addr] = data;
 	}
 
+	void Memory::WriteDirect16(uint16 addr, uint16 data16)
+	{
+		m_memory[addr] = data16 & 0xFF;
+		m_memory[addr + 1] = (data16 >> 8) & 0xFF;
+	}
+
 
 	void Memory::LoadCartridge(const FilePath& cartridgePath)
 	{

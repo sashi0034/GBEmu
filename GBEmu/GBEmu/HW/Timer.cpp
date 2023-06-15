@@ -21,12 +21,12 @@ namespace GBEmu::HW
 		const uint8 tac = env.GetMemory().Read(TAC_0xFF07);
 
 		const int timaFreq =
-			tac & 0b11 == 0b00 ? 1024 :
-			tac & 0b11 == 0b01 ? 16 :
-			tac & 0b11 == 0b10 ? 64 :
+			(tac & 0b11) == 0b00 ? 1024 :
+			(tac & 0b11) == 0b01 ? 16 :
+			(tac & 0b11) == 0b10 ? 64 :
 			256; // when 0b11
 
-		const bool isTimaEnable = tac & 0b100 != 0;
+		const bool isTimaEnable = tac & 0b100;
 
 		checkIncTima(memory, timaFreq, isTimaEnable);
 
