@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CPU.h"
+#include "HWDebugger.h"
 #include "Joypad.h"
 #include "Memory.h"
 #include "PPU.h"
@@ -58,5 +59,16 @@ namespace GBEmu::HW
 
 		// interface
 		IHWEnvMemory m_ihwEnvMemory{*this};
+	};
+
+	class HWEnvHandler
+	{
+	public:
+		HWEnv& operator()() {return m_env; }
+		HWEnv& Env() {return m_env; }
+		HWDebugger& Debugger() {return m_debugger; }
+	private:
+		HWEnv m_env;
+		HWDebugger m_debugger;
 	};
 }

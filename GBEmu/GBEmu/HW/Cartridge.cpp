@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Cartridge.h"
 
+#include "HWLogger.h"
 #include "GBEmu/ConstParam.h"
 
 
@@ -22,8 +23,8 @@ namespace GBEmu::HW
 			return std::make_unique<MBC1>();
 		}
 
-		assert(false);
-		return std::make_unique<MBC>();
+		HWLogger::Error(U"adaptable MBC not implemented");
+		return std::make_unique<MBCNone>();
 	}
 
 

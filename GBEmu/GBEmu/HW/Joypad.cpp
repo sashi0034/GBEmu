@@ -8,7 +8,13 @@ namespace GBEmu::HW
 {
 	void Joypad::Update(Memory& memory, uint8 control)
 	{
+		m_controlBefore = control;
 		memory.WriteDirect(MemoryAddress::JOYP_0xFF00, fetchInput(control));
+	}
+
+	void Joypad::UpdateFrame(Memory& memory)
+	{
+		Update(memory, m_controlBefore);
 	}
 
 	uint8 Joypad::fetchInput(uint8 control)

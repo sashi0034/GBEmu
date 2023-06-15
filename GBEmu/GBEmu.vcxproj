@@ -71,7 +71,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableSpecificWarnings>26451;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions) /W4</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <BuildStlModules>false</BuildStlModules>
@@ -205,6 +205,7 @@
     <ClCompile Include="GBEmu\HW\CPUInstructionCB.cpp" />
     <ClCompile Include="GBEmu\HW\CPUOperation.cpp" />
     <ClCompile Include="GBEmu\HW\CPUOperationCB.cpp" />
+    <ClCompile Include="GBEmu\HW\HWDebugger.cpp" />
     <ClCompile Include="GBEmu\HW\HWEnv.cpp" />
     <ClCompile Include="GBEmu\HW\HWFrame.cpp" />
     <ClCompile Include="GBEmu\HW\HWLogger.cpp" />
@@ -429,6 +430,7 @@
     <ClInclude Include="GBEmu\HW\CPUInstructionCB.h" />
     <ClInclude Include="GBEmu\HW\CPUOperation.h" />
     <ClInclude Include="GBEmu\HW\CPUOperationCB.h" />
+    <ClInclude Include="GBEmu\HW\HWDebugger.h" />
     <ClInclude Include="GBEmu\HW\HWEnv.h" />
     <ClInclude Include="GBEmu\HW\HWFrame.h" />
     <ClInclude Include="GBEmu\HW\HWLogger.h" />
@@ -442,6 +444,8 @@
     <ClInclude Include="GBEmu\HW\Timer.h" />
     <ClInclude Include="GBEmu\Util\Range.h" />
     <ClInclude Include="GBEmu\Util\Utils.h" />
+    <ClInclude Include="Include\magic_enum\magic_enum.hpp" />
+    <ClInclude Include="Include\nameof\nameof.hpp" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -528,10 +532,23 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App\asset\rom\.gitignore" />
+    <Content Include="App\asset\rom\01-special.gb" />
+    <Content Include="App\asset\rom\02-interrupts.gb" />
+    <Content Include="App\asset\rom\03-op sp,hl.gb" />
+    <Content Include="App\asset\rom\04-op r,imm.gb" />
+    <Content Include="App\asset\rom\05-op rp.gb" />
+    <Content Include="App\asset\rom\06-ld r,r.gb" />
+    <Content Include="App\asset\rom\07-jr,jp,call,ret,rst.gb" />
+    <Content Include="App\asset\rom\08-misc instrs.gb" />
+    <Content Include="App\asset\rom\09-op r,r.gb" />
+    <Content Include="App\asset\rom\10-bit ops.gb" />
+    <Content Include="App\asset\rom\11-op a,(hl).gb" />
     <Content Include="App\asset\rom\cpu_instrs.gb" />
     <Content Include="App\asset\rom\Pocket Puyo Puyo 2 Tsuu.GB" />
     <Content Include="App\asset\rom\Puyo Puyo.GB" />
     <Content Include="App\asset\rom\Zelda no Densetsu - Yume o Miru Shima.GB" />
+    <Content Include="Include\magic_enum\LICENSE" />
+    <Content Include="Include\nameof\LICENSE" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

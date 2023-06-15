@@ -5,10 +5,18 @@
 #include "CPUOperationCB.h"
 #include "HWLogger.h"
 #include "MemoryAddress.h"
+#include "GBEmu/Util/Utils.h"
 
 namespace GBEmu::HW
 {
 	using namespace MemoryAddress;
+
+	String CPUInstructionProperty::ToString() const
+	{
+		return IsPrefixedCB
+			? Unicode::Widen(magic_enum::enum_name(static_cast<CPUInstructionCB>(Code)))
+			: Unicode::Widen(magic_enum::enum_name(static_cast<CPUInstruction>(Code)));
+	}
 
 	CPU::CPU()
 	{
@@ -22,16 +30,16 @@ namespace GBEmu::HW
 
 	CPUCycle CPU::StepOperation(HWEnv& env)
 	{
+		// 割り込みチェック
+		const auto interrupt = checkInterrupt(env);
+		if (interrupt.has_value()) return interrupt.value();
+
 		// EIの効果は1命令分だけ遅れる
 		if (m_imeRequested)
 		{
 			m_imeRequested = false;
 			m_imeFlag = true;
 		}
-
-		// 割り込みチェック
-		const auto interrupt = checkInterrupt(env);
-		if (interrupt.has_value()) return interrupt.value();
 
 		// HALTされているとき、割り込みまで進まない
 		if (m_state != CPUState::Running)
@@ -41,7 +49,7 @@ namespace GBEmu::HW
 		}
 
 		// 命令フェッチ
-		auto [isPrefixedCB, code] = fetchInstruction(env);
+		auto [isPrefixedCB, code] = FetchInstruction(env.GetMemory());
 
 		// 命令実行
 		const auto opResult =
@@ -143,13 +151,28 @@ namespace GBEmu::HW
 		}
 	}
 
-	CPUInstructionProperty CPU::fetchInstruction(HWEnv& env) const
+	CPUInstructionProperty CPU::FetchInstruction(Memory& memory) const
 	{
-		const uint8 nextCode = env.GetMemory().Read(m_pc);
+		const uint8 nextCode = memory.Read(m_pc);
 
 		if (nextCode != 0xCB) return {false, nextCode};
 
-		return {true, env.GetMemory().Read(m_pc + 1)};
+		return {true, memory.Read(m_pc + 1)};
+	}
+
+	String CPU::StringifyInfo(Memory& memory) const
+	{
+		String str{};
+		str += U"PC: {:04X}, "_fmt(m_pc);
+		str += U"SP: {:04X}, "_fmt(m_pc);
+		str += U"AF: {:04X}, "_fmt(RegAF());
+		str += U"BC: {:04X}, "_fmt(RegBC());
+		str += U"DE: {:04X}, "_fmt(RegDE());
+		str += U"HL: {:04X},\n"_fmt(RegHL());
+		str += U"IME: {}, "_fmt(IME());
+		str += U"state: {},\n"_fmt(Util::StringifyEnum(m_state));
+		str += U"instr: {}"_fmt(FetchInstruction(memory).ToString());
+		return str;
 	}
 
 	uint8 CPU::applyFlagZNHC(uint8 regF, CPUOperationZNHC flag)

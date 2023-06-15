@@ -9,5 +9,12 @@ namespace GBEmu
 		int AnimFrameIndex(int controller, const int frameNumber, const int frameDuration);
 		int AnimFrameIndex(uint64 controller, const int frameNumber, const int frameDuration);
 		String ConcatStringWithBreak(const Array<String>& array);
+
+		template <typename E>
+		[[nodiscard]] String StringifyEnum(E value) noexcept
+		{
+			const auto enumName = magic_enum::enum_name(value);
+			return Unicode::Widen(enumName);
+		}
 	}
 }

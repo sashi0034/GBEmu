@@ -20,20 +20,17 @@ namespace GBEmu::EmuFlowchart
 		}
 
 		Console.open();
-		Console.writeln(U"Setup ...");
+		Console.writeln(U"setup ...");
 
-		HW::HWEnv env{};
+		HW::HWEnvHandler env{};
 
-		env.GetMemory().LoadCartridge(config.CartridgePath);
-
-		const Font font{16};
+		env().GetMemory().LoadCartridge(config.CartridgePath);
 
 		while (System::Update())
 		{
 			HW::HWFrame::EmulateFrame(env);
-			env.GetPPU().Draw(Point{0, 0}, 2);
-
-			(void)font(U"PC: {:04X}"_fmt(env.GetCPU().PC())).draw(400, 100);
+			env().GetPPU().Draw(Point{0, 0}, 2);
+			env.Debugger().Draw(env(), Point{400, 100});
 		}
 	}
 }
