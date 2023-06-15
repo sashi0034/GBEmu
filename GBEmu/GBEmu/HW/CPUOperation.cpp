@@ -439,7 +439,7 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::DEC_A_0x3D ? CPUReg8::A :
 			instr == ci::DEC_B_0x05 ? CPUReg8::B :
 			instr == ci::DEC_C_0x0D ? CPUReg8::C :
-			instr == ci::DEC_A_0x3D ? CPUReg8::D :
+			instr == ci::DEC_D_0x15 ? CPUReg8::D :
 			instr == ci::DEC_E_0x1D ? CPUReg8::E :
 			instr == ci::DEC_H_0x25 ? CPUReg8::H :
 			instr == ci::DEC_L_0x2D ? CPUReg8::L :
