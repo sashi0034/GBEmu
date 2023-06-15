@@ -97,7 +97,7 @@ namespace GBEmu::HW::CPUOperation
 			cpu.SetB(a); return cycle4;
 		case ci::LD_C_A_0x4F:
 			cpu.SetC(a); return cycle4;
-		case ci::LD_C_D_0x4A:
+		case ci::LD_D_A_0x57:
 			cpu.SetD(a); return cycle4;
 		case ci::LD_E_A_0x5F:
 			cpu.SetE(a); return cycle4;
