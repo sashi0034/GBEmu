@@ -58,8 +58,7 @@ namespace GBEmu::HW
 		checkInterrupt(env, lcd, isModeChanged);
 
 		return PPUResult{
-			isModeChanged && m_mode == PPUMode::VBlank,
-			m_dotCycle == 0
+			isModeChanged && m_mode == PPUMode::VBlank
 		};
 	}
 
@@ -214,7 +213,7 @@ namespace GBEmu::HW
 		const uint16 tileIdAddr = tileIdAddrBase + ((tileIdAddrOffsetX + tileIdAddrOffsetY) & 0x3FFF);
 
 		// タイルデータ
-		const uint8 tileDataAddr = getTileDataAddress(
+		const uint16 tileDataAddr = getTileDataAddress(
 			lcd.BGAndWindowTileDataAddress(),
 			memory.Read(tileIdAddr),
 			isWindowFetch ? (windowFetcherY % 8) : (ly + scy) % 8);
