@@ -217,7 +217,7 @@ namespace GBEmu::HW
 			lcd.BGAndWindowTileDataAddress(),
 			memory.Read(tileIdAddr),
 			isWindowFetch ? (windowFetcherY % 8) : (ly + scy) % 8);
-		const uint8 tileDataColor = getTileDataColor(memory.Read(tileDataAddr), isWindowFetch ? windowFetcherX : fetcherX);
+		const uint8 tileDataColor = getTileDataColor(memory.Read(tileDataAddr), isWindowFetch ? windowFetcherX % 8 : fetcherX % 8);
 
 		// BGまたはウィンドウの色をフェッチできたので、OAMもマージしてディスプレイ上の色をフェッチ
 		const Color displayColor = fetchPixelByMergeOAM(lcd, fetcherX, oamBuffer, ly, tileDataColor);
