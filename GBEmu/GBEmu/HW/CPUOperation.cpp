@@ -536,7 +536,7 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::ADD_HL_SP_0x39 ? cpu.SP() :
 			undefined8();
 
-		const bool h = ((cpu.RegHL() & 0x7fff) + (src & 0x7fff)) > 0x7fff; // bit11からオーバーフローした場合にセット
+		const bool h = ((cpu.RegHL() & 0x07FF) + (src & 0x07FF)) > 0x07FF; // bit11からオーバーフローした場合にセット
 		const bool c = ((cpu.RegHL() & 0xffff) + (src & 0xffff)) > 0xffff; // bit15からオーバーフローした場合にセット
 
 		cpu.SetHL(cpu.RegHL() + src);
