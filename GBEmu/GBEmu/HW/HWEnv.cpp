@@ -3,9 +3,4 @@
 
 namespace GBEmu::HW
 {
-	PPU& IHWEnvMemory::GetPPU()
-	{
-		return m_env.GetPPU();
-	}
-
 }

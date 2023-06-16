@@ -236,6 +236,7 @@ namespace GBEmu::HW::CPUOperation
 	[[nodiscard]]
 	CPUOperationResult operateLD_ma16_SP(HWEnv& env)
 	{
+		// 0x08
 		const uint16 a16 = env.GetMemory().Read16(env.GetCPU().PC() + 1);
 		env.GetMemory().Write16(env, a16, env.GetCPU().SP());
 		return CPUOperationResult(3, 20);

@@ -16,15 +16,6 @@ namespace GBEmu::HW
 	class Joypad;
 	class Timer;
 
-	class IHWEnvMemory
-	{
-	public:
-		explicit IHWEnvMemory(HWEnv& env) : m_env(env){}
-		PPU& GetPPU();
-	private:
-		HWEnv& m_env;
-	};
-
 	class HWEnv
 	{
 	public:
@@ -48,8 +39,10 @@ namespace GBEmu::HW
 		{
 			return m_timer;
 		}
-
-		operator IHWEnvMemory&() {return m_ihwEnvMemory; }
+		HWDebugger& Debugger()
+		{
+			return m_debugger;
+		}
 	private:
 		CPU m_cpu{};
 		Memory m_memory{};
@@ -57,18 +50,6 @@ namespace GBEmu::HW
 		Joypad m_joypad{};
 		Timer m_timer{};
 
-		// interface
-		IHWEnvMemory m_ihwEnvMemory{*this};
-	};
-
-	class HWEnvHandler
-	{
-	public:
-		HWEnv& operator()() {return m_env; }
-		HWEnv& Env() {return m_env; }
-		HWDebugger& Debugger() {return m_debugger; }
-	private:
-		HWEnv m_env;
 		HWDebugger m_debugger;
 	};
 }

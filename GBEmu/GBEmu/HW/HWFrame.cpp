@@ -3,15 +3,14 @@
 
 namespace GBEmu::HW::HWFrame
 {
-	void EmulateFrame(HWEnvHandler& handler)
+	void EmulateFrame(HWEnv& env)
 	{
-		auto&& env = handler.Env();
 		int passedCycle = 0;
 		env.GetJoypad().UpdateFrame(env.GetMemory());
 
 		while (true)
 		{
-			handler.Debugger().Update(env);
+			env.Debugger().Update(env);
 
 			// CPU実行
 			const auto cpuCycle = env.GetCPU().StepOperation(env);

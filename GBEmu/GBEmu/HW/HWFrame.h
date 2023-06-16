@@ -6,6 +6,6 @@ namespace GBEmu::HW
 	namespace HWFrame
 	{
 		// ハードウェアの1フレームをエミュレート
-		void EmulateFrame(HWEnvHandler& handler);
+		void EmulateFrame(HWEnv& env);
 	};
 }
