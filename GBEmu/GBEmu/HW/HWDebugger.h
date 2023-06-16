@@ -16,9 +16,16 @@ namespace GBEmu::HW
 	{
 	public:
 		HWDebugger();
-		void Update(HWEnv& env);
+
+		// 1フレームごとに更新
+		void UpdateFrame(HWEnv& env);
+
+		// 1サイクルごとに更新
+		void UpdateCycle(HWEnv& env);
+
 		void Draw(HWEnv& env, const Point& leftTop) const;
 		void OnExecuteInstruction(const CPU& cpu, const CPUInstructionProperty& fetchedInstruction);
+		bool IsDebugSuspend() const { return m_isDebugSuspend; };
 	private:
 		const Font m_font{16};
 		static constexpr int lineMargin = 20;
@@ -31,6 +38,7 @@ namespace GBEmu::HW
 		int m_traceCountdown{};
 		HashSet<std::string> m_tracedKey{};
 		std::deque<HWDebuggerExecutedInstruction> m_executedInstructionLog{};
+		bool m_isDebugSuspend = false;
 
 		Optional<std::pair<std::string, int>> checkStartTrace(HWEnv& env) const;
 		void publishStatistics(HWEnv& env) const;

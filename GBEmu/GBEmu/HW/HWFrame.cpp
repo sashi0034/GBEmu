@@ -8,9 +8,12 @@ namespace GBEmu::HW::HWFrame
 		int passedCycle = 0;
 		env.GetJoypad().UpdateFrame(env.GetMemory());
 
+		env.Debugger().UpdateFrame(env);
+		if (env.Debugger().IsDebugSuspend()) return;
+
 		while (true)
 		{
-			env.Debugger().Update(env);
+			env.Debugger().UpdateCycle(env);
 
 			// CPU実行
 			const auto cpuCycle = env.GetCPU().StepOperation(env);

@@ -21,11 +21,20 @@ namespace GBEmu::HW
 
 #ifdef CUSTOMIZABLE
 		// 特定のPCになったら統計出す
-		m_statisticsPC = 52113;
+		// m_statisticsPC = 52113;
 #endif
 	}
 
-	void HWDebugger::Update(HWEnv& env)
+	void HWDebugger::UpdateFrame(HWEnv& env)
+	{
+		// デバッグ用休止状態に
+		if (KeyQ.down() && KeyControl.pressed())
+		{
+			m_isDebugSuspend = !m_isDebugSuspend;
+		}
+	}
+
+	void HWDebugger::UpdateCycle(HWEnv& env)
 	{
 		// トレースチェック
 		const auto startedTrace = checkStartTrace(env);
@@ -36,16 +45,18 @@ namespace GBEmu::HW
 			m_traceCountdown = startedTrace.value().second;
 		}
 
-		if (env.GetCPU().PC() == m_statisticsPC)
-		{
-			publishStatistics(env);
-			m_statisticsPC = none;
-		}
-
+		// トレース中
 		if (m_traceCountdown > 0)
 		{
 			m_traceCountdown--;
 			debugTrace(env);
+		}
+
+		// 特定PCで統計表示
+		if (env.GetCPU().PC() == m_statisticsPC)
+		{
+			publishStatistics(env);
+			m_statisticsPC = none;
 		}
 	}
 
@@ -53,6 +64,7 @@ namespace GBEmu::HW
 	{
 		Array<String> message{};
 
+		if (m_isDebugSuspend) message.push_back(U"[ Suspended ]");
 		message.push_back(U"PC: {:04X}"_fmt(env.GetCPU().PC()));
 		message.push_back(U"SP: {:04X}"_fmt(env.GetCPU().SP()));
 		message.push_back(U"IME: {}"_fmt(env.GetCPU().IME()));
@@ -104,9 +116,13 @@ namespace GBEmu::HW
 		// トレース開始チェック
 #ifdef CUSTOMIZABLE
 
-		// 命令に達したらトレース開始
-		if (cpu.FetchInstruction(memory).CodeUnprefixed() == CPUInstruction::LD_SP_d16_0x31 &&
-			m_tracedKey.contains("MISC") == false) return pair{"MISC", size_50};
+		// 特定のPC付近に達したら
+		if (Math::Abs(cpu.PC() - 0xC5FB) < size_5 &&
+			m_tracedKey.contains("PC") == false) return pair{"PC", size_50};
+
+		// 命令に達したら
+		// if (cpu.FetchInstruction(memory).CodeUnprefixed() == CPUInstruction::LD_SP_d16_0x31 &&
+		// 	m_tracedKey.contains("INSTR") == false) return pair{"INSTR", size_50};
 
 		// EIに達したら
 		// if (cpu.FetchInstruction(memory).CodeUnprefixed() == CPUInstruction::EI_0xFB &&
@@ -134,8 +150,13 @@ namespace GBEmu::HW
 #ifdef CUSTOMIZABLE
 		Console.writeln(stringifyFoundInstructionDistribution());
 
-		uint16 addr = searchMemoryBlob(env.GetMemory(), RangeUint16(0x0000, 0xFFFF), {0xF0, 0x91, 0x00});
-		Console.writeln(U"{:04X}"_fmt(addr));
+		uint16 addr1 = searchMemoryBlob(env.GetMemory(), RangeUint16(0x0000, 0xFFFF),
+			{0xF0, 0x91, 0x00, 0xE0, 0x91, 0x00});
+		Console.writeln(U"{:04X}"_fmt(addr1));
+
+		uint16 addr2 = searchMemoryBlob(env.GetMemory(), RangeUint16(addr1 + 1, 0xFFFF),
+			{0xF0, 0x91, 0x00, 0xE0, 0x91, 0x00});
+				Console.writeln(U"{:04X}"_fmt(addr2));
 #endif
 	}
 
