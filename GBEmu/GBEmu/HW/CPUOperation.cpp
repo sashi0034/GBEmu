@@ -446,13 +446,13 @@ namespace GBEmu::HW::CPUOperation
 			CPUReg8::Invalid;
 		assert(target != CPUReg8::Invalid);
 
-		const bool h = (cpu.GetReg8(target) & 0xF) == 0xF;
+		const bool h = (cpu.GetReg8(target) & 0xF) == 0;
 
 		cpu.SetReg8(target, cpu.GetReg8(target) - 1);
 
 		const bool z = cpu.GetReg8(target) == 0;
 
-		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{z, false, h, cpu.FlagC()});
+		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{z, true, h, cpu.FlagC()});
 	}
 
 	[[nodiscard]]
