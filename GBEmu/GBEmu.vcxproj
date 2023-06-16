@@ -544,6 +544,7 @@
     <Content Include="App\asset\rom\10-bit ops.gb" />
     <Content Include="App\asset\rom\11-op a,(hl).gb" />
     <Content Include="App\asset\rom\cpu_instrs.gb" />
+    <Content Include="App\asset\rom\instr_timing.gb" />
     <Content Include="App\asset\rom\Pocket Puyo Puyo 2 Tsuu.GB" />
     <Content Include="App\asset\rom\Puyo Puyo.GB" />
     <Content Include="App\asset\rom\Zelda no Densetsu - Yume o Miru Shima.GB" />

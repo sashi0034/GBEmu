@@ -49,13 +49,16 @@ namespace GBEmu::HW
 		}
 
 		// 命令フェッチ
-		auto [isPrefixedCB, code] = FetchInstruction(env.GetMemory());
+		auto fetched = FetchInstruction(env.GetMemory());
+
+		// 実行イベントを通知
+		env.Debugger().OnExecuteInstruction(*this, fetched);
 
 		// 命令実行
 		const auto opResult =
-			isPrefixedCB
-              ? CPUOperationCB::OperateInstructionCB(env, static_cast<CPUInstructionCB>(code))
-              : CPUOperation::OperateInstruction(env, static_cast<CPUInstruction>(code));
+			fetched.IsPrefixedCB
+              ? CPUOperationCB::OperateInstructionCB(env, static_cast<CPUInstructionCB>(fetched.Code))
+              : CPUOperation::OperateInstruction(env, static_cast<CPUInstruction>(fetched.Code));
 
 		m_pc = opResult.NextPC.has_value()
 			// 分岐命令など
@@ -164,7 +167,7 @@ namespace GBEmu::HW
 	{
 		String str{};
 		str += U"PC: {:04X}, "_fmt(m_pc);
-		str += U"SP: {:04X}, "_fmt(m_pc);
+		str += U"SP: {:04X}, "_fmt(m_sp);
 		str += U"AF: {:04X}, "_fmt(RegAF());
 		str += U"BC: {:04X}, "_fmt(RegBC());
 		str += U"DE: {:04X}, "_fmt(RegDE());

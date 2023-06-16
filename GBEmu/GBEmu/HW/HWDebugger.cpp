@@ -6,6 +6,8 @@
 #include "MemoryAddress.h"
 #include "GBEmu/Util/Utils.h"
 
+#define CUSTOMIZABLE
+
 namespace GBEmu::HW
 {
 	using namespace MemoryAddress;
@@ -15,18 +17,16 @@ namespace GBEmu::HW
 
 	HWDebugger::HWDebugger()
 	{
-		m_cycleLogBuffer.resize(size_50);
+		m_executedInstructionLog.resize(size_50);
+
+#ifdef CUSTOMIZABLE
+		// 特定のPCになったら統計出す
+		m_statisticsPC = 52113;
+#endif
 	}
 
 	void HWDebugger::Update(HWEnv& env)
 	{
-		// フレームごとに簡易ログを残す
-		m_cycleLogBuffer.push_front(HWDebuggerCycleLog{
-			env.GetCPU().PC(),
-			env.GetCPU().FetchInstruction(env.GetMemory()).ToString()
-		});
-		m_cycleLogBuffer.pop_back();
-
 		// トレースチェック
 		const auto startedTrace = checkStartTrace(env);
 		if (startedTrace.has_value())
@@ -34,6 +34,12 @@ namespace GBEmu::HW
 			// トレース開始
 			m_tracedKey.emplace(startedTrace.value().first);
 			m_traceCountdown = startedTrace.value().second;
+		}
+
+		if (env.GetCPU().PC() == m_statisticsPC)
+		{
+			publishStatistics(env);
+			m_statisticsPC = none;
 		}
 
 		if (m_traceCountdown > 0)
@@ -59,29 +65,74 @@ namespace GBEmu::HW
 		}
 	}
 
+	void HWDebugger::OnExecuteInstruction(const CPU& cpu, const CPUInstructionProperty& fetchedInstruction)
+	{
+		// 命令実行経歴を残す
+		m_executedInstructionLog.push_front(HWDebuggerExecutedInstruction{
+			cpu.PC(),
+			fetchedInstruction.ToString()
+		});
+		m_executedInstructionLog.pop_back();
+
+		// 命令出現状況を記憶
+		if (fetchedInstruction.IsPrefixedCB)
+			m_foundInstructionCBDistribution[fetchedInstruction.Code]++;
+		else
+			m_foundInstructionDistribution[fetchedInstruction.Code]++;
+	}
+
+	String HWDebugger::stringifyFoundInstructionDistribution() const
+	{
+		String str = U"";
+		for (int i=0; i<256; ++i)
+		{
+			str += U"{}: {}\n"_fmt(Util::StringifyEnum(static_cast<CPUInstruction>(i)), m_foundInstructionDistribution[i]);
+		}
+		for (int i=0; i<256; ++i)
+		{
+			str += U"{}: {}\n"_fmt(Util::StringifyEnum(static_cast<CPUInstructionCB>(i)), m_foundInstructionCBDistribution[i]);
+		}
+		return str;
+	}
+
 	Optional<std::pair<std::string, int>> HWDebugger::checkStartTrace(HWEnv& env) const
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 		using pair = std::pair<std::string, int>;
 
-		// EIに達したらトレース開始
-		if (cpu.FetchInstruction(memory).CodeUnprefixed() == CPUInstruction::EI_0xFB &&
-			m_tracedKey.contains("EI") == false) return pair{"EI", size_50};
+		// トレース開始チェック
+#ifdef CUSTOMIZABLE
+
+		// 命令に達したらトレース開始
+		if (cpu.FetchInstruction(memory).CodeUnprefixed() == CPUInstruction::LD_SP_d16_0x31 &&
+			m_tracedKey.contains("MISC") == false) return pair{"MISC", size_50};
+
+		// EIに達したら
+		// if (cpu.FetchInstruction(memory).CodeUnprefixed() == CPUInstruction::EI_0xFB &&
+		// 	m_tracedKey.contains("EI") == false) return pair{"EI", size_50};
 
 		// TimerのIEがONになったら
-		if (memory.Read(IE_0xFFFF) & (1 << 2) &&
-			m_tracedKey.contains("IE Timer") == false) return pair{"IE Timer", size_5};
+		// if (memory.Read(IE_0xFFFF) & (1 << 2) &&
+		// 	m_tracedKey.contains("IE Timer") == false) return pair{"IE Timer", size_5};
 
 		// HALTになったら
 		// if (cpu.State() == CPUState::Halted &&
 		// 	m_tracedKey.contains("HALT") == false) return pair{"HALT", size_5};
 
+#endif
 		return none;
 	}
 
 	void HWDebugger::debugTrace(HWEnv& env)
 	{
 		HWLogger::Info( U"CPU: { " + env.GetCPU().StringifyInfo(env.GetMemory()) + U" }\n");
+	}
+
+	void HWDebugger::publishStatistics(HWEnv& env) const
+	{
+#ifdef CUSTOMIZABLE
+		Console.writeln(stringifyFoundInstructionDistribution());
+#endif
 	}
 }

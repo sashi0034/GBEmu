@@ -22,15 +22,15 @@ namespace GBEmu::EmuFlowchart
 		Console.open();
 		Console.writeln(U"setup ...");
 
-		HW::HWEnvHandler env{};
+		HW::HWEnv env{};
 
-		env().GetMemory().LoadCartridge(config.CartridgePath);
+		env.GetMemory().LoadCartridge(config.CartridgePath);
 
 		while (System::Update())
 		{
 			HW::HWFrame::EmulateFrame(env);
-			env().GetPPU().Draw(Point{0, 0}, 2);
-			env.Debugger().Draw(env(), Point{400, 100});
+			env.GetPPU().Draw(Point{0, 0}, 2);
+			env.Debugger().Draw(env, Point{400, 100});
 		}
 	}
 }

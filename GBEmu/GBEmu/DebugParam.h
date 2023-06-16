@@ -11,6 +11,7 @@ namespace GBEmu
 		inline String RomPathPuyoPuyo2 = U"asset/rom/Pocket Puyo Puyo 2 Tsuu.GB";
 
 		inline String RomPathTestCpuInstrs = U"asset/rom/cpu_instrs.gb";
+		inline String RomPathTestInstrTiming = U"asset/rom/instr_timing.gb";
 
 		inline String RomPathTest01 = U"asset/rom/01-special.gb";
 		inline String RomPathTest02 = U"asset/rom/02-interrupts.gb";
