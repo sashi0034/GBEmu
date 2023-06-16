@@ -127,7 +127,7 @@ namespace GBEmu::HW
 		}
 		else if (addr == DIV_0xFF04)
 		{
-			env.GetTimer().ResetDIV();
+			env.GetTimer().ResetDIVDetail();
 		}
 		else if (addr == TIMA_0xFF05)
 		{
@@ -147,6 +147,10 @@ namespace GBEmu::HW
 				m_memory[OAMStart_0xFE00 + offset] = Read(src + offset);
 			}
 			m_memory[addr] = 0xFF;
+		}
+		else if (addr == IF_0xFF0F)
+		{
+			m_memory[addr] = data | 0xE0;
 		}
 		// TODO: 他のも
 		else
@@ -187,6 +191,7 @@ namespace GBEmu::HW
 		m_memory[0xFF49] = 0xFF; // OBP1
 		m_memory[0xFF4A] = 0x00; // WY
 		m_memory[0xFF4B] = 0x00; // WX
+		m_memory[0xFF0F] = 0xE0; // IF
 		m_memory[0xFFFF] = 0x00; // IE
 	}
 

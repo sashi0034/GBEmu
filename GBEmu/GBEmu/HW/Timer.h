@@ -11,14 +11,16 @@ namespace GBEmu::HW
 		Timer() = default;
 
 		void StepCycle(HWEnv& env);
-		void ResetDIV();
+		void ResetDIVDetail();
 	private:
 		uint16 m_divDetail{};
 		Optional<int> m_timaOverflowedCountdown = none;
+		uint8 m_oldTAC{};
 
-		uint8 getTima(Memory& memory);
-		void setTima(Memory& memory, uint8 value);
-		void checkIncTima(Memory& memory, int timaFreq, bool isTimaEnable);
-		void checkUpdateTimaOverflowedCountdown(HWEnv& env, Memory& memory);
+		uint8 getTIMA(Memory& memory);
+		void setTIMA(Memory& memory, uint8 value);
+		void checkIncTIMA(Memory& memory, uint8 newTAC, uint8 oldTAC);
+		static bool canIncTIMA(uint8 newTAC, uint8 oldTAC, uint16 sysClock);
+		void checkUpdateTIMAOverflowedCountdown(HWEnv& env, Memory& memory);
 	};
 }
