@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CPU.h"
+#include "GBEmu/Util/Range.h"
 
 namespace GBEmu::HW
 {
@@ -34,5 +35,6 @@ namespace GBEmu::HW
 		Optional<std::pair<std::string, int>> checkStartTrace(HWEnv& env) const;
 		void publishStatistics(HWEnv& env) const;
 		static void debugTrace(HWEnv& env);
+		static uint16 searchMemoryBlob(Memory& memory, const RangeUint16& range, const Array<uint16>& blob);
 	};
 }

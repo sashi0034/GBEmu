@@ -22,6 +22,9 @@ namespace GBEmu::Util
 			return Range<T>(value1, value2);
 		}
 
+		T Max() const {return m_Max; }
+		T Min() const {return m_Min; }
+
 		Range<T> ExtendRange(T extension)
 		{
 			if (extension < 0) return FromSort(m_Min - extension, m_Max + extension);

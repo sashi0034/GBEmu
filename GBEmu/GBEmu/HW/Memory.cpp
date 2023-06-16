@@ -82,6 +82,7 @@ namespace GBEmu::HW
 		}
 	}
 
+	// エンディアンに注意
 	void Memory::Write16(HWEnv& env, uint16 addr, uint16 data16)
 	{
 		Write(env, addr, data16 & 0xFF);

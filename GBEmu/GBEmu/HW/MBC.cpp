@@ -40,7 +40,8 @@ namespace GBEmu::HW
 		}
 		else if (RangeUint16(ExternalRamStart, ExternalRamEnd).IsBetween(addr))
 		{
-			return cartridge.RAM()[externalRamAddress(addr)];
+			// TODO: 警告を入れたほうがいいかも
+			return externalRamAddress(addr) < cartridge.RAM().size() ? cartridge.RAM()[externalRamAddress(addr)] : 0x0000;
 		}
 
 		HWLogger::Error(U"invalid read address in MBC1: {}"_fmt(addr));

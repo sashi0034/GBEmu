@@ -133,6 +133,29 @@ namespace GBEmu::HW
 	{
 #ifdef CUSTOMIZABLE
 		Console.writeln(stringifyFoundInstructionDistribution());
+
+		uint16 addr = searchMemoryBlob(env.GetMemory(), RangeUint16(0x0000, 0xFFFF), {0xF0, 0x91, 0x00});
+		Console.writeln(U"{:04X}"_fmt(addr));
 #endif
+	}
+
+
+	// データ列を受け取って、そのメモリ列が存在するならアドレスを返す
+	uint16 HWDebugger::searchMemoryBlob(Memory& memory, const RangeUint16& range, const Array<uint16>& blob)
+	{
+		for (uint16 i=range.Min(); i<= range.Max() - blob.size() + 1; ++i)
+		{
+			if (memory.Read(i) != blob[0]) continue;
+
+			bool isMatch = true;
+			for (int x = 1; x<blob.size(); ++x)
+			{
+				if (memory.Read(i + x) == blob[x]) continue;
+				isMatch = false;
+				break;
+			}
+			if (isMatch) return i;
+		}
+		return 0xFFFF;
 	}
 }
