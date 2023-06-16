@@ -2,7 +2,6 @@
 #include "HWDebugger.h"
 
 #include "HWEnv.h"
-#include "HWLogger.h"
 #include "MemoryAddress.h"
 #include "GBEmu/Util/Utils.h"
 
@@ -21,14 +20,15 @@ namespace GBEmu::HW
 
 #ifdef CUSTOMIZABLE
 		// 特定のPCになったら統計出す
-		// m_statisticsPC = 52113;
+		m_statisticsPC = 52113;
+		// m_isWriteMemoryLog = true;
 #endif
 	}
 
 	void HWDebugger::UpdateFrame(HWEnv& env)
 	{
 		// デバッグ用休止状態に
-		if (KeyQ.down() && KeyControl.pressed())
+		if (KeyC.down() && KeyControl.pressed())
 		{
 			m_isDebugSuspend = !m_isDebugSuspend;
 		}
@@ -80,7 +80,7 @@ namespace GBEmu::HW
 	void HWDebugger::OnExecuteInstruction(const CPU& cpu, const CPUInstructionProperty& fetchedInstruction)
 	{
 		// 命令実行経歴を残す
-		m_executedInstructionLog.push_front(HWDebuggerExecutedInstruction{
+		m_executedInstructionLog.push_front(HWDebugExecutedInstruction{
 			cpu.PC(),
 			fetchedInstruction.ToString()
 		});
@@ -91,6 +91,15 @@ namespace GBEmu::HW
 			m_foundInstructionCBDistribution[fetchedInstruction.Code]++;
 		else
 			m_foundInstructionDistribution[fetchedInstruction.Code]++;
+	}
+
+	void HWDebugger::OnMemoryWrite(uint16 address, uint8 data)
+	{
+		if (m_isWriteMemoryLog == false) return;
+
+		m_wroteMemoryLog.push_front(HWDebugWroteMemory{address, data, m_executedInstructionLog[0]});
+		constexpr int wroteMemoryLogSize = 500;
+		if (m_wroteMemoryLog.size() > wroteMemoryLogSize) m_wroteMemoryLog.pop_back();
 	}
 
 	String HWDebugger::stringifyFoundInstructionDistribution() const
@@ -117,7 +126,7 @@ namespace GBEmu::HW
 #ifdef CUSTOMIZABLE
 
 		// 特定のPC付近に達したら
-		if (Math::Abs(cpu.PC() - 0xC5FB) < size_5 &&
+		if (Math::Abs(cpu.PC() - 0xC5FB) <= size_5 &&
 			m_tracedKey.contains("PC") == false) return pair{"PC", size_50};
 
 		// 命令に達したら
@@ -142,27 +151,42 @@ namespace GBEmu::HW
 
 	void HWDebugger::debugTrace(HWEnv& env)
 	{
-		HWLogger::Info( U"CPU: { " + env.GetCPU().StringifyInfo(env.GetMemory()) + U" }\n");
+		Console.writeln( U"CPU: { " + env.GetCPU().StringifyInfo(env.GetMemory()) + U" }\n");
 	}
 
 	void HWDebugger::publishStatistics(HWEnv& env) const
 	{
 #ifdef CUSTOMIZABLE
-		Console.writeln(stringifyFoundInstructionDistribution());
+		// 命令の実行分布
+		// Console.writeln(stringifyFoundInstructionDistribution());
 
-		uint16 addr1 = searchMemoryBlob(env.GetMemory(), RangeUint16(0x0000, 0xFFFF),
-			{0xF0, 0x91, 0x00, 0xE0, 0x91, 0x00});
-		Console.writeln(U"{:04X}"_fmt(addr1));
-
-		uint16 addr2 = searchMemoryBlob(env.GetMemory(), RangeUint16(addr1 + 1, 0xFFFF),
-			{0xF0, 0x91, 0x00, 0xE0, 0x91, 0x00});
-				Console.writeln(U"{:04X}"_fmt(addr2));
+		// 特定のメモリ列を探索
+		printSearchedMemoryBlob(env,
+			{0xF0, 0x91, 0x00, 0xE0, 0x91, 0x00, 0xF2, 0x00, 0x00});
 #endif
+
+		// メモリ書き込み経歴
+		for (int i=0; i<m_wroteMemoryLog.size(); ++i)
+		{
+			auto&& log = m_wroteMemoryLog[i];
+			Console.writeln(U"[{}] ({:04X}) <- {:02X} (PC: {:04X}, instr: {})"_fmt(
+				i, log.Address, log.Data, log.PreviousInstr.CurrentPC, log.PreviousInstr.NextInstruction));
+		}
 	}
 
+	void HWDebugger::printSearchedMemoryBlob(HWEnv& env, const Array<uint16>& blob)
+	{
+		for (uint16 addr = 0xFFFF;;)
+		{
+			auto searched = searchMemoryBlob(env.GetMemory(), RangeUint16(addr + 1, 0xFFFF), blob);
+			if (searched.has_value() == false) break;
+			addr = searched.value();
+			Console.writeln(U"{:04X}"_fmt(addr));
+		}
+	}
 
 	// データ列を受け取って、そのメモリ列が存在するならアドレスを返す
-	uint16 HWDebugger::searchMemoryBlob(Memory& memory, const RangeUint16& range, const Array<uint16>& blob)
+	Optional<uint16> HWDebugger::searchMemoryBlob(Memory& memory, const RangeUint16& range, const Array<uint16>& blob)
 	{
 		for (uint16 i=range.Min(); i<= range.Max() - blob.size() + 1; ++i)
 		{
@@ -177,6 +201,6 @@ namespace GBEmu::HW
 			}
 			if (isMatch) return i;
 		}
-		return 0xFFFF;
+		return none;
 	}
 }

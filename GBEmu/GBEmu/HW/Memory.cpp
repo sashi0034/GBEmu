@@ -57,6 +57,8 @@ namespace GBEmu::HW
 
 	void Memory::Write(HWEnv& env, uint16 addr, uint8 data)
 	{
+		env.Debugger().OnMemoryWrite(addr, data);
+
 		if (RangeUint16(RomBank00Start, RomBankNNEnd).IsBetween(addr) ||
 			RangeUint16(ExternalRamStart, ExternalRamEnd).IsBetween(addr))
 		{
