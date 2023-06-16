@@ -25,7 +25,7 @@ namespace GBEmu::HW
 
 #ifdef CUSTOMIZABLE
 		// 特定のPCになったら統計出す
-		m_statisticsPC = 0xCE67;
+		// m_statisticsPC = 0xCE67;
 		// m_isWriteMemoryLog = true;
 #endif
 	}
@@ -131,8 +131,8 @@ namespace GBEmu::HW
 #ifdef CUSTOMIZABLE
 
 		// 特定のPC付近に達したら
-		// if (Math::Abs(cpu.PC() - 0xC5FB) <= size_5 &&
-		// 	m_tracedKey.contains("PC") == false) return pair{"PC", size_50};
+		// if (Math::Abs(cpu.PC() - 0xC370) <= size_20 &&
+		// m_tracedKey.contains("PC") == false) return pair{"PC", size_500};
 
 		// 命令に達したら
 		// if (cpu.FetchInstruction(memory).CodeUnprefixed() == CPUInstruction::LD_SP_d16_0x31 &&

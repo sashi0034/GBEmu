@@ -75,11 +75,15 @@ namespace GBEmu::HW
 	Optional<CPUCycle> CPU::checkInterrupt(HWEnv& env)
 	{
 		auto&& memory = env.GetMemory();
-
-		if (m_imeFlag == false) return none;
-
 		const uint8 interruptEnable = memory.Read(IE_0xFFFF);
 		const uint8 interruptFlag = memory.Read(IF_0xFF0F);
+
+		if (m_imeFlag == false)
+		{
+			// IMEが許可されてなくても、IFが立ったらHALT終了
+			if ((interruptFlag & interruptEnable) != 0) m_state = CPUState::Running;
+			return none;
+		}
 
 		static const std::array<uint16, 5> interruptAddress{
 			InterruptVBlank_0x0040,

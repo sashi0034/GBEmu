@@ -9,6 +9,6 @@ namespace GBEmu
 	};
 
 	static const EmuConfig DefaultEmuConfig = EmuConfig{
-		DebugParam::RomPathTest01
+		DebugParam::RomPathTest02
 	};
 }
