@@ -41,8 +41,8 @@ namespace GBEmu::HW
 	{
 		// https://github.com/pokemium/gb-docs-ja/blob/main/cartridge/mbc/mbc1.md
 
-		if (RangeUint16(RomBank00Start, RomBankNNEnd).IsBetween(addr) ||
-			RangeUint16(ExternalRamStart, ExternalRamEnd).IsBetween(addr))
+		if (RangeUint16(RomBank00Start_0x0000, RomBankNNEnd_0x7FFF).IsBetween(addr) ||
+			RangeUint16(ExternalRamStart_0xA000, ExternalRamEnd_0xBFFF).IsBetween(addr))
 		{
 			return m_cartridge.Read(addr);
 		}
@@ -59,20 +59,20 @@ namespace GBEmu::HW
 	{
 		env.Debugger().OnMemoryWrite(addr, data);
 
-		if (RangeUint16(RomBank00Start, RomBankNNEnd).IsBetween(addr) ||
-			RangeUint16(ExternalRamStart, ExternalRamEnd).IsBetween(addr))
+		if (RangeUint16(RomBank00Start_0x0000, RomBankNNEnd_0x7FFF).IsBetween(addr) ||
+			RangeUint16(ExternalRamStart_0xA000, ExternalRamEnd_0xBFFF).IsBetween(addr))
 		{
 			m_cartridge.Write(addr, data);
 		}
-		else if (RangeUint16(WorkRamBank0Start, WorkRamBank1End).IsBetween(addr))
+		else if (RangeUint16(WorkRamBank0Start_0xC000, WorkRamBank1End_0xDFFF).IsBetween(addr))
 		{
 			m_memory[addr] = data;
-			m_memory[EchoWorkRamStart + (addr - WorkRamBank0Start)] = data;
+			// m_memory[EchoWorkRamStart_0xE000 + (addr - WorkRamBank0Start_0xC000)] = data; // ミラー書き込み (これだと駄目)
 		}
-		else if (RangeUint16(EchoWorkRamStart, EchoWorkRamEnd).IsBetween(addr))
+		else if (RangeUint16(EchoWorkRamStart_0xE000, EchoWorkRamEnd_0xFDFF).IsBetween(addr))
 		{
-			HWLogger::Warn(U"accessed mirrored work ram: {:X}"_fmt(addr));
-			Write(env, addr- (static_cast<uint8>(EchoWorkRamStart) - static_cast<uint8>(WorkRamBank0Start)), data);
+			HWLogger::Warn(U"accessed mirrored work ram: {:04X}"_fmt(addr));
+			m_memory[addr] = data;
 		}
 		else if (RangeUint16(IOPortsStart_0xFF00, IOPortsEnd_0xFF7F).IsBetween(addr))
 		{

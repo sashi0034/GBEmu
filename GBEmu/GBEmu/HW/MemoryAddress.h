@@ -5,8 +5,8 @@ namespace GBEmu::HW
 	namespace MemoryAddress
 	{
 		enum : uint16 {
-			RomBank00Start = 0x0000,
-			RomBank00End = 0x3fff,
+			RomBank00Start_0x0000 = 0x0000,
+			RomBank00End_0x3FFF = 0x3fff,
 
 			InterruptVBlank_0x0040 = 0x0040,
 			InterruptSTAT_0x0048 = 0x0048,
@@ -14,17 +14,17 @@ namespace GBEmu::HW
 			InterruptSerial_0x0058 = 0x0058,
 			InterruptJoypad_0x0060 = 0x0060,
 
-			RomBankNNStart = 0x4000,
-			RomBankNNEnd = 0x7fff,
+			RomBankNNStart_0x4000 = 0x4000,
+			RomBankNNEnd_0x7FFF = 0x7fff,
 
-			ExternalRamStart = 0xa000,
-			ExternalRamEnd = 0xbfff,
+			ExternalRamStart_0xA000 = 0xa000,
+			ExternalRamEnd_0xBFFF = 0xbfff,
 
-			WorkRamBank0Start = 0xC000,
+			WorkRamBank0Start_0xC000 = 0xC000,
 			WorkRamBank0End = 0xCFFF,
 
 			WorkRamBank1Start = 0xD000,
-			WorkRamBank1End = 0xDFFF,
+			WorkRamBank1End_0xDFFF = 0xDFFF,
 
 			TileDataTableStart_0x8000 = 0x8000,
 
@@ -46,8 +46,8 @@ namespace GBEmu::HW
 			TimeMap1Start_0x9C00 = 0x9C00,
 			TimeMap1End_0x9FFF = 0x9FFF,
 
-			EchoWorkRamStart = 0xE000,
-			EchoWorkRamEnd = 0xFDFF,
+			EchoWorkRamStart_0xE000 = 0xE000,
+			EchoWorkRamEnd_0xFDFF = 0xFDFF,
 
 			OAMStart_0xFE00 = 0xFE00,
 			OAMEnd_0xFE9F = 0xFE9F,

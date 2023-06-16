@@ -35,6 +35,5 @@ namespace GBEmu::HW
 		bool m_ramEnableFrag;
 
 		uint16 romBankIndexExtended(Cartridge& cartridge) const;
-		bool hasBankMoreThanBit5(Cartridge& cartridge) const;
 	};
 }

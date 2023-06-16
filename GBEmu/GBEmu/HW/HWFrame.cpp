@@ -5,11 +5,12 @@ namespace GBEmu::HW::HWFrame
 {
 	void EmulateFrame(HWEnv& env)
 	{
-		int passedCycle = 0;
 		env.GetJoypad().UpdateFrame(env.GetMemory());
 
 		env.Debugger().UpdateFrame(env);
 		if (env.Debugger().IsDebugSuspend()) return;
+
+		int passedCycle = 0;
 
 		while (true)
 		{

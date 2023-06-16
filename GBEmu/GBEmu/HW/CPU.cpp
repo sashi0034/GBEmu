@@ -20,8 +20,8 @@ namespace GBEmu::HW
 
 	CPU::CPU()
 	{
-		SetAF(0x11B0);
-		SetBC(0x0000);
+		SetAF(0x01B0);
+		SetBC(0x0013);
 		SetDE(0x00D8);
 		SetHL(0x014D);
 		m_sp = 0xFFFE;

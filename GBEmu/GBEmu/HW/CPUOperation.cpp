@@ -459,6 +459,7 @@ namespace GBEmu::HW::CPUOperation
 	[[nodiscard]]
 	CPUOperationResult operateDEC_mHL(HWEnv& env)
 	{
+		// 0x35
 		auto&& cpu = env.GetCPU();
 
 		const uint8 before = env.GetMemory().Read(cpu.RegHL());
@@ -627,7 +628,7 @@ namespace GBEmu::HW::CPUOperation
 		const bool h = ((cpu.RegA() & 0xF) + (add & 0xF) + carry) > 0xF; // bit3からオーバーフローした場合にセット
 		const bool c = ((cpu.RegA() & 0xFF) + (add & 0xFF) + carry) > 0xFF; // bit7からオーバーフローした場合にセット
 
-		cpu.SetA(cpu.RegA() + add + carry);
+		cpu.SetA(cpu.RegA() + (add + carry));
 
 		dispatch.second.Flag = CPUOperationZNHC{cpu.RegA() == 0, false, h, c};
 

@@ -12,7 +12,12 @@ namespace GBEmu::HW
 	using namespace MemoryAddress;
 
 	constexpr int size_5 = 5;
+	constexpr int size_10 = 10;
+	constexpr int size_20 = 20;
 	constexpr int size_50 = 50;
+	constexpr int size_100 = 100;
+	constexpr int size_200 = 200;
+	constexpr int size_500 = 500;
 
 	HWDebugger::HWDebugger()
 	{
@@ -20,7 +25,7 @@ namespace GBEmu::HW
 
 #ifdef CUSTOMIZABLE
 		// 特定のPCになったら統計出す
-		m_statisticsPC = 52113;
+		m_statisticsPC = 0xCE67;
 		// m_isWriteMemoryLog = true;
 #endif
 	}
@@ -126,8 +131,8 @@ namespace GBEmu::HW
 #ifdef CUSTOMIZABLE
 
 		// 特定のPC付近に達したら
-		if (Math::Abs(cpu.PC() - 0xC5FB) <= size_5 &&
-			m_tracedKey.contains("PC") == false) return pair{"PC", size_50};
+		// if (Math::Abs(cpu.PC() - 0xC5FB) <= size_5 &&
+		// 	m_tracedKey.contains("PC") == false) return pair{"PC", size_50};
 
 		// 命令に達したら
 		// if (cpu.FetchInstruction(memory).CodeUnprefixed() == CPUInstruction::LD_SP_d16_0x31 &&
@@ -135,7 +140,7 @@ namespace GBEmu::HW
 
 		// EIに達したら
 		// if (cpu.FetchInstruction(memory).CodeUnprefixed() == CPUInstruction::EI_0xFB &&
-		// 	m_tracedKey.contains("EI") == false) return pair{"EI", size_50};
+		// 	m_tracedKey.contains("EI") == false) return pair{"EI", size_500};
 
 		// TimerのIEがONになったら
 		// if (memory.Read(IE_0xFFFF) & (1 << 2) &&
@@ -158,11 +163,11 @@ namespace GBEmu::HW
 	{
 #ifdef CUSTOMIZABLE
 		// 命令の実行分布
-		// Console.writeln(stringifyFoundInstructionDistribution());
+		Console.writeln(stringifyFoundInstructionDistribution());
 
 		// 特定のメモリ列を探索
-		printSearchedMemoryBlob(env,
-			{0xF0, 0x91, 0x00, 0xE0, 0x91, 0x00, 0xF2, 0x00, 0x00});
+		// printSearchedMemoryBlob(env,
+		// 	{0xF0, 0x91, 0x00, 0xE0, 0x91, 0x00, 0xF2, 0x00, 0x00});
 #endif
 
 		// メモリ書き込み経歴

@@ -11,7 +11,7 @@ namespace GBEmu::EmuFlowchart
 {
 	void RunEmu()
 	{
-		EmuConfig config{DebugParam::RomPathTestCpuInstrs};
+		EmuConfig config = DefaultEmuConfig;
 
 		if (FileSystem::Exists(config.CartridgePath) == false)
 		{
