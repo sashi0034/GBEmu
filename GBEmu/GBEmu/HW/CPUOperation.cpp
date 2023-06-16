@@ -461,13 +461,13 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 
 		const uint8 before = env.GetMemory().Read(cpu.RegHL());
-		const bool h = (before & 0xF) == 0xF;
+		const bool h = (before & 0xF) == 0;
 
 		const uint8 after = before - 1;
 		env.GetMemory().Write(env, cpu.RegHL(), after);
 		const bool z = after == 0;
 
-		return CPUOperationResult::ByCalc(1, 12, CPUOperationZNHC{z, false, h, cpu.FlagC()});
+		return CPUOperationResult::ByCalc(1, 12, CPUOperationZNHC{z, true, h, cpu.FlagC()});
 	}
 
 	[[nodiscard]]
