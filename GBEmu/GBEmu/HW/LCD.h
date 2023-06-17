@@ -17,7 +17,7 @@ namespace GBEmu::HW
 		uint16 WindowTileMapDisplayAddress() const;
 		bool IsWindowDisplayEnable() const;
 		uint16 BGAndWindowTileDataAddress() const;
-		uint16 BGTimeMapDisplayAddress() const;
+		uint16 BGTileMapDisplayAddress() const;
 		uint16 OBJHeight() const;
 		bool IsOBJDisplayEnable() const;
 		bool IsBGAndWindowEnable() const;

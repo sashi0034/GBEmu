@@ -24,8 +24,13 @@ namespace GBEmu::HW
 		m_executedInstructionLog.resize(size_50);
 
 #ifdef CUSTOMIZABLE
+		// 命令実行をトレース
+		// m_isTraceExecutedInstruction = true;
+
 		// 特定のPCになったら統計出す
 		// m_statisticsPC = 0xCE67;
+
+		// メモリ書き込み経歴を取る
 		// m_isWriteMemoryLog = true;
 #endif
 	}
@@ -84,6 +89,8 @@ namespace GBEmu::HW
 
 	void HWDebugger::OnExecuteInstruction(const CPU& cpu, const CPUInstructionProperty& fetchedInstruction)
 	{
+		if (m_isTraceExecutedInstruction == false) return;
+
 		// 命令実行経歴を残す
 		m_executedInstructionLog.push_front(HWDebugExecutedInstruction{
 			cpu.PC(),

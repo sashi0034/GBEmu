@@ -14,8 +14,8 @@ namespace GBEmu::HW
 
 	struct HWDebugWroteMemory
 	{
-		uint16 Address;
-		uint8 Data;
+		uint16 Address{};
+		uint8 Data{};
 		HWDebugExecutedInstruction PreviousInstr;
 	};
 
@@ -48,6 +48,7 @@ namespace GBEmu::HW
 		std::deque<HWDebugExecutedInstruction> m_executedInstructionLog{};
 		std::deque<HWDebugWroteMemory> m_wroteMemoryLog{};
 		bool m_isDebugSuspend = false;
+		bool m_isTraceExecutedInstruction = false;
 		bool m_isWriteMemoryLog = false;
 
 		Optional<std::pair<std::string, int>> checkStartTrace(HWEnv& env) const;

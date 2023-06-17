@@ -34,6 +34,9 @@ namespace GBEmu::HW
 			BGAndWindowTileData1Start_0x8000 = 0x8000,
 			BGAndWindowTileData1End_0x8FFF = 0x8FFF,
 
+			BGAndWindowTileData2Start_0x9000 = 0x9000,
+			BGAndWindowTileData2End_0x97FF = 0x97FF,
+
 			BGTimeMapDisplay0Start_0x9800 = 0x9800,
 			BGTimeMapDisplay0End_0x9BFF = 0x9BFF,
 

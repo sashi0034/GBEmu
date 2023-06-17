@@ -145,7 +145,7 @@ namespace GBEmu::HW
 			if (objHeight == 16)
 			{
 				// スプライトのサイズが8x16なら、8x8のタイルの連続タイルごとにスプライトが形成される
-				bool isTop =
+				const bool isTop =
 					(oam.FlagYFlip() == false && ly < oam.ActualY() + 8) ||
 					(oam.FlagYFlip() && (ly >= oam.ActualY() + 8));
 				oam.TileIndex = isTop
@@ -206,29 +206,31 @@ namespace GBEmu::HW
 				32 * (windowFetcherY / 8)}
 			// 通常はBG
 			: std::tuple<uint16, uint16, uint16>{
-				lcd.BGTimeMapDisplayAddress(),
+				lcd.BGTileMapDisplayAddress(),
 				((fetcherX / 8) + (scx / 8)) & 0x1f,
 				32 * (((ly + scy) & 0xff) / 8)};
 		// タイルID
-		const uint16 tileIdAddr = tileIdAddrBase + ((tileIdAddrOffsetX + tileIdAddrOffsetY) & 0x3FFF);
+		const uint16 tileIdAddr = tileIdAddrBase + ((tileIdAddrOffsetX + tileIdAddrOffsetY) & 0x03FF);
 
 		// タイルデータ
 		const uint16 tileDataAddr = getTileDataAddress(
 			lcd.BGAndWindowTileDataAddress(),
 			memory.Read(tileIdAddr),
 			isWindowFetch ? (windowFetcherY % 8) : (ly + scy) % 8);
-		const uint8 tileDataColor = getTileDataColor(memory.Read(tileDataAddr), isWindowFetch ? windowFetcherX % 8 : fetcherX % 8);
+		const uint8 tileDataColor = getTileDataColor(memory.Read16(tileDataAddr), isWindowFetch ? windowFetcherX % 8 : fetcherX % 8);
 
 		// BGまたはウィンドウの色をフェッチできたので、OAMもマージしてディスプレイ上の色をフェッチ
-		const Color displayColor = fetchPixelByMergeOAM(lcd, fetcherX, oamBuffer, ly, tileDataColor);
+		const Color displayColor = fetchPixelByMergeOAM(memory, lcd, fetcherX, oamBuffer, ly, tileDataColor);
 
 		// 色情報転送
 		bitmap[ly][fetcherX] = displayColor;
 	}
 
-	Color PPU::fetchPixelByMergeOAM(LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, uint8 ly, uint8 tileDataColor)
+	Color PPU::fetchPixelByMergeOAM(
+		Memory& memory, LCD& lcd,
+		int fetcherX, const Array<OAMData>& oamBuffer, uint8 ly, uint8 bgWindowTileDataColor)
 	{
-		Color displayColor = displayColorPalette[lcd.BGPaletteData(tileDataColor)];
+		Color displayColor = displayColorPalette[lcd.BGPaletteData(bgWindowTileDataColor)];
 		if (lcd.IsOBJDisplayEnable() == false) return displayColor;
 
 		// OAM中のスプライトをフェッチ
@@ -244,9 +246,10 @@ namespace GBEmu::HW
 			// スプライトのタイルデータアドレス
 			const uint16 oamTileDataAddr =
 				getTileDataAddress(TileDataTableStart_0x8000, oam.TileIndex, (ly - oam.ActualY()) % 8, oam.FlagYFlip());
-			const uint8 oamTileDataColor = getTileDataColor(oamTileDataAddr, oamX % 8, oam.FlagXFlip());
+			const uint8 oamTileDataColor = getTileDataColor(memory.Read16(oamTileDataAddr), oamX % 8, oam.FlagXFlip());
 
-			if (oamTileDataColor != 0 && (oam.FlagPriority() && tileDataColor != 0))
+			// TODO: これだとまだ条件不十分?
+			if (oamTileDataColor != 0 && (oam.FlagPriority() == false || bgWindowTileDataColor == 0 || lcd.IsBGAndWindowEnable() == false))
 			{
 				// マージ
 				displayColor = displayColorPalette[lcd.ObjectPaletteData(oam.Palette(), oamTileDataColor)];

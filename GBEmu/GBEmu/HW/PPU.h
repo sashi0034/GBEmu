@@ -58,6 +58,6 @@ namespace GBEmu::HW
 		static PPUMode updateMode(HWEnv& env, LCD& lcd, int dotCycle);
 		static Array<OAMData> scanOAM(HWEnv& env, LCD& lcd);
 		static void scanLineX(HWEnv& env, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, Image& bitmap);
-		static Color fetchPixelByMergeOAM(LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, uint8 ly, uint8 tileDataColor);
+		static Color fetchPixelByMergeOAM(Memory& memory, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, uint8 ly, uint8 bgWindowTileDataColor);
 	};
 }

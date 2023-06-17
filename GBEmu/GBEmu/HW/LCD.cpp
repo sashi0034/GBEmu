@@ -25,10 +25,10 @@ namespace GBEmu::HW
 
 	uint16 LCD::BGAndWindowTileDataAddress() const
 	{
-		return lcdc() & (1 << 4) ? BGAndWindowTileData1Start_0x8000 : BGAndWindowTileData0Start_0x8800;
+		return lcdc() & (1 << 4) ? BGAndWindowTileData1Start_0x8000 : BGAndWindowTileData2Start_0x9000;
 	}
 
-	uint16 LCD::BGTimeMapDisplayAddress() const
+	uint16 LCD::BGTileMapDisplayAddress() const
 	{
 		return lcdc() & (1 << 3) ? BGTimeMapDisplay1Start_0x9C00 : BGTimeMapDisplay0Start_0x9800;
 	}
