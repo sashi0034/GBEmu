@@ -13,5 +13,7 @@ namespace GBEmu::HW
 		constexpr int InterruptVBlank = 1 << 0;
 
 		constexpr Size DisplayResolution{160, 144};
+
+		constexpr uint16 VRamSize_0x2000 = 0x2000;
 	};
 }

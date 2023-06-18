@@ -55,7 +55,7 @@ namespace GBEmu::HW
 		void checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged);
 
 		static void updateLY(HWEnv& env, LCD& lcd, int dotCycle);
-		static PPUMode updateMode(HWEnv& env, LCD& lcd, int dotCycle);
+		static PPUMode judgePPUMode(HWEnv& env, LCD& lcd, int dotCycle);
 		static Array<OAMData> scanOAM(HWEnv& env, LCD& lcd);
 		static void scanLineX(HWEnv& env, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, Image& bitmap);
 		static Color fetchPixelByMergeOAM(Memory& memory, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, uint8 ly, uint8 bgWindowTileDataColor);

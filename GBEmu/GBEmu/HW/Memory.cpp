@@ -28,14 +28,7 @@ namespace GBEmu::HW
 
 	Memory::Memory() :
 		m_lcd(*this)
-	{
-		m_memory.resize(MemorySize);
-	}
-
-	LCD& Memory::GetLCD()
-	{
-		return m_lcd;
-	}
+	{}
 
 	uint8 Memory::Read(uint16 addr)
 	{
@@ -45,6 +38,10 @@ namespace GBEmu::HW
 			RangeUint16(ExternalRamStart_0xA000, ExternalRamEnd_0xBFFF).IsBetween(addr))
 		{
 			return m_cartridge.Read(addr);
+		}
+		else if (RangeUint16(VRamStart_0x8000, VRamEnd_0x9FFF).IsBetween(addr))
+		{
+			return m_vram.Read(addr);
 		}
 
 		return m_memory[addr];
@@ -63,6 +60,10 @@ namespace GBEmu::HW
 			RangeUint16(ExternalRamStart_0xA000, ExternalRamEnd_0xBFFF).IsBetween(addr))
 		{
 			m_cartridge.Write(addr, data);
+		}
+		else if (RangeUint16(VRamStart_0x8000, VRamEnd_0x9FFF).IsBetween(addr))
+		{
+			m_vram.Write(addr, data);
 		}
 		else if (RangeUint16(WorkRamBank0Start_0xC000, WorkRamBank1End_0xDFFF).IsBetween(addr))
 		{

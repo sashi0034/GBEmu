@@ -39,11 +39,12 @@ namespace GBEmu::HW
 
 		updateLY(env, lcd, m_dotCycle);
 		const auto modeBefore = m_mode;
-		m_mode = updateMode(env, lcd, m_dotCycle);
+		m_mode = judgePPUMode(env, lcd, m_dotCycle);
+		const PPUMode nextMode = judgePPUMode(env, lcd, (m_dotCycle + 1) % dotCycleFreq_70224);
 		const bool isModeChanged = modeBefore != m_mode;
 
 		// モード分岐
-		if (m_mode == PPUMode::OAMSearch && (m_dotCycle % scanLineFreq_456) == oamSearchDuration_80 - 1)
+		if (m_mode == PPUMode::OAMSearch && m_mode != nextMode)
 		{
 			m_oamBuffer = scanOAM(env, lcd);
 			m_fetcherX = 0;
@@ -102,11 +103,11 @@ namespace GBEmu::HW
 		lcd.UpdateLYCoincidenceFlag(env);
 	}
 
-	PPUMode PPU::updateMode(HWEnv& env, LCD& lcd, int dotCycle)
+	PPUMode PPU::judgePPUMode(HWEnv& env, LCD& lcd, int dotCycle)
 	{
 		const int scan = dotCycle % scanLineFreq_456;
 		const PPUMode mode =
-			lcd.LY() >= scanLineSize_144 ? PPUMode::VBlank :
+			(dotCycle / scanLineFreq_456) >= scanLineSize_144 ? PPUMode::VBlank :
 			(scan < oamSearchDuration_80) ? PPUMode::OAMSearch :
 			(scan < oamSearchDuration_80 + pixelTransferDuration_289) ? PPUMode::PixelTransfer : // less than 369
 			PPUMode::HBlank; // duration: scanLineFreq - pixelTransferDuration = 456 - 369
@@ -182,8 +183,6 @@ namespace GBEmu::HW
 	void PPU::scanLineX(HWEnv& env, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, Image& bitmap)
 	{
 		auto&& memory = env.GetMemory();
-
-		if (lcd.IsBGAndWindowEnable() == false) return;
 
 		const uint8 ly = lcd.LY();
 		const uint8 scy = lcd.SCY();

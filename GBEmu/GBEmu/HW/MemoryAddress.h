@@ -26,10 +26,13 @@ namespace GBEmu::HW
 			WorkRamBank1Start = 0xD000,
 			WorkRamBank1End_0xDFFF = 0xDFFF,
 
+			VRamStart_0x8000 = 0x8000,
+			VRamEnd_0x9FFF = 0x9FFF,
+
 			TileDataTableStart_0x8000 = 0x8000,
 
 			BGAndWindowTileData0Start_0x8800 = 0x8800,
-			BGAndWindowTileData0End_0x97FF = 0x97FF,
+			BGAndWindowTileData0End_0x87FF = 0x87FF,
 
 			BGAndWindowTileData1Start_0x8000 = 0x8000,
 			BGAndWindowTileData1End_0x8FFF = 0x8FFF,

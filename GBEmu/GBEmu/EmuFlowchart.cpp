@@ -47,6 +47,7 @@ namespace GBEmu::EmuFlowchart
 			HW::HWFrame::EmulateFrame(env);
 			env.GetPPU().Draw(Point{0, 0},  3);
 			env.Debugger().Draw(env, Point{512, 100});
+			env.GetMemory().GetVRAM().DumpDraw(Point{16, 480});
 		}
 	}
 }
