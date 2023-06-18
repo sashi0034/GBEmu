@@ -9,14 +9,30 @@
 
 namespace GBEmu::EmuFlowchart
 {
+	bool selectFileFromExplorer(EmuConfig& config)
+	{
+		const auto cartridgeDir = FileSystem::PathAppend(FileSystem::InitialDirectory(), U"asset/rom");
+		const auto selectedPath = Dialog::OpenFile(
+			{ FileFilter{ .name = U"GAMEBOY Cartridge", .patterns = {U"gb?"} } },
+			cartridgeDir,
+			U"Open cartridge file");
+		if (selectedPath.has_value() == false)
+		{
+			Console.writeln(U"cartridge is not found: {}"_fmt(selectedPath));
+			return false;
+		}
+
+		config.CartridgePath = selectedPath.value();
+		return true;
+	}
+
 	void RunEmu()
 	{
 		EmuConfig config = DefaultEmuConfig;
 
 		if (FileSystem::Exists(config.CartridgePath) == false)
 		{
-			Console.writeln(U"cartridge is not found: {}"_fmt(config.CartridgePath));
-			return;
+			if (selectFileFromExplorer(config) == false) return;
 		}
 
 		Console.open();
@@ -29,8 +45,8 @@ namespace GBEmu::EmuFlowchart
 		while (System::Update())
 		{
 			HW::HWFrame::EmulateFrame(env);
-			env.GetPPU().Draw(Point{0, 0}, 2);
-			env.Debugger().Draw(env, Point{400, 100});
+			env.GetPPU().Draw(Point{0, 0},  3);
+			env.Debugger().Draw(env, Point{512, 100});
 		}
 	}
 }
