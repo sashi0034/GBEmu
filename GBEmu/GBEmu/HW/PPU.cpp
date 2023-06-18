@@ -12,6 +12,7 @@ namespace GBEmu::HW
 	constexpr int scanLineFreq_456 = 456;
 	constexpr int scanLineSize_144 = 144;
 	constexpr int displayWidth_160 = HWParam::DisplayResolution.x;
+	constexpr int displayHeight_144 = HWParam::DisplayResolution.y;
 
 	constexpr int oamCapacity_10 = 10;
 	constexpr int oamSearchDuration_80 = 80;
@@ -38,13 +39,16 @@ namespace GBEmu::HW
 		if (lcd.IsLCDDisplayEnable() == false) m_dotCycle = 0;
 
 		updateLY(env, lcd, m_dotCycle);
+
 		const auto modeBefore = m_mode;
-		m_mode = judgePPUMode(env, lcd, m_dotCycle);
-		const PPUMode nextMode = judgePPUMode(env, lcd, (m_dotCycle + 1) % dotCycleFreq_70224);
+		m_mode = m_nextMode;
+		m_nextMode = judgePPUMode((m_dotCycle + 1) % dotCycleFreq_70224);
+
 		const bool isModeChanged = modeBefore != m_mode;
+		if (isModeChanged) lcd.SetMode(env, m_mode);
 
 		// モード分岐
-		if (m_mode == PPUMode::OAMSearch && m_mode != nextMode)
+		if (m_mode == PPUMode::OAMSearch && m_mode != m_nextMode)
 		{
 			m_oamBuffer = scanOAM(env, lcd);
 			m_fetcherX = 0;
@@ -53,6 +57,11 @@ namespace GBEmu::HW
 		{
 			scanLineX(env, lcd, m_fetcherX, m_oamBuffer, m_bitmap);
 			m_fetcherX++;
+		}
+		else if (m_mode == PPUMode::HBlank && m_nextMode == PPUMode::VBlank)
+		{
+			// TODO: これを使う
+			// renderAtVBlank(env.GetMemory(), lcd, m_renderBuffer);
 		}
 
 		// 割り込みチェック
@@ -73,6 +82,9 @@ namespace GBEmu::HW
 		Profiler::EnableAssetCreationWarning(false);
 		const Texture texture(m_bitmap);
 		(void)texture.scaled(scale).draw(pos);
+
+		// TODO: これを使う
+		// (void)m_renderBuffer.scaled(scale).draw(pos);
 	}
 
 	void PPU::checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged)
@@ -96,14 +108,140 @@ namespace GBEmu::HW
 		memory.Write(env, IF_0xFF0F, interruptFlag);
 	}
 
+	void PPU::renderAtVBlank(Memory& memory, LCD& lcd, RenderTexture& renderTexture)
+	{
+		const ScopedRenderTarget2D target{ renderTexture };
+
+		auto&& vram = memory.GetVRAM();
+
+		// BG描画
+		renderBGCompletely(memory, lcd, vram);
+
+		// ウィンドウ描画
+		// TODO: バッファにLCD経歴を格納して、IsWindowDisplayEnableが付いてる行だけ描画したい
+		// if (lcd.IsWindowDisplayEnable()) renderWindowCompletely(memory, lcd, vram);
+
+		// OBJを末尾から順に描画
+		const Array<OAMData> oamList = correctOAM(memory, lcd);
+		for (int i=oamList.size()-1; i>=0; --i)
+		{
+			auto&& oam = oamList[i];
+
+			if (oam.FlagPriority()) continue;
+
+			auto texture =
+				oam.FlagXFlip() ? vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).mirrored() :
+				oam.FlagYFlip() ? vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).flipped() :
+				vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex);
+
+			(void)texture.drawAt(oam.ActualX(), oam.ActualY());
+		}
+	}
+
+	void PPU::renderBGCompletely(Memory& memory, const LCD& lcd, VRAM& vram)
+	{
+		const uint8 scy = lcd.SCY();
+		const uint8 scx = lcd.SCX();
+
+		const int scxModulo = scx % 8;
+		const int scyModulo = scy % 8;
+
+		const uint16 bgBaseAddr = lcd.BGTileMapDisplayAddress();
+		const uint16 tileDataBaseAddr = lcd.BGAndWindowTileDataAddress();
+
+		for (int x = -8 + scxModulo; x< displayWidth_160 + scxModulo; x += 8)
+		{
+			for (int y= -8 + scyModulo; y < displayHeight_144 + scyModulo; y += 8)
+			{
+				const uint8 scrolledX = static_cast<uint8>(x + scx);
+				const uint8 scrolledY = static_cast<uint8>(y + scy);
+
+				const uint8 tileX = scrolledX / 8;
+				const uint8 tileY = scrolledY / 8;
+
+				const uint16 tileIdAddr = bgBaseAddr + ((tileX + tileY) & 0x3FFF);
+				const uint8 tileId = memory.Read(tileIdAddr);
+				(void)vram.GetTileData(tileDataBaseAddr, tileId).draw(x, y);
+			}
+		}
+	}
+
+	void PPU::renderWindowCompletely(Memory& memory, const LCD& lcd, VRAM& vram)
+	{
+		const uint8 wy = lcd.WY();
+		const uint8 wx = lcd.WX();
+
+		const uint16 tileDataBaseAddr = lcd.BGAndWindowTileDataAddress();
+
+		const uint16 windowBaseAddr = lcd.WindowTileMapDisplayAddress();
+		for (int x = wx - 7; x< displayWidth_160 + 8; x += 8)
+		{
+			for (int y= wy; y < displayHeight_144; y += 8)
+			{
+				const uint8 tileX = static_cast<uint8>(x) / 8;
+				const uint8 tileY = static_cast<uint8>(y) / 8;
+
+				const uint16 tileIdAddr = windowBaseAddr + ((tileX + tileY) & 0x3FFF);
+				const uint8 tileId = memory.Read(tileIdAddr);
+				(void)vram.GetTileData(tileDataBaseAddr, tileId).draw(x, y);
+			}
+		}
+	}
+
+	Array<OAMData> PPU::correctOAM(Memory& memory, LCD& lcd)
+	{
+		const int objHeight = lcd.OBJHeight(); // 16 or 8
+
+		Array<OAMData> result{};
+		for (uint16 addr = OAMStart_0xFE00; addr <= OAMEnd_0xFE9F; addr += 4)
+		{
+			OAMData oam{};
+
+			oam.Y = memory.Read(addr + 0);
+			oam.X = memory.Read(addr + 1);
+
+			oam.TileIndex = memory.Read(addr + 2);
+			oam.Flags = memory.Read(addr + 3);
+
+			if (objHeight == 16)
+			{
+				// スプライトのサイズが8x16なら、8x8のタイルの連続タイルごとにスプライトが形成される
+				if (oam.FlagYFlip())
+				{
+					// 8x16 (反転あり)
+					oam.TileIndex = oam.TileIndex | 0x01;
+					result.push_back(oam);
+					oam.TileIndex = oam.TileIndex & 0xFE;
+					oam.Y += 8;
+					result.push_back(oam);
+				}
+				else
+				{
+					// 8x16 (反転なし)
+					oam.TileIndex = oam.TileIndex & 0xFE;
+					result.push_back(oam);
+					oam.TileIndex = oam.TileIndex | 0x01;
+					oam.Y += 8;
+					result.push_back(oam);
+				}
+			}
+			else
+			{
+				// 8x8のタイル
+				result.push_back(oam);
+			}
+		}
+		return result;
+	}
+
 	void PPU::updateLY(HWEnv& env, LCD& lcd, int dotCycle)
 	{
 		const uint8 ly = dotCycle / scanLineFreq_456;
+
 		lcd.SetLY(env, ly);
-		lcd.UpdateLYCoincidenceFlag(env);
 	}
 
-	PPUMode PPU::judgePPUMode(HWEnv& env, LCD& lcd, int dotCycle)
+	PPUMode PPU::judgePPUMode(int dotCycle)
 	{
 		const int scan = dotCycle % scanLineFreq_456;
 		const PPUMode mode =
@@ -111,8 +249,6 @@ namespace GBEmu::HW
 			(scan < oamSearchDuration_80) ? PPUMode::OAMSearch :
 			(scan < oamSearchDuration_80 + pixelTransferDuration_289) ? PPUMode::PixelTransfer : // less than 369
 			PPUMode::HBlank; // duration: scanLineFreq - pixelTransferDuration = 456 - 369
-		lcd.SetMode(env, mode);
-
 		return mode;
 	}
 

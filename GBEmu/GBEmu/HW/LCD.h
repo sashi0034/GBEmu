@@ -28,7 +28,7 @@ namespace GBEmu::HW
 		bool IsVBlankInterruptEnable() const;
 		bool IsHBlankInterruptEnable() const;
 		bool LYCoincidenceFlag() const;
-		void UpdateLYCoincidenceFlag(HWEnv& env);
+		// void UpdateLYCoincidenceFlag(HWEnv& env);
 		void SetMode(HWEnv& env, PPUMode mode);
 
 		// position and scrolling
@@ -43,6 +43,7 @@ namespace GBEmu::HW
 		uint8 BGPaletteData(uint8 colorNumber) const;
 		uint8 ObjectPaletteData(bool isUseOBP1, uint8 colorNumber) const;
 	private:
+		// TODO: メモリ参照をしない
 		uint8 lcdc() const;
 		uint8 stat() const;
 		Memory& m_memoryRef;

@@ -142,10 +142,18 @@ namespace GBEmu::HW
 		{
 			m_memory[addr] = 0xF8 | (data & 0xF07);
 		}
+		else if (addr == LY_0xFF44 || addr == LYC_0xFF45)
+		{
+			m_memory[addr] = data;
+
+			// LY=LYC一致割り込み更新
+			m_memory[STAT_0xFF41] =
+				0x80 | (m_memory[STAT_0xFF41] & ~0b100) | (m_memory[LY_0xFF44] == m_memory[LYC_0xFF45] ? 0b100 : 0);
+		}
 		else if (addr == DMA_0xFF46)
 		{
 			// ROMまたはRAMからOAMへのDMA転送
-			uint16 src = data * 0x100; // 多くのドキュメントには転送元アドレスを0x100で割ると書いてあるが、多分間違ってる
+			const uint16 src = data * 0x100;
 			for (uint16 offset = 0; offset < 0x100; ++offset)
 			{
 				m_memory[OAMStart_0xFE00 + offset] = Read(src + offset);

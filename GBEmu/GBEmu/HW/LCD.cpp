@@ -74,11 +74,11 @@ namespace GBEmu::HW
 		return stat() & (1 << 2);
 	}
 
-	void LCD::UpdateLYCoincidenceFlag(HWEnv& env)
-	{
-		m_memoryRef.Write(env, STAT_0xFF41,
-			0x80 | (stat() & ~0b100) | (LY() == LYC() ? 0b100 : 0));
-	}
+	// void LCD::UpdateLYCoincidenceFlag(HWEnv& env)
+	// {
+	// 	m_memoryRef.Write(env, STAT_0xFF41,
+	// 		0x80 | (stat() & ~0b100) | (LY() == LYC() ? 0b100 : 0));
+	// }
 
 	void LCD::SetMode(HWEnv& env, PPUMode mode)
 	{
@@ -108,7 +108,7 @@ namespace GBEmu::HW
 
 	uint8 LCD::LYC() const
 	{
-		return m_memoryRef.Read(0xFF45);
+		return m_memoryRef.Read(LYC_0xFF45);
 	}
 
 	uint8 LCD::WX() const

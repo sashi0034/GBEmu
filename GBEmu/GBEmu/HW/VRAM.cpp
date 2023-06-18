@@ -15,8 +15,8 @@ namespace GBEmu::HW
 
 		if (addr <= BGAndWindowTileData2End_0x97FF)
 		{
-			m_isAtlasObsolete = true;
-			m_tileDataObsoleteFlag.set((addr - VRamStart_0x8000) / singleTileBytes_0x10);
+			m_isAtlasOutdated = true;
+			m_tileDataOutdatedFlag.set((addr - VRamStart_0x8000) / singleTileBytes_0x10);
 		}
 	}
 
@@ -40,14 +40,14 @@ namespace GBEmu::HW
 		const uint16 tileAddr = baseAddr + tileOffset;
 		const uint16 tileIndex = (tileAddr - TileDataTableStart_0x8000) / singleTileBytes_0x10;
 
-		if (m_isAtlasObsolete) refreshAtlas();
+		if (m_isAtlasOutdated) refreshAtlas();
 
 		return m_tileAtlas(tileIndex * tileEdge_8, 0, tileEdge_8, tileEdge_8);
 	}
 
 	void VRAM::DumpDraw(const Vec2& pos)
 	{
-		if (m_isAtlasObsolete) refreshAtlas();
+		if (m_isAtlasOutdated) refreshAtlas();
 
 		for (int y=0;; y+=tileEdge_8)
 		{
@@ -63,7 +63,7 @@ namespace GBEmu::HW
 
 	void VRAM::refreshAtlas()
 	{
-		m_isAtlasObsolete = false;
+		m_isAtlasOutdated = false;
 
 		const ScopedRenderTarget2D target{ m_tileAtlas };
 
@@ -72,8 +72,8 @@ namespace GBEmu::HW
 			const int tileIndex = (addr - TileDataTableStart_0x8000) / singleTileBytes_0x10;
 			// assert(tileIndex < tileAmount_384);
 
-			if (m_tileDataObsoleteFlag.test(tileIndex) == false) continue;
-			m_tileDataObsoleteFlag.reset(tileIndex);
+			if (m_tileDataOutdatedFlag.test(tileIndex) == false) continue;
+			m_tileDataOutdatedFlag.reset(tileIndex);
 
 			for (int v=0; v<=7; ++v)
 			{

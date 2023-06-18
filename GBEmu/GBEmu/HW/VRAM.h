@@ -25,8 +25,8 @@ namespace GBEmu::HW
 		// TODO: フォーマットをR16G16_Float
 		static constexpr int tileAmount_384 = 384; // (0x97FF - 0x8000) / 16
 		static constexpr int tileEdge_8 = 8;
-		std::bitset<tileAmount_384> m_tileDataObsoleteFlag{};
-		bool m_isAtlasObsolete{};
+		std::bitset<tileAmount_384> m_tileDataOutdatedFlag{};
+		bool m_isAtlasOutdated{};
 
 		RenderTexture m_tileAtlas{Size(tileEdge_8 * tileAmount_384, tileEdge_8)};
 	};

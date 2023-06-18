@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "HWParams.h"
 #include "LCD.h"
+#include "VRAM.h"
 
 namespace GBEmu::HW
 {
@@ -45,17 +46,25 @@ namespace GBEmu::HW
 		void Draw(const Point& pos, double scale) const;
 	private:
 		int m_dotCycle{};
+		PPUMode m_nextMode = PPUMode::OAMSearch;
 		PPUMode m_mode = PPUMode::OAMSearch;
 		Array<OAMData> m_oamBuffer{};
 
+		RenderTexture m_renderBuffer{HWParam::DisplayResolution, ColorF{1.0}};
 		Image m_bitmap{HWParam::DisplayResolution, ColorF{1.0}};
 		int m_fetcherX{};
 		bool m_canSTATInterruptBefore{};
 
 		void checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged);
 
+		static void renderAtVBlank(Memory& memory, LCD& lcd, RenderTexture& renderTexture);
+		static void renderBGCompletely(Memory& memory, const LCD& lcd, VRAM& vram);
+		static void renderWindowCompletely(Memory& memory, const LCD& lcd, VRAM& vram);
+
+		static Array<OAMData> correctOAM(Memory& memory, LCD& lcd);
+
 		static void updateLY(HWEnv& env, LCD& lcd, int dotCycle);
-		static PPUMode judgePPUMode(HWEnv& env, LCD& lcd, int dotCycle);
+		static PPUMode judgePPUMode(int dotCycle);
 		static Array<OAMData> scanOAM(HWEnv& env, LCD& lcd);
 		static void scanLineX(HWEnv& env, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, Image& bitmap);
 		static Color fetchPixelByMergeOAM(Memory& memory, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, uint8 ly, uint8 bgWindowTileDataColor);
