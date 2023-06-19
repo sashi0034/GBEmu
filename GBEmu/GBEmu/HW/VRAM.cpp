@@ -75,13 +75,14 @@ namespace GBEmu::HW
 			if (m_tileDataOutdatedFlag.test(tileIndex) == false) continue;
 			m_tileDataOutdatedFlag.reset(tileIndex);
 
-			for (int v=0; v<=7; ++v)
+			for (uint8 v=0; v<=7; ++v)
 			{
 				const uint16 tileLineData = Read16(addr + v * 2);
 
-				for (int u=0; u<=7; ++u)
+				for (uint8 u=0; u<=7; ++u)
 				{
-					const int paletteIndex = ((tileLineData >> u) & 0b1) | (((tileLineData >> (u + 8)) & 0b1) << 1); // 0 ~ 3
+					const uint8 u0 = 7 - u;
+					const int paletteIndex = ((tileLineData >> u0) & 0b1) | (((tileLineData >> (u0 + 8)) & 0b1) << 1); // 0 ~ 3
 
 					// ここでは、RG情報にパレットインデックスだけ保存し、描画する際シェーダー側でパレットを参照する
 					(void)Rect{tileIndex * tileEdge_8 + u, v, 1, 1}.draw(
