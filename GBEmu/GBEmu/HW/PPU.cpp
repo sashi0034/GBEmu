@@ -206,7 +206,8 @@ namespace GBEmu::HW
 		{
 			auto&& oam = oamList[i];
 
-			if (oam.FlagPriority()) continue;
+			// TODO: HBlankごとにSpriteのFlagPriorityを収集しておく
+			// if (oam.FlagPriority()) continue;
 
 			auto texture =
 				oam.FlagXFlip() ? vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).mirrored() :
