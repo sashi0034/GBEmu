@@ -1,6 +1,8 @@
 # GBEmu
-Game Boy emulator written in C++ / Siv3D
+A game Boy emulator written in C++
 
+- ✅ Passed all [CPU instructions tests](https://github.com/retrio/gb-test-roms/tree/master/cpu_instrs)
+- ✅ 60FPS performance
 
 This project was inspired by:
   
