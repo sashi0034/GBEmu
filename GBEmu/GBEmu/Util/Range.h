@@ -12,11 +12,15 @@ namespace GBEmu::Util
 	public:
 		Range(T minInclusive, T maxInclusive) :
 			m_Min(minInclusive), m_Max(maxInclusive)
+		{}
+
+		static Range<T> WithAssert(T minInclusive, T maxInclusive)
 		{
 			assert(minInclusive <= maxInclusive);
+			return Range<T>(minInclusive, maxInclusive);
 		}
 
-		static Range<T> FromSort(T value1, T value2)
+		static Range<T> WithSort(T value1, T value2)
 		{
 			if (value1 > value2) return Range<T>(value2, value1);
 			return Range<T>(value1, value2);
@@ -27,7 +31,7 @@ namespace GBEmu::Util
 
 		Range<T> ExtendRange(T extension)
 		{
-			if (extension < 0) return FromSort(m_Min - extension, m_Max + extension);
+			if (extension < 0) return WithSort(m_Min - extension, m_Max + extension);
 			return Range(m_Min - extension, m_Max + extension);
 		}
 
@@ -43,12 +47,6 @@ namespace GBEmu::Util
 		T Clamp(T targetValue) const
 		{
 			return (std::max)(m_Min, (std::min)(targetValue, m_Max));
-		}
-
-		T ClampWithAssert(T targetValue) const
-		{
-			assert(IsBetween(targetValue));
-			return Clamp(targetValue);
 		}
 
 		T Normalize(T targetValue, const Range<T>&afterRange)
