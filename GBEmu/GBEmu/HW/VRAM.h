@@ -20,7 +20,7 @@ namespace GBEmu::HW
 		void DumpDraw(const Vec2& pos);
 		void CheckRefreshAtlas();
 
-		MSRenderTexture& Atlas(){return m_tileAtlas; }
+		RenderTexture& Atlas(){return m_tileAtlas; }
 	private:
 		void refreshAtlas();
 
@@ -32,6 +32,6 @@ namespace GBEmu::HW
 		std::bitset<tileAmount_384> m_tileDataOutdatedFlag{};
 		bool m_isAtlasOutdated{};
 
-		MSRenderTexture m_tileAtlas{Size(tileEdge_8 * tileAmount_384, tileEdge_8)};
+		RenderTexture m_tileAtlas{Size(tileEdge_8 * tileAmount_384, tileEdge_8), TextureFormat::R16G16_Float};
 	};
 }

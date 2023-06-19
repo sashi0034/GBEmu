@@ -71,9 +71,6 @@ namespace GBEmu::HW
 		if (m_isAtlasOutdated == false) return;
 		refreshAtlas();
 		m_isAtlasOutdated = false;
-
-		Graphics2D::Flush();
-		m_tileAtlas.resolve();
 	}
 
 	void VRAM::refreshAtlas()

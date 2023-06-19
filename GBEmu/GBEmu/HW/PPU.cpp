@@ -74,7 +74,7 @@ namespace GBEmu::HW
 		if (m_mode == PPUMode::HBlank && m_nextMode == PPUMode::VBlank)
 		{
 			// 画面描画
-			renderAtVBlank(env.GetMemory(), lcd, m_renderBuffer);
+			renderAtVBlank(env.GetMemory(), lcd);
 		}
 
 		// 割り込みチェック
@@ -112,16 +112,19 @@ namespace GBEmu::HW
 		m_canSTATInterruptBefore = canSTATInterrupt;
 	}
 
-	void PPU::renderAtVBlank(Memory& memory, const LCD& lcd, MSRenderTexture& renderTexture)
+	void PPU::renderAtVBlank(Memory& memory, const LCD& lcd) const
 	{
 		memory.GetVRAM().CheckRefreshAtlas();
 
-		const ScopedRenderTarget2D target{ renderTexture };
+		const ScopedRenderTarget2D target{ m_renderBuffer };
+
+
+
 		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileDMG };
 
 		auto&& vram = memory.GetVRAM();
 
-		(void)renderTexture.clear(Palette::Black);
+		(void)m_renderBuffer.clear(Palette::Black);
 
 		// パレット
 		ConstantBuffer<TileDMGCb> tileDMGCb{};
@@ -139,10 +142,6 @@ namespace GBEmu::HW
 
 		// OBJ描画
 		renderOBJCompletely(memory, lcd, vram, tileDMGCb);
-
-		// 描画確定
-		Graphics2D::Flush();
-		renderTexture.resolve();
 	}
 
 	void PPU::renderBGCompletely(Memory& memory, const LCD& lcd, VRAM& vram)
@@ -206,8 +205,8 @@ namespace GBEmu::HW
 		{
 			auto&& oam = oamList[i];
 
-			// TODO: HBlankごとにSpriteのFlagPriorityを収集しておく
-			// if (oam.FlagPriority()) continue;
+			// TODO: HBlankごとにSpriteのFlagPriorityを収集しておく(trueの時はWindowとマスク処理を行う)
+			if (oam.FlagPriorityBGAndWindow()) continue;
 
 			auto texture =
 				oam.FlagXFlip() ? vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).mirrored() :

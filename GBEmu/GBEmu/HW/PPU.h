@@ -30,7 +30,7 @@ namespace GBEmu::HW
 
 		uint8 ActualY() const {return Y - 16; }
 		uint8 ActualX() const {return X - 8; }
-		bool FlagPriority() const {return (Flags >> 7) & 0b1; };
+		bool FlagPriorityBGAndWindow() const {return (Flags >> 7) & 0b1; };
 		bool FlagYFlip() const {return (Flags >> 6) & 0b1; };
 		bool FlagXFlip() const {return (Flags >> 5) & 0b1; };
 		bool Palette() const {return (Flags >> 4) & 0b1; };
@@ -51,12 +51,14 @@ namespace GBEmu::HW
 		PPUMode m_nextMode = PPUMode::OAMSearch;
 		PPUMode m_mode = PPUMode::OAMSearch;
 
-		MSRenderTexture m_renderBuffer{HWParam::DisplayResolution, ColorF{1.0}};
+		RenderTexture m_renderBuffer{HWParam::DisplayResolution, ColorF{1.0}};
+		RenderTexture m_objMaskBuffer{HWParam::DisplayResolution, TextureFormat::R16G16_Float};
+
 		bool m_canSTATInterruptBefore{};
 
 		void checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged);
 
-		static void renderAtVBlank(Memory& memory, const LCD& lcd, MSRenderTexture& renderTexture);
+		void renderAtVBlank(Memory& memory, const LCD& lcd) const;
 		static void renderBGCompletely(Memory& memory, const LCD& lcd, VRAM& vram);
 		static void renderWindowCompletely(Memory& memory, const LCD& lcd, VRAM& vram);
 		static void renderOBJCompletely(Memory& memory, const LCD& lcd, VRAM& vram, ConstantBuffer<TileDMGCb>& tileDMGCb);
