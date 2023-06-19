@@ -19,9 +19,14 @@ namespace GBEmu::HW
 	constexpr int oamSearchDuration_80 = 80;
 	constexpr int pixelTransferDuration_289 = 289;
 
-	struct PPU::TileDMGCb
+	struct PPU::TileBgAndWindowqDmgCb
 	{
 		Float4 palette[4];
+	};
+	struct PPU::TileObjDmgCb
+	{
+		Float4 palette[4];
+		bool isMasking;
 	};
 
 	static const std::array<Color, 4> displayColorPalette{
@@ -112,40 +117,70 @@ namespace GBEmu::HW
 		m_canSTATInterruptBefore = canSTATInterrupt;
 	}
 
-	void PPU::renderAtVBlank(Memory& memory, const LCD& lcd) const
+	void PPU::renderBGAndWindow(Memory& memory, const LCD& lcd, VRAM& vram)
 	{
-		memory.GetVRAM().CheckRefreshAtlas();
-
-		const ScopedRenderTarget2D target{ m_renderBuffer };
-
-
-
-		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileDMG };
-
-		auto&& vram = memory.GetVRAM();
-
-		(void)m_renderBuffer.clear(Palette::Black);
-
 		// パレット
-		ConstantBuffer<TileDMGCb> tileDMGCb{};
+		ConstantBuffer<TileBgAndWindowqDmgCb> tileCb{};
 
 		// BG兼 ウィンドウパレットを設定
-		for (int i=0; i<4; ++i) tileDMGCb->palette[i] = displayColorPaletteF[lcd.BGPaletteData(i)].toFloat4();
-		Graphics2D::SetPSConstantBuffer(1, tileDMGCb);
+		for (int i=0; i<4; ++i) tileCb->palette[i] = displayColorPaletteF[lcd.BGPaletteData(i)].toFloat4();
+		Graphics2D::SetPSConstantBuffer(1, tileCb);
 
 		// BG描画
 		renderBGCompletely(memory, lcd, vram);
 
 		// ウィンドウ描画
-		// TODO: バッファにLCD経歴を格納して、IsWindowDisplayEnableが付いてる行だけ描画したい
 		if (lcd.IsWindowDisplayEnable()) renderWindowCompletely(memory, lcd, vram);
+	}
+
+	void PPU::renderAtVBlank(Memory& memory, const LCD& lcd) const
+	{
+		// TODO: バッファにLCD経歴を格納して、IsWindowDisplayEnableが付いてる行だけ描画したい
+
+		memory.GetVRAM().CheckRefreshAtlas();
+
+		const ScopedRenderTarget2D target{ m_renderBuffer };
+
+		auto&& vram = memory.GetVRAM();
+
+		(void)m_renderBuffer.clear(Palette::Black);
+
+		// BGとウィンドウ描画
+		renderBGAndWindow(memory, lcd, vram);
+
+		// OBJマスク作成
+		renderObjMaskFromBGAndWindow(memory, lcd, vram, m_objMaskBuffer);
 
 		// OBJ描画
-		renderOBJCompletely(memory, lcd, vram, tileDMGCb);
+		renderOBJCompletely(memory, lcd, vram, m_objMaskBuffer);
+	}
+
+	// Priorityフラグが付いたOBJ用のマスクを作成
+	void PPU::renderObjMaskFromBGAndWindow(Memory& memory, const LCD& lcd, VRAM& vram, const RenderTexture& objMaskBuffer)
+	{
+		ConstantBuffer<TileBgAndWindowqDmgCb> tileCb{};
+
+		const ScopedRenderTarget2D target{ objMaskBuffer };
+		(void)objMaskBuffer.clear(Palette::Black);
+
+		// マスク用パレットを設定
+		tileCb->palette[0] = Float4(1, 1, 1, 1);
+		tileCb->palette[1] = Float4(0, 0, 0, 0);
+		tileCb->palette[2] = Float4(0, 0, 0, 0);
+		tileCb->palette[3] = Float4(0, 0, 0, 0);
+		Graphics2D::SetPSConstantBuffer(1, tileCb);
+
+		// BG描画
+		renderBGCompletely(memory, lcd, vram);
+
+		// ウィンドウ描画
+		if (lcd.IsWindowDisplayEnable()) renderWindowCompletely(memory, lcd, vram);
 	}
 
 	void PPU::renderBGCompletely(Memory& memory, const LCD& lcd, VRAM& vram)
 	{
+		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileBgDMG };
+
 		const uint8 scy = lcd.SCY();
 		const uint8 scx = lcd.SCX();
 
@@ -174,6 +209,8 @@ namespace GBEmu::HW
 
 	void PPU::renderWindowCompletely(Memory& memory, const LCD& lcd, VRAM& vram)
 	{
+		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileWindowDMG };
+
 		const uint8 wy = lcd.WY();
 		const uint8 wx = lcd.WX();
 
@@ -194,9 +231,14 @@ namespace GBEmu::HW
 		}
 	}
 
-	void PPU::renderOBJCompletely(Memory& memory, const LCD& lcd, VRAM& vram, ConstantBuffer<TileDMGCb>& tileDMGCb)
+	void PPU::renderOBJCompletely(
+		Memory& memory, const LCD& lcd, VRAM& vram,  const RenderTexture& objMask)
 	{
-		tileDMGCb->palette[0] = Float4(0, 0, 0, 0);
+		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileObjDMG };
+		Graphics2D::SetPSTexture(1, objMask);
+
+		ConstantBuffer<TileObjDmgCb> tileCb{};
+		tileCb->palette[0] = Float4(0, 0, 0, 0);
 
 		const Array<OAMData> oamList = correctOAM(memory, lcd);
 
@@ -205,8 +247,7 @@ namespace GBEmu::HW
 		{
 			auto&& oam = oamList[i];
 
-			// TODO: HBlankごとにSpriteのFlagPriorityを収集しておく(trueの時はWindowとマスク処理を行う)
-			if (oam.FlagPriorityBGAndWindow()) continue;
+			tileCb->isMasking = oam.FlagPriorityBGAndWindow();
 
 			auto texture =
 				oam.FlagXFlip() ? vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).mirrored() :
@@ -215,9 +256,10 @@ namespace GBEmu::HW
 
 			// パレット設定
 			for (int color = 1; color < 4; ++color)
-				tileDMGCb->palette[color] =
+				tileCb->palette[color] =
 					displayColorPaletteF[lcd.ObjectPaletteData(oam.Palette(), color)].toFloat4();
-			Graphics2D::SetPSConstantBuffer(1, tileDMGCb);
+
+			Graphics2D::SetPSConstantBuffer(1, tileCb);
 
 			// 描画
 			(void)texture.draw(oam.ActualX(), oam.ActualY());

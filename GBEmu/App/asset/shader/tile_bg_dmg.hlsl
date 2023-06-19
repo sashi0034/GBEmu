@@ -28,7 +28,7 @@ cbuffer PSConstants2D : register(b0)
 	float4 g_internal;
 }
 
-cbuffer TileDMGCb : register(b1)
+cbuffer TileBgAndWindowqDmgCb : register(b1)
 {
 	float4 g_palette[4];
 }
@@ -37,22 +37,7 @@ float4 PS(s3d::PSInput input) : SV_TARGET
 {
 	float4 color0 = g_texture0.Sample(g_sampler0, input.uv);
 
-	if (color0.x == 0 && color0.y == 0)
-	{
-		color0 = g_palette[0];	
-	}
-	else if (color0.x == 0 && color0.y == 1)
-	{
-		color0 = g_palette[1];	
-	}
-	else if (color0.x == 1 && color0.y == 0)
-	{
-		color0 = g_palette[2];	
-	}
-	else if (color0.x == 1 && color0.y == 1)
-	{
-		color0 = g_palette[3];	
-	}
+	color0 = g_palette[(int)(color0.x) * 2 + (int)(color0.y)];
 	
 	return color0 + g_colorAdd;
 }

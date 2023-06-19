@@ -45,7 +45,8 @@ namespace GBEmu::HW
 
 		void Draw(const Point& pos, double scale) const;
 	private:
-		struct TileDMGCb;
+		struct TileBgAndWindowqDmgCb;
+		struct TileObjDmgCb;
 
 		int m_dotCycle{};
 		PPUMode m_nextMode = PPUMode::OAMSearch;
@@ -59,9 +60,12 @@ namespace GBEmu::HW
 		void checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged);
 
 		void renderAtVBlank(Memory& memory, const LCD& lcd) const;
+
+		static void renderBGAndWindow(Memory& memory, const LCD& lcd, VRAM& vram);
 		static void renderBGCompletely(Memory& memory, const LCD& lcd, VRAM& vram);
 		static void renderWindowCompletely(Memory& memory, const LCD& lcd, VRAM& vram);
-		static void renderOBJCompletely(Memory& memory, const LCD& lcd, VRAM& vram, ConstantBuffer<TileDMGCb>& tileDMGCb);
+		static void renderOBJCompletely(Memory& memory, const LCD& lcd, VRAM& vram, const RenderTexture& objMask);
+		static void renderObjMaskFromBGAndWindow(Memory& memory, const LCD& lcd, VRAM& vram, const RenderTexture& objMaskBuffer);
 
 		static Array<OAMData> correctOAM(Memory& memory, const LCD& lcd);
 
