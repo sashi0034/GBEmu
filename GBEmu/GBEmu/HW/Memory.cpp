@@ -39,7 +39,10 @@ namespace GBEmu::HW
 			&m_memory[LYC_0xFF45],
 			&m_memory[WX_0xFF4B],
 			&m_memory[WY_0xFF4A]
-			)
+			),
+		m_interrupt(
+			&m_memory[IE_0xFFFF],
+			&m_memory[IF_0xFF0F])
 	{}
 
 	uint8 Memory::Read(uint16 addr)

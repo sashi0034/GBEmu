@@ -75,8 +75,8 @@ namespace GBEmu::HW
 	Optional<CPUCycle> CPU::checkInterrupt(HWEnv& env)
 	{
 		auto&& memory = env.GetMemory();
-		const uint8 interruptEnable = memory.Read(IE_0xFFFF);
-		const uint8 interruptFlag = memory.Read(IF_0xFF0F);
+		const uint8 interruptEnable = memory.Interrupt().IE();
+		const uint8 interruptFlag = memory.Interrupt().IF();
 
 		if (m_imeFlag == false)
 		{
@@ -113,7 +113,7 @@ namespace GBEmu::HW
 
 		// 割り込み無効化
 		m_imeFlag = false;
-		memory.Write(env, IF_0xFF0F, interruptFlag & ~(1 << interruptBit));
+		memory.Interrupt().ResetFlag(InterruptFlag(1 << interruptBit));
 
 		// PCをスタックにプッシュ
 		memory.WriteDirect16(m_sp - 2, m_pc);

@@ -25,12 +25,17 @@ namespace GBEmu::HW::HWFrame
 				// タイマ更新
 				env.GetTimer().StepCycle(env);
 			}
-			for (int i=0; i<cpuCycle.Count; ++i)
+
+			auto&& lcd = env.GetMemory().GetLCD();
+			for (int i=0; i<(lcd.IsLCDDisplayEnable() ? cpuCycle.Count : 0); ++i)
 			{
 				// PPU更新
 				const auto ppuResult = env.GetPPU().StepCycle(env);
 				if (ppuResult.IsEnteredVBlank) return; // フレーム終了
 			}
+
+			// フラグ更新
+			lcd.UpdateLYCoincidenceFlag();
 
 			passedCycle += cpuCycle.Count;
 			constexpr int ppuCycle = 70224;

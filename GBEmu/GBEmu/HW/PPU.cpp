@@ -36,7 +36,6 @@ namespace GBEmu::HW
 		auto&& lcd = env.GetMemory().GetLCD();
 
 		m_dotCycle = (m_dotCycle + 1) % dotCycleFreq_70224;
-		if (lcd.IsLCDDisplayEnable() == false) m_dotCycle = 0;
 
 		updateLY(lcd, m_dotCycle);
 
@@ -90,10 +89,10 @@ namespace GBEmu::HW
 	void PPU::checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged)
 	{
 		auto&& memory = env.GetMemory();
-		uint8 interruptFlag = memory.Read(IF_0xFF0F);
+		auto&& interrupt = memory.Interrupt();
 
 		// VBlank割り込みチェック
-		if (isModeChanged && m_mode == PPUMode::VBlank) { interruptFlag |= HWParam::InterruptVBlank; }
+		if (isModeChanged && m_mode == PPUMode::VBlank) { interrupt.SetFlag(InterruptFlags::VBlank); }
 
 		// STAT割り込みチェック
 		const bool canSTATInterrupt =
@@ -102,10 +101,9 @@ namespace GBEmu::HW
 			(isModeChanged && lcd.IsHBlankInterruptEnable()) ||
 			(isModeChanged && lcd.IsVBlankInterruptEnable());
 
-		if (canSTATInterrupt && m_canSTATInterruptBefore == false) { interruptFlag |= HWParam::InterruptSTAT; }
-		m_canSTATInterruptBefore = canSTATInterrupt;
+		if (canSTATInterrupt && m_canSTATInterruptBefore == false) { interrupt.SetFlag(InterruptFlags::STAT); }
 
-		memory.Write(env, IF_0xFF0F, interruptFlag);
+		m_canSTATInterruptBefore = canSTATInterrupt;
 	}
 
 	void PPU::renderAtVBlank(Memory& memory, LCD& lcd, RenderTexture& renderTexture)
@@ -119,7 +117,7 @@ namespace GBEmu::HW
 
 		// ウィンドウ描画
 		// TODO: バッファにLCD経歴を格納して、IsWindowDisplayEnableが付いてる行だけ描画したい
-		// if (lcd.IsWindowDisplayEnable()) renderWindowCompletely(memory, lcd, vram);
+		if (lcd.IsWindowDisplayEnable()) renderWindowCompletely(memory, lcd, vram);
 
 		// OBJを末尾から順に描画
 		const Array<OAMData> oamList = correctOAM(memory, lcd);
@@ -236,10 +234,11 @@ namespace GBEmu::HW
 
 	void PPU::updateLY(LCD& lcd, int dotCycle)
 	{
+		if (dotCycle % scanLineFreq_456 != 0) return;
+
 		const uint8 ly = dotCycle / scanLineFreq_456;
 
 		lcd.SetLY(ly);
-		lcd.UpdateLYCoincidenceFlag();
 	}
 
 	PPUMode PPU::judgePPUMode(int dotCycle)

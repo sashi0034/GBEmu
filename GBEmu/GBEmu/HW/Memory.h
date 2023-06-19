@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Cartridge.h"
+#include "Interruption.h"
 #include "LCD.h"
 #include "VRAM.h"
 
@@ -11,9 +12,10 @@ namespace GBEmu::HW
 	{
 	public:
 		Memory();
+		VRAM& GetVRAM() {return m_vram; }
 
 		LCD& GetLCD() {return m_lcd; }
-		VRAM& GetVRAM() {return m_vram; }
+		Interruption& Interrupt() {return m_interrupt; }
 
 		uint8 Read(uint16 addr);
 		uint16 Read16(uint16 addr);
@@ -30,12 +32,11 @@ namespace GBEmu::HW
 
 	private:
 		std::array<uint8, MemorySize_0x10000> m_memory{};
-
+		VRAM m_vram{};
 		Cartridge m_cartridge{};
 
 		LCD m_lcd;
-
-		VRAM m_vram{};
+		Interruption m_interrupt;
 
 		void writeIO(HWEnv& env, uint16 addr, uint8 data);
 
