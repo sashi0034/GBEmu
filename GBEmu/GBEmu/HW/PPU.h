@@ -50,11 +50,8 @@ namespace GBEmu::HW
 		int m_dotCycle{};
 		PPUMode m_nextMode = PPUMode::OAMSearch;
 		PPUMode m_mode = PPUMode::OAMSearch;
-		Array<OAMData> m_oamBuffer{};
 
 		MSRenderTexture m_renderBuffer{HWParam::DisplayResolution, ColorF{1.0}};
-		Image m_bitmap{HWParam::DisplayResolution, ColorF{1.0}};
-		int m_fetcherX{};
 		bool m_canSTATInterruptBefore{};
 
 		void checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged);
@@ -68,8 +65,13 @@ namespace GBEmu::HW
 
 		static void updateLY(LCD& lcd, int dotCycle);
 		static PPUMode judgePPUMode(int dotCycle);
-		static Array<OAMData> scanOAM(HWEnv& env, LCD& lcd);
-		static void scanLineX(HWEnv& env, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, Image& bitmap);
-		static Color fetchPixelByMergeOAM(Memory& memory, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, uint8 ly, uint8 bgWindowTileDataColor);
+
+		// Array<OAMData> m_oamBuffer{};
+		// Image m_bitmap{HWParam::DisplayResolution, ColorF{1.0}};
+		// int m_fetcherX{};
+
+		// static Array<OAMData> scanOAM(HWEnv& env, LCD& lcd);
+		// static void scanLineX(HWEnv& env, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, Image& bitmap);
+		// static Color fetchPixelByMergeOAM(Memory& memory, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, uint8 ly, uint8 bgWindowTileDataColor);
 	};
 }
