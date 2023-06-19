@@ -1,8 +1,8 @@
 ﻿#include "stdafx.h"
 #include "EmuFlowchart.h"
 
-#include "DebugParam.h"
 #include "EmuConfig.h"
+#include "HW/HWAsset.h"
 #include "HW/HWEnv.h"
 #include "HW/HWFrame.h"
 #include "HW/Memory.h"
@@ -28,6 +28,8 @@ namespace GBEmu::EmuFlowchart
 
 	void RunEmu()
 	{
+		HW::HWAsset::CreateInstance();
+
 		EmuConfig config = DefaultEmuConfig;
 
 		if (FileSystem::Exists(config.CartridgePath) == false)
@@ -49,5 +51,7 @@ namespace GBEmu::EmuFlowchart
 			env.Debugger().Draw(env, Point{512, 100});
 			env.GetMemory().GetVRAM().DumpDraw(Point{16, 480});
 		}
+
+		HW::HWAsset::DestroyInstance();
 	}
 }

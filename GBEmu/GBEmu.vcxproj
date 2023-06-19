@@ -117,6 +117,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="App\asset\shader\tile_dmg.hlsl" />
     <ClCompile Include="GBEmu\ConstParam.cpp" />
     <ClCompile Include="GBEmu\DebugParam.cpp" />
     <ClCompile Include="GBEmu\EmuConfig.cpp">
@@ -205,6 +206,7 @@
     <ClCompile Include="GBEmu\HW\CPUInstructionCB.cpp" />
     <ClCompile Include="GBEmu\HW\CPUOperation.cpp" />
     <ClCompile Include="GBEmu\HW\CPUOperationCB.cpp" />
+    <ClCompile Include="GBEmu\HW\HWAsset.cpp" />
     <ClCompile Include="GBEmu\HW\HWDebugger.cpp" />
     <ClCompile Include="GBEmu\HW\HWEnv.cpp" />
     <ClCompile Include="GBEmu\HW\HWFrame.cpp" />
@@ -432,6 +434,7 @@
     <ClInclude Include="GBEmu\HW\CPUInstructionCB.h" />
     <ClInclude Include="GBEmu\HW\CPUOperation.h" />
     <ClInclude Include="GBEmu\HW\CPUOperationCB.h" />
+    <ClInclude Include="GBEmu\HW\HWAsset.h" />
     <ClInclude Include="GBEmu\HW\HWDebugger.h" />
     <ClInclude Include="GBEmu\HW\HWEnv.h" />
     <ClInclude Include="GBEmu\HW\HWFrame.h" />

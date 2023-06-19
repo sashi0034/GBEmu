@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "PPU.h"
 
+#include "HWAsset.h"
 #include "HWEnv.h"
 #include "MemoryAddress.h"
 
@@ -18,11 +19,23 @@ namespace GBEmu::HW
 	constexpr int oamSearchDuration_80 = 80;
 	constexpr int pixelTransferDuration_289 = 289;
 
+	struct TileDMGCb
+	{
+		Float4 palette[4];
+	};
+
 	static const std::array<Color, 4> displayColorPalette{
 		Color{ 221, 255, 212 },
 		Palette::Lightgreen,
 		Color{ 29, 114, 61 },
 		Color{ 0, 51, 0 },
+	};
+
+	static const std::array<ColorF, 4> displayColorPaletteF{
+		ColorF{ 221 / 255.0, 255 / 255.0, 212 / 255.0 },
+		ColorF{ 144 / 255.0, 238 / 255.0, 144 / 255.0 },
+		ColorF{ 29 / 255.0, 114 / 255.0, 61 / 255.0 },
+		ColorF{ 0 / 255.0, 51 / 255.0, 0 / 255.0 },
 	};
 
 	PPU::PPU()
@@ -49,18 +62,18 @@ namespace GBEmu::HW
 		// モード分岐
 		if (m_mode == PPUMode::OAMSearch && m_mode != m_nextMode)
 		{
-			m_oamBuffer = scanOAM(env, lcd);
-			m_fetcherX = 0;
+			// m_oamBuffer = scanOAM(env, lcd);
+			// m_fetcherX = 0;
 		}
 		else if (m_mode == PPUMode::PixelTransfer && m_fetcherX < displayWidth_160)
 		{
-			scanLineX(env, lcd, m_fetcherX, m_oamBuffer, m_bitmap);
-			m_fetcherX++;
+			// scanLineX(env, lcd, m_fetcherX, m_oamBuffer, m_bitmap);
+			// m_fetcherX++;
 		}
 		else if (m_mode == PPUMode::HBlank && m_nextMode == PPUMode::VBlank)
 		{
 			// TODO: これを使う
-			// renderAtVBlank(env.GetMemory(), lcd, m_renderBuffer);
+			renderAtVBlank(env.GetMemory(), lcd, m_renderBuffer);
 		}
 
 		// 割り込みチェック
@@ -77,13 +90,13 @@ namespace GBEmu::HW
 		// rs.scissorEnable = true;
 		// const ScopedRenderStates2D renderStates{ rs };
 
-		// TODO: 警告消したい
-		Profiler::EnableAssetCreationWarning(false);
-		const Texture texture(m_bitmap);
-		(void)texture.scaled(scale).draw(pos);
+		// // TODO: 警告消したい
+		// Profiler::EnableAssetCreationWarning(false);
+		// const Texture texture(m_bitmap);
+		// (void)texture.scaled(scale).draw(pos);
 
 		// TODO: これを使う
-		// (void)m_renderBuffer.scaled(scale).draw(pos);
+		(void)m_renderBuffer.scaled(scale).draw(pos);
 	}
 
 	void PPU::checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged)
@@ -109,6 +122,7 @@ namespace GBEmu::HW
 	void PPU::renderAtVBlank(Memory& memory, LCD& lcd, RenderTexture& renderTexture)
 	{
 		const ScopedRenderTarget2D target{ renderTexture };
+		// const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileDMG };
 
 		auto&& vram = memory.GetVRAM();
 
@@ -157,7 +171,7 @@ namespace GBEmu::HW
 				const uint8 tileX = scrolledX / 8;
 				const uint8 tileY = scrolledY / 8;
 
-				const uint16 tileIdAddr = bgBaseAddr + ((tileX + tileY) & 0x3FFF);
+				const uint16 tileIdAddr = bgBaseAddr + ((tileX + tileY * 32) & 0x3FFF);
 				const uint8 tileId = memory.Read(tileIdAddr);
 				(void)vram.GetTileData(tileDataBaseAddr, tileId).draw(x, y);
 			}
@@ -166,6 +180,11 @@ namespace GBEmu::HW
 
 	void PPU::renderWindowCompletely(Memory& memory, const LCD& lcd, VRAM& vram)
 	{
+		ConstantBuffer<TileDMGCb> tileDMGCb{};
+		for (int i=0; i<3; ++i)
+			tileDMGCb->palette[i] = displayColorPaletteF[lcd.BGPaletteData(i)].toFloat4();
+		Graphics2D::SetPSConstantBuffer(1, tileDMGCb);
+
 		const uint8 wy = lcd.WY();
 		const uint8 wx = lcd.WX();
 
@@ -179,7 +198,7 @@ namespace GBEmu::HW
 				const uint8 tileX = static_cast<uint8>(x) / 8;
 				const uint8 tileY = static_cast<uint8>(y) / 8;
 
-				const uint16 tileIdAddr = windowBaseAddr + ((tileX + tileY) & 0x3FFF);
+				const uint16 tileIdAddr = windowBaseAddr + ((tileX + tileY * 32) & 0x3FFF);
 				const uint8 tileId = memory.Read(tileIdAddr);
 				(void)vram.GetTileData(tileDataBaseAddr, tileId).draw(x, y);
 			}
