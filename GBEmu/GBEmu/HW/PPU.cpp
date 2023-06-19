@@ -19,7 +19,7 @@ namespace GBEmu::HW
 	constexpr int oamSearchDuration_80 = 80;
 	constexpr int pixelTransferDuration_289 = 289;
 
-	struct TileDMGCb
+	struct PPU::TileDMGCb
 	{
 		Float4 palette[4];
 	};
@@ -119,12 +119,23 @@ namespace GBEmu::HW
 		m_canSTATInterruptBefore = canSTATInterrupt;
 	}
 
-	void PPU::renderAtVBlank(Memory& memory, LCD& lcd, RenderTexture& renderTexture)
+	void PPU::renderAtVBlank(Memory& memory, const LCD& lcd, MSRenderTexture& renderTexture)
 	{
+		memory.GetVRAM().CheckRefreshAtlas();
+
 		const ScopedRenderTarget2D target{ renderTexture };
-		// const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileDMG };
+		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileDMG };
 
 		auto&& vram = memory.GetVRAM();
+
+		(void)renderTexture.clear(Palette::Black);
+
+		// パレット
+		ConstantBuffer<TileDMGCb> tileDMGCb{};
+
+		// BG兼 ウィンドウパレットを設定
+		for (int i=0; i<4; ++i) tileDMGCb->palette[i] = displayColorPaletteF[lcd.BGPaletteData(i)].toFloat4();
+		Graphics2D::SetPSConstantBuffer(1, tileDMGCb);
 
 		// BG描画
 		renderBGCompletely(memory, lcd, vram);
@@ -133,21 +144,12 @@ namespace GBEmu::HW
 		// TODO: バッファにLCD経歴を格納して、IsWindowDisplayEnableが付いてる行だけ描画したい
 		if (lcd.IsWindowDisplayEnable()) renderWindowCompletely(memory, lcd, vram);
 
-		// OBJを末尾から順に描画
-		const Array<OAMData> oamList = correctOAM(memory, lcd);
-		for (int i=oamList.size()-1; i>=0; --i)
-		{
-			auto&& oam = oamList[i];
+		// OBJ描画
+		renderOBJCompletely(memory, lcd, vram, tileDMGCb);
 
-			if (oam.FlagPriority()) continue;
-
-			auto texture =
-				oam.FlagXFlip() ? vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).mirrored() :
-				oam.FlagYFlip() ? vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).flipped() :
-				vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex);
-
-			(void)texture.drawAt(oam.ActualX(), oam.ActualY());
-		}
+		// 描画確定
+		Graphics2D::Flush();
+		renderTexture.resolve();
 	}
 
 	void PPU::renderBGCompletely(Memory& memory, const LCD& lcd, VRAM& vram)
@@ -180,11 +182,6 @@ namespace GBEmu::HW
 
 	void PPU::renderWindowCompletely(Memory& memory, const LCD& lcd, VRAM& vram)
 	{
-		ConstantBuffer<TileDMGCb> tileDMGCb{};
-		for (int i=0; i<3; ++i)
-			tileDMGCb->palette[i] = displayColorPaletteF[lcd.BGPaletteData(i)].toFloat4();
-		Graphics2D::SetPSConstantBuffer(1, tileDMGCb);
-
 		const uint8 wy = lcd.WY();
 		const uint8 wx = lcd.WX();
 
@@ -205,7 +202,36 @@ namespace GBEmu::HW
 		}
 	}
 
-	Array<OAMData> PPU::correctOAM(Memory& memory, LCD& lcd)
+	void PPU::renderOBJCompletely(Memory& memory, const LCD& lcd, VRAM& vram, ConstantBuffer<TileDMGCb>& tileDMGCb)
+	{
+		tileDMGCb->palette[0] = Float4(0, 0, 0, 0);
+
+		const Array<OAMData> oamList = correctOAM(memory, lcd);
+
+		// 末尾から描画していく
+		for (int i=oamList.size()-1; i>=0; --i)
+		{
+			auto&& oam = oamList[i];
+
+			if (oam.FlagPriority()) continue;
+
+			auto texture =
+				oam.FlagXFlip() ? vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).mirrored() :
+					oam.FlagYFlip() ? vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).flipped() :
+					vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex);
+
+			// パレット設定
+			for (int color = 1; color < 4; ++color)
+				tileDMGCb->palette[color] =
+					displayColorPaletteF[lcd.ObjectPaletteData(oam.Palette(), color)].toFloat4();
+			Graphics2D::SetPSConstantBuffer(1, tileDMGCb);
+
+			// 描画
+			(void)texture.draw(oam.ActualX(), oam.ActualY());
+		}
+	}
+
+	Array<OAMData> PPU::correctOAM(Memory& memory, const LCD& lcd)
 	{
 		const int objHeight = lcd.OBJHeight(); // 16 or 8
 

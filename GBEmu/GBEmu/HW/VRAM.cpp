@@ -9,6 +9,11 @@ namespace GBEmu::HW
 
 	constexpr uint16 singleTileBytes_0x10 = 0x10; // 1枚のタイルは16バイト
 
+	VRAM::VRAM()
+	{
+		(void)m_tileAtlas.clear(Palette::Black);
+	}
+
 	void VRAM::Write(uint16 addr, uint8 data)
 	{
 		m_vram[addr - VRamStart_0x8000] = data;
@@ -40,14 +45,14 @@ namespace GBEmu::HW
 		const uint16 tileAddr = baseAddr + tileOffset;
 		const uint16 tileIndex = (tileAddr - TileDataTableStart_0x8000) / singleTileBytes_0x10;
 
-		if (m_isAtlasOutdated) refreshAtlas();
+		CheckRefreshAtlas();
 
 		return m_tileAtlas(tileIndex * tileEdge_8, 0, tileEdge_8, tileEdge_8);
 	}
 
 	void VRAM::DumpDraw(const Vec2& pos)
 	{
-		if (m_isAtlasOutdated) refreshAtlas();
+		CheckRefreshAtlas();
 
 		for (int y=0;; y+=tileEdge_8)
 		{
@@ -61,10 +66,18 @@ namespace GBEmu::HW
 		exit:;
 	}
 
-	void VRAM::refreshAtlas()
+	void VRAM::CheckRefreshAtlas()
 	{
+		if (m_isAtlasOutdated == false) return;
+		refreshAtlas();
 		m_isAtlasOutdated = false;
 
+		Graphics2D::Flush();
+		m_tileAtlas.resolve();
+	}
+
+	void VRAM::refreshAtlas()
+	{
 		const ScopedRenderTarget2D target{ m_tileAtlas };
 
 		for (uint16 addr = TileDataTableStart_0x8000; addr <= BGAndWindowTileData2End_0x97FF; addr += singleTileBytes_0x10)

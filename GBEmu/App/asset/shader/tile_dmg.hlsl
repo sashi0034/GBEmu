@@ -1,8 +1,7 @@
 //	Textures
 //
+Texture2D		g_texture0 : register(t0);
 SamplerState	g_sampler0 : register(s0);
-SamplerState	g_sampler1 : register(s1);
-SamplerState	g_sampler2 : register(s2);
 
 namespace s3d
 {
@@ -36,7 +35,7 @@ cbuffer TileDMGCb : register(b1)
 
 float4 PS(s3d::PSInput input) : SV_TARGET
 {
-	float4 color0 = input.color;
+	float4 color0 = g_texture0.Sample(g_sampler0, input.uv);
 
 	if (color0.x == 0 && color0.y == 0)
 	{

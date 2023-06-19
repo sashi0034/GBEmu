@@ -10,6 +10,7 @@ namespace GBEmu::HW
 	class VRAM
 	{
 	public:
+		VRAM();
 		void Write(uint16 addr, uint8 data);
 		uint8 Read(uint16 addr) const;
 		uint16 Read16(uint16 addr) const;
@@ -17,6 +18,9 @@ namespace GBEmu::HW
 		TextureRegion GetTileData(uint16 baseAddr, uint8 tileId);
 
 		void DumpDraw(const Vec2& pos);
+		void CheckRefreshAtlas();
+
+		MSRenderTexture& Atlas(){return m_tileAtlas; }
 	private:
 		void refreshAtlas();
 
@@ -28,6 +32,6 @@ namespace GBEmu::HW
 		std::bitset<tileAmount_384> m_tileDataOutdatedFlag{};
 		bool m_isAtlasOutdated{};
 
-		RenderTexture m_tileAtlas{Size(tileEdge_8 * tileAmount_384, tileEdge_8)};
+		MSRenderTexture m_tileAtlas{Size(tileEdge_8 * tileAmount_384, tileEdge_8)};
 	};
 }
