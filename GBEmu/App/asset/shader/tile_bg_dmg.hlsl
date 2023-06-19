@@ -31,13 +31,18 @@ cbuffer PSConstants2D : register(b0)
 cbuffer TileBgAndWindowqDmgCb : register(b1)
 {
 	float4 g_palette[4];
+	uint g_windowPriorityBuffer[5]; // 32 bit * 5 > displayHeight_144 bit
 }
 
 float4 PS(s3d::PSInput input) : SV_TARGET
 {
 	float4 color0 = g_texture0.Sample(g_sampler0, input.uv);
 
-	color0 = g_palette[(int)(color0.x) * 2 + (int)(color0.y)];
+	const float y = input.position.y;
+	const bool windowEnable = g_windowPriorityBuffer[uint(y / 32)] & (1 << uint(y % 32));
+	
+	color0 = g_palette[(uint)(color0.x) * 2 + (uint)(color0.y)];
+	color0.a = 1 - float(windowEnable);
 	
 	return color0 + g_colorAdd;
 }

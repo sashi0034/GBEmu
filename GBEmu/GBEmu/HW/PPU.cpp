@@ -19,9 +19,12 @@ namespace GBEmu::HW
 	constexpr int oamSearchDuration_80 = 80;
 	constexpr int pixelTransferDuration_289 = 289;
 
-	struct PPU::TileBgAndWindowqDmgCb
+	constexpr int hlslPacking_4 = 4;
+
+	struct PPU::TileBgAndWindowDmgCb
 	{
 		Float4 palette[4];
+		uint32 windowPriorityBuffer[windowPriorityBufferSize_5 * hlslPacking_4];
 	};
 	struct PPU::TileObjDmgCb
 	{
@@ -75,8 +78,12 @@ namespace GBEmu::HW
 		// 	scanLineX(env, lcd, m_fetcherX, m_oamBuffer, m_bitmap);
 		// 	m_fetcherX++;
 		// }
-		// else
-		if (m_mode == PPUMode::HBlank && m_nextMode == PPUMode::VBlank)
+		if (m_mode == PPUMode::PixelTransfer && m_nextMode == PPUMode::HBlank)
+		{
+			// WindowEnableFlagを記憶
+			updateWindowPriorityBuffer(lcd);
+		}
+		else if (m_mode == PPUMode::HBlank && m_nextMode == PPUMode::VBlank)
 		{
 			// 画面描画
 			renderAtVBlank(env.GetMemory(), lcd);
@@ -88,6 +95,21 @@ namespace GBEmu::HW
 		return PPUResult{
 			isModeChanged && m_mode == PPUMode::VBlank
 		};
+	}
+
+	void PPU::updateWindowPriorityBuffer(LCD& lcd)
+	{
+		const int ly = lcd.LY(); // 0~143
+		if (ly < 0 || 144 <= ly) return;
+
+		if (lcd.IsWindowDisplayEnable() && ly >= lcd.WY())
+		{
+			m_windowPriorityBuffer[ly / 32] |= 1 << (ly % 32);
+		}
+		else
+		{
+			m_windowPriorityBuffer[ly / 32] &= ~(1 << (ly % 32));
+		}
 	}
 
 	void PPU::Draw(const Point& pos, double scale) const
@@ -117,22 +139,6 @@ namespace GBEmu::HW
 		m_canSTATInterruptBefore = canSTATInterrupt;
 	}
 
-	void PPU::renderBGAndWindow(Memory& memory, const LCD& lcd, VRAM& vram)
-	{
-		// パレット
-		ConstantBuffer<TileBgAndWindowqDmgCb> tileCb{};
-
-		// BG兼 ウィンドウパレットを設定
-		for (int i=0; i<4; ++i) tileCb->palette[i] = displayColorPaletteF[lcd.BGPaletteData(i)].toFloat4();
-		Graphics2D::SetPSConstantBuffer(1, tileCb);
-
-		// BG描画
-		renderBGCompletely(memory, lcd, vram);
-
-		// ウィンドウ描画
-		if (lcd.IsWindowDisplayEnable()) renderWindowCompletely(memory, lcd, vram);
-	}
-
 	void PPU::renderAtVBlank(Memory& memory, const LCD& lcd) const
 	{
 		// TODO: バッファにLCD経歴を格納して、IsWindowDisplayEnableが付いてる行だけ描画したい
@@ -146,19 +152,43 @@ namespace GBEmu::HW
 		(void)m_renderBuffer.clear(Palette::Black);
 
 		// BGとウィンドウ描画
-		renderBGAndWindow(memory, lcd, vram);
+		renderBGAndWindow(memory, lcd, vram, m_windowPriorityBuffer);
 
 		// OBJマスク作成
-		renderObjMaskFromBGAndWindow(memory, lcd, vram, m_objMaskBuffer);
+		renderObjMaskFromBGAndWindow(memory, lcd, vram, m_objMaskBuffer, m_windowPriorityBuffer);
 
 		// OBJ描画
 		renderOBJCompletely(memory, lcd, vram, m_objMaskBuffer);
 	}
 
-	// Priorityフラグが付いたOBJ用のマスクを作成
-	void PPU::renderObjMaskFromBGAndWindow(Memory& memory, const LCD& lcd, VRAM& vram, const RenderTexture& objMaskBuffer)
+	void PPU::renderBGAndWindow(
+		Memory& memory, const LCD& lcd, VRAM& vram, const std::array<uint32, windowPriorityBufferSize_5>& windowEnableBuffer)
 	{
-		ConstantBuffer<TileBgAndWindowqDmgCb> tileCb{};
+		// パレット
+		ConstantBuffer<TileBgAndWindowDmgCb> tileCb{};
+
+		// BG兼 ウィンドウパレットを設定
+		for (int i=0; i<4; ++i) tileCb->palette[i] = displayColorPaletteF[lcd.BGPaletteData(i)].toFloat4();
+
+		// WindowEnable情報を設定
+		for (int i=0; i<windowEnableBuffer.size(); ++i) tileCb->windowPriorityBuffer[i * hlslPacking_4] = windowEnableBuffer[i];
+
+		// 転送
+		Graphics2D::SetPSConstantBuffer(1, tileCb);
+
+		// BG描画
+		renderBGCompletely(memory, lcd, vram);
+
+		// ウィンドウ描画
+		renderWindowCompletely(memory, lcd, vram);
+	}
+
+	// Priorityフラグが付いたOBJ用のマスクを作成
+	void PPU::renderObjMaskFromBGAndWindow(
+		Memory& memory, const LCD& lcd, VRAM& vram,
+		const RenderTexture& objMaskBuffer, const std::array<uint32, windowPriorityBufferSize_5>& windowEnableBuffer)
+	{
+		ConstantBuffer<TileBgAndWindowDmgCb> tileCb{};
 
 		const ScopedRenderTarget2D target{ objMaskBuffer };
 		(void)objMaskBuffer.clear(Palette::Black);
@@ -168,13 +198,18 @@ namespace GBEmu::HW
 		tileCb->palette[1] = Float4(0, 0, 0, 0);
 		tileCb->palette[2] = Float4(0, 0, 0, 0);
 		tileCb->palette[3] = Float4(0, 0, 0, 0);
+
+		// WindowEnable情報を設定
+		for (int i=0; i<windowEnableBuffer.size(); ++i) tileCb->windowPriorityBuffer[i] = windowEnableBuffer[i];
+
+		// 転送
 		Graphics2D::SetPSConstantBuffer(1, tileCb);
 
 		// BG描画
 		renderBGCompletely(memory, lcd, vram);
 
 		// ウィンドウ描画
-		if (lcd.IsWindowDisplayEnable()) renderWindowCompletely(memory, lcd, vram);
+		renderWindowCompletely(memory, lcd, vram);
 	}
 
 	void PPU::renderBGCompletely(Memory& memory, const LCD& lcd, VRAM& vram)

@@ -40,12 +40,13 @@ namespace GBEmu::HW
 	{
 	public:
 		PPU();
+		void updateWindowPriorityBuffer(LCD& lcd);
 
 		PPUResult StepCycle(HWEnv& env);
 
 		void Draw(const Point& pos, double scale) const;
 	private:
-		struct TileBgAndWindowqDmgCb;
+		struct TileBgAndWindowDmgCb;
 		struct TileObjDmgCb;
 
 		int m_dotCycle{};
@@ -55,17 +56,23 @@ namespace GBEmu::HW
 		RenderTexture m_renderBuffer{HWParam::DisplayResolution, ColorF{1.0}};
 		RenderTexture m_objMaskBuffer{HWParam::DisplayResolution, TextureFormat::R16G16_Float};
 
+		static constexpr int windowPriorityBufferSize_5 = 5; // displayHeight_144 / 32 + 1
+		std::array<uint32, windowPriorityBufferSize_5> m_windowPriorityBuffer{};
+
 		bool m_canSTATInterruptBefore{};
 
 		void checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged);
 
 		void renderAtVBlank(Memory& memory, const LCD& lcd) const;
 
-		static void renderBGAndWindow(Memory& memory, const LCD& lcd, VRAM& vram);
+		static void renderBGAndWindow(
+			Memory& memory, const LCD& lcd, VRAM& vram, const std::array<unsigned, 5>& windowEnableBuffer);
 		static void renderBGCompletely(Memory& memory, const LCD& lcd, VRAM& vram);
 		static void renderWindowCompletely(Memory& memory, const LCD& lcd, VRAM& vram);
 		static void renderOBJCompletely(Memory& memory, const LCD& lcd, VRAM& vram, const RenderTexture& objMask);
-		static void renderObjMaskFromBGAndWindow(Memory& memory, const LCD& lcd, VRAM& vram, const RenderTexture& objMaskBuffer);
+		static void renderObjMaskFromBGAndWindow(
+			Memory& memory, const LCD& lcd, VRAM& vram,
+			const RenderTexture& objMaskBuffer, const std::array<unsigned, 5>&windowEnableBuffer);
 
 		static Array<OAMData> correctOAM(Memory& memory, const LCD& lcd);
 
