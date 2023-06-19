@@ -256,8 +256,8 @@ namespace GBEmu::HW
 		{
 			for (int y= wy; y < displayHeight_144; y += 8)
 			{
-				const uint8 tileX = static_cast<uint8>(x) / 8;
-				const uint8 tileY = static_cast<uint8>(y) / 8;
+				const uint8 tileX = static_cast<uint8>(x - (wx - 7)) / 8;
+				const uint8 tileY = static_cast<uint8>(y - wy) / 8;
 
 				const uint16 tileIdAddr = windowBaseAddr + ((tileX + tileY * 32) & 0x3FFF);
 				const uint8 tileId = memory.Read(tileIdAddr);
