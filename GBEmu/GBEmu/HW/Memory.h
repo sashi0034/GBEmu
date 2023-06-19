@@ -29,11 +29,12 @@ namespace GBEmu::HW
 		static constexpr int MemorySize_0x10000 = 0x10000;
 
 	private:
+		std::array<uint8, MemorySize_0x10000> m_memory{};
+
 		Cartridge m_cartridge{};
 
 		LCD m_lcd;
 
-		std::array<uint8, MemorySize_0x10000> m_memory{};
 		VRAM m_vram{};
 
 		void writeIO(HWEnv& env, uint16 addr, uint8 data);

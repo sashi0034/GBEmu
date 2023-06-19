@@ -38,14 +38,14 @@ namespace GBEmu::HW
 		m_dotCycle = (m_dotCycle + 1) % dotCycleFreq_70224;
 		if (lcd.IsLCDDisplayEnable() == false) m_dotCycle = 0;
 
-		updateLY(env, lcd, m_dotCycle);
+		updateLY(lcd, m_dotCycle);
 
 		const auto modeBefore = m_mode;
 		m_mode = m_nextMode;
 		m_nextMode = judgePPUMode((m_dotCycle + 1) % dotCycleFreq_70224);
 
 		const bool isModeChanged = modeBefore != m_mode;
-		if (isModeChanged) lcd.SetMode(env, m_mode);
+		if (isModeChanged) lcd.SetMode(m_mode);
 
 		// モード分岐
 		if (m_mode == PPUMode::OAMSearch && m_mode != m_nextMode)
@@ -234,11 +234,12 @@ namespace GBEmu::HW
 		return result;
 	}
 
-	void PPU::updateLY(HWEnv& env, LCD& lcd, int dotCycle)
+	void PPU::updateLY(LCD& lcd, int dotCycle)
 	{
 		const uint8 ly = dotCycle / scanLineFreq_456;
 
-		lcd.SetLY(env, ly);
+		lcd.SetLY(ly);
+		lcd.UpdateLYCoincidenceFlag();
 	}
 
 	PPUMode PPU::judgePPUMode(int dotCycle)

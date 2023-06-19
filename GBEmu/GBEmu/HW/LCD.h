@@ -10,8 +10,19 @@ namespace GBEmu::HW
 	class LCD
 	{
 	public:
-		explicit LCD(Memory& memoryRef) : m_memoryRef(memoryRef){}
-
+		LCD() = default;
+		LCD(
+			uint8* lcdcPtr,
+			uint8* statPtr,
+			uint8* bg0Ptr,
+			uint8* obp0Ptr,
+			uint8* obp1Ptr,
+			uint8* scxPtr,
+			uint8* scyPtr,
+			uint8* lyPtr,
+			uint8* lycPtr,
+			uint8* wxPtr,
+			uint8* wyPtr);
 		// LCDC
 		bool IsLCDDisplayEnable() const;
 		uint16 WindowTileMapDisplayAddress() const;
@@ -28,14 +39,14 @@ namespace GBEmu::HW
 		bool IsVBlankInterruptEnable() const;
 		bool IsHBlankInterruptEnable() const;
 		bool LYCoincidenceFlag() const;
-		// void UpdateLYCoincidenceFlag(HWEnv& env);
-		void SetMode(HWEnv& env, PPUMode mode);
+		void UpdateLYCoincidenceFlag();
+		void SetMode(PPUMode mode);
 
 		// position and scrolling
 		uint8 SCY() const;
 		uint8 SCX() const;
 		uint8 LY() const;
-		void SetLY(HWEnv& env, uint8 ly);
+		void SetLY(uint8 ly);
 		uint8 LYC() const;
 		uint8 WX() const;
 		uint8 WY() const;
@@ -46,6 +57,17 @@ namespace GBEmu::HW
 		// TODO: メモリ参照をしない
 		uint8 lcdc() const;
 		uint8 stat() const;
-		Memory& m_memoryRef;
+
+		uint8* m_lcdcPtr;
+		uint8* m_statPtr;
+		uint8* m_bg0Ptr;
+		uint8* m_obp0Ptr;
+		uint8* m_obp1Ptr;
+		uint8* m_scxPtr;
+		uint8* m_scyPtr;
+		uint8* m_lyPtr;
+		uint8* m_lycPtr;
+		uint8* m_wxPtr;
+		uint8* m_wyPtr;
 	};
 }

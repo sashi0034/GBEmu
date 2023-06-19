@@ -63,7 +63,7 @@ namespace GBEmu::HW
 
 		static Array<OAMData> correctOAM(Memory& memory, LCD& lcd);
 
-		static void updateLY(HWEnv& env, LCD& lcd, int dotCycle);
+		static void updateLY(LCD& lcd, int dotCycle);
 		static PPUMode judgePPUMode(int dotCycle);
 		static Array<OAMData> scanOAM(HWEnv& env, LCD& lcd);
 		static void scanLineX(HWEnv& env, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, Image& bitmap);

@@ -27,7 +27,19 @@ namespace GBEmu::HW
 	using namespace MemoryAddress;
 
 	Memory::Memory() :
-		m_lcd(*this)
+		m_lcd(
+			&m_memory[LCDC_0xFF40],
+			&m_memory[STAT_0xFF41],
+			&m_memory[BGP_0xFF47],
+			&m_memory[OBP0_0xFF48],
+			&m_memory[OBP1_0xFF49],
+			&m_memory[SCX_0xFF43],
+			&m_memory[SCY_0xFF42],
+			&m_memory[LY_0xFF44],
+			&m_memory[LYC_0xFF45],
+			&m_memory[WX_0xFF4B],
+			&m_memory[WY_0xFF4A]
+			)
 	{}
 
 	uint8 Memory::Read(uint16 addr)
@@ -141,14 +153,6 @@ namespace GBEmu::HW
 		else if (addr == TAC_0xFF07)
 		{
 			m_memory[addr] = 0xF8 | (data & 0xF07);
-		}
-		else if (addr == LY_0xFF44 || addr == LYC_0xFF45)
-		{
-			m_memory[addr] = data;
-
-			// LY=LYC一致割り込み更新
-			m_memory[STAT_0xFF41] =
-				0x80 | (m_memory[STAT_0xFF41] & ~0b100) | (m_memory[LY_0xFF44] == m_memory[LYC_0xFF45] ? 0b100 : 0);
 		}
 		else if (addr == DMA_0xFF46)
 		{

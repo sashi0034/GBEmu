@@ -1,12 +1,36 @@
 ﻿#include "stdafx.h"
 #include "LCD.h"
 
-#include "Memory.h"
 #include "MemoryAddress.h"
 
 namespace GBEmu::HW
 {
 	using namespace MemoryAddress;
+
+	LCD::LCD(
+		uint8* lcdcPtr,
+		uint8* statPtr,
+		uint8* bg0Ptr,
+		uint8* obp0Ptr,
+		uint8* obp1Ptr,
+		uint8* scxPtr,
+		uint8* scyPtr,
+		uint8* lyPtr,
+		uint8* lycPtr,
+		uint8* wxPtr,
+		uint8* wyPtr) :
+			m_lcdcPtr(lcdcPtr),
+			m_statPtr(statPtr),
+			m_bg0Ptr(bg0Ptr),
+			m_obp0Ptr(obp0Ptr),
+			m_obp1Ptr(obp1Ptr),
+			m_scxPtr(scxPtr),
+			m_scyPtr(scyPtr),
+			m_lyPtr(lyPtr),
+			m_lycPtr(lycPtr),
+			m_wxPtr(wxPtr),
+			m_wyPtr(wyPtr)
+	{}
 
 	bool LCD::IsLCDDisplayEnable() const
 	{
@@ -74,72 +98,70 @@ namespace GBEmu::HW
 		return stat() & (1 << 2);
 	}
 
-	// void LCD::UpdateLYCoincidenceFlag(HWEnv& env)
-	// {
-	// 	m_memoryRef.Write(env, STAT_0xFF41,
-	// 		0x80 | (stat() & ~0b100) | (LY() == LYC() ? 0b100 : 0));
-	// }
-
-	void LCD::SetMode(HWEnv& env, PPUMode mode)
+	void LCD::UpdateLYCoincidenceFlag()
 	{
-		m_memoryRef.Write(env, STAT_0xFF41,
-			0x80 | (stat() & ~0b11) | (IsLCDDisplayEnable() ? static_cast<uint8>(mode) : 0));
+		*m_statPtr = 0x80 | (stat() & ~0b100) | (LY() == LYC() ? 0b100 : 0);
+	}
+
+	void LCD::SetMode(PPUMode mode)
+	{
+		*m_statPtr = 0x80 | (stat() & ~0b11) | (IsLCDDisplayEnable() ? static_cast<uint8>(mode) : 0);
 	}
 
 	uint8 LCD::SCY() const
 	{
-		return m_memoryRef.Read(0xFF42);
+		return *m_scyPtr;
 	}
 
 	uint8 LCD::SCX() const
 	{
-		return m_memoryRef.Read(0xFF43);
+		return *m_scxPtr;
 	}
 
 	uint8 LCD::LY() const
 	{
-		return m_memoryRef.Read(LY_0xFF44);
+		return *m_lyPtr;
 	}
 
-	void LCD::SetLY(HWEnv& env, uint8 ly)
+	void LCD::SetLY(uint8 ly)
 	{
-		m_memoryRef.Write(env, LY_0xFF44, ly);
+		*m_lyPtr = ly;
 	}
 
 	uint8 LCD::LYC() const
 	{
-		return m_memoryRef.Read(LYC_0xFF45);
+		return *m_lycPtr;
 	}
 
 	uint8 LCD::WX() const
 	{
-		return m_memoryRef.Read(0xFF4B);
+		return *m_wxPtr;
 	}
 
 	uint8 LCD::WY() const
 	{
-		return m_memoryRef.Read(0xFF4A);
+		return *m_wyPtr;
 	}
 
 	uint8 LCD::BGPaletteData(uint8 colorNumber) const
 	{
-		const uint8 bgp = m_memoryRef.Read(0xFF47);
+		const uint8 bgp = *m_bg0Ptr;
 		return (bgp >> (colorNumber * 2)) & 0b11;
 	}
 
 	uint8 LCD::ObjectPaletteData(bool isUseOBP1, uint8 colorNumber) const
 	{
-		const uint8 obp = m_memoryRef.Read(isUseOBP1 ? 0xFF49 : 0xFF48);
+		const uint8 obp = isUseOBP1 ? *m_obp1Ptr : *m_obp0Ptr;
 		return (obp >> (colorNumber * 2)) & 0b11;
 	}
 
 	uint8 LCD::lcdc() const
 	{
-		return m_memoryRef.Read(LCDC_0xFF40);
+		return *m_lcdcPtr;
 	}
 
 	uint8 LCD::stat() const
 	{
-		return m_memoryRef.Read(STAT_0xFF41);
+		return *m_statPtr;
 	}
 }
