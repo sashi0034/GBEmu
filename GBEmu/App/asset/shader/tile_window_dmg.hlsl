@@ -54,7 +54,7 @@ float4 PS(s3d::PSInput input) : SV_TARGET
 	
 	const int paletteIndex = (uint)(color0.x) * 2 + (uint)(color0.y);
 	color0 = g_palette[(uint)(enable) * paletteIndex];
-	color0.a = float(windowPriority);
+	color0.a *= float(windowPriority);
 	
 	return color0 + g_colorAdd;
 }
