@@ -5,24 +5,22 @@ namespace GBEmu::UI
 {
 	void UIBack::Draw()
 	{
-		Rect{ Scene::Size() }.draw(Color(32, 32,32));
-		return;
-
 		m_count++;
 
 		// 上下グラデーション
 		Rect{ Scene::Size() }.draw(
-			Arg::top = Color{ 0, 88, 116 },
-			Arg::bottom = Color{ 8, 32, 64 });
+			Arg::top = Color{ 32, 40, 32 },
+			Arg::bottom = Color{ 16, 24, 16 });
 
 		// ドット模様
-		for (int y=0; y<Scene::Size().y; y += 32)
+		constexpr int step = 32;
+		for (int y=0; y<Scene::Size().y; y += step)
 		{
-			const double animRate = (((m_count + y) % 120) / 120.0);
-			for (int x = 0; x< Scene::Size().x; x += 32)
+			const double animRate = ((m_count + y / step) % 60) / 60.0;
+			for (int x = 0; x< Scene::Size().x; x += step)
 			{
-				Circle{ x, y, 1 }.draw(Color{
-					static_cast<uint8>(96 + 40 * animRate), static_cast<uint8>(120 + 40 * animRate), static_cast<uint8>(200 + 40 * animRate) });
+				Circle{ x, y, 1}.draw(Color{
+					static_cast<uint8>(64 + 160 * animRate), static_cast<uint8>(196 + 48 * animRate), static_cast<uint8>(48 + 64 * animRate) });
 			}
 		}
 	}

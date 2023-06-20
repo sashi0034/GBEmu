@@ -12,7 +12,7 @@ namespace GBEmu::UI
 	class UIHud
 	{
 	public:
-		void DrawLeft(UIEnv& ui, HW::HWEnv& hw, const Point& start, int width);
+		void DrawLeft(UIEnv& ui, HW::HWEnv& hw, const Point& start, int width, int height);
 	private:
 
 	};

@@ -2,8 +2,8 @@
 #include "UIHud.h"
 
 #include "UIAsset.h"
+#include "GBEmu/ConstParam.h"
 #include "GBEmu/HW/HWEnv.h"
-#include "GBEmu/Util/Utils.h"
 
 namespace GBEmu::UI
 {
@@ -18,26 +18,39 @@ namespace GBEmu::UI
 		(void)rect.left().draw(LineStyle::SquareDot(offset), thickness);
 	}
 
-	void UIHud::DrawLeft(UIEnv& ui, HW::HWEnv& hw, const Point& start, int width)
+	void UIHud::DrawLeft(UIEnv& ui, HW::HWEnv& hw, const Point& start, int width, int height)
 	{
 		const Transformer2D transformer{ Mat3x2::Scale(1).translated(start) };
-		auto&& font = UIAsset::Instance().Font;
+		auto&& font = UIAsset::Instance().FontDotGothic18;
 
-		constexpr int line = 20;
-		constexpr int padding = -10;
-		constexpr int line_2 = 2;
+		constexpr int lineH = 24;
 
-		String message{};
-		message += U"PC: {:04X}\n"_fmt(hw.GetCPU().PC());
-		message += U"SP: {:04X}\n"_fmt(hw.GetCPU().SP());
-		message += U"IME: {}\n"_fmt(hw.GetCPU().IME());
-		message += U"instr: {}\n"_fmt(hw.GetCPU().FetchInstruction(hw.GetMemory()).ToString());
-		message += U"state: {}\n"_fmt(Util::StringifyEnum(hw.GetCPU().State()));
+		// Array<String> message{};
+		// message.push_back(U"OP={}"_fmt(hw.GetCPU().FetchInstruction(hw.GetMemory()).ToString()));
+		// message.push_back(U"PC={:04X}"_fmt(hw.GetCPU().PC()));
+		// message.push_back(U"SP={:04X}"_fmt(hw.GetCPU().SP()));
 
-		const Rect rect1{Point(0, line * 0), Point(width, line * (5 + line_2)) };
-		drawBorder(rect1);
-		(void)font(message).draw(rect1.stretched(padding));
+		String message1{};
+		message1 += U"OP={}"_fmt(hw.GetCPU().FetchInstruction(hw.GetMemory()).ToString());
+		message1 += U"\nPC={:04X}"_fmt(hw.GetCPU().PC());
+		message1 += U"\nSP={:04X}"_fmt(hw.GetCPU().SP());
 
+		constexpr int borderThickness = 3;
 
+		// 緑帯描画
+		(void)Rect{Point(-borderThickness, 0), Point(borderThickness, height) }.draw(ConstParam::ColorGamingGreen);
+
+		(void)Rect{Point(0, 0), Point(width, height) }.draw(
+			Arg::left = Color{ 16, 16, 16 },
+			Arg::right = Color{ 16, 16, 16, 0 });
+
+		constexpr int paddingY = 4;
+		constexpr int paddingX = 12;
+
+		font(message1).draw(Vec2(paddingX, paddingY), ColorF(0.5f, 0.5f, 0.5f));
+		// for (int i=0; i<message.size(); ++i)
+		// {
+		// 	font(message[i]).draw(Vec2(paddingX, paddingY) + Vec2::Down(lineH * i), ColorF(0.5f, 0.5f, 0.5f));
+		// }
 	}
 }

@@ -3,6 +3,7 @@
 
 #include "HWAsset.h"
 #include "MemoryAddress.h"
+#include "GBEmu/ConstParam.h"
 
 namespace GBEmu::HW
 {
@@ -63,8 +64,14 @@ namespace GBEmu::HW
 		// const ScopedRenderStates2D sampler{ SamplerState::ClampNearest };
 		const Transformer2D transformer{ Mat3x2::Scale(scale)
 			.translated(pos - scale * Point(width, height) / 2) };
-		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileDump };
 
+		// 緑帯描画
+		constexpr int borderThickness = 1;
+		(void)Rect(Point(-borderThickness, 0), Size(borderThickness, height))
+			.draw(ConstParam::ColorGamingGreen);
+
+		// タイル1枚ずつ
+		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileDump };
 		for (int y=0;; y+=tileEdge_8)
 		{
 			for (int x=0; x < columns * tileEdge_8; x+=tileEdge_8)

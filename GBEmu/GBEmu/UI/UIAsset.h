@@ -5,7 +5,7 @@ namespace GBEmu::UI
 	class UIAsset
 	{
 	public:
-		const Font Font{ 16, Typeface::Bold };
+		const Font FontDotGothic18{ 18, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bold };
 
 		static UIAsset& Instance();
 		UIAsset();

@@ -78,7 +78,7 @@ namespace GBEmu::EmuFlowchart
 
 			// HUD描画
 			const int hudWidth = Scene::Center().x - (hwScreen.x / 2) - (padding * 2);
-			uiEnv.Hud().DrawLeft(uiEnv, hwEnv, Point(padding, Scene::Center().y - hwScreen.y / 2), hudWidth);
+			uiEnv.Hud().DrawLeft(uiEnv, hwEnv, Point(padding, Scene::Center().y - hwScreen.y / 2), hudWidth, hwScreen.y);
 		}
 	}
 }
