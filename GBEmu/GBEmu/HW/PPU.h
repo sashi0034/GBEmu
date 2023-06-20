@@ -43,6 +43,9 @@ namespace GBEmu::HW
 		const LCD& LCD;
 		VRAM& VRAM;
 		const std::array<unsigned, 5>& WindowEnableBuffer;
+		const PPUAddressLYDiff& BGAndWindowTileDataDiff{};
+		const PPUAddressLYDiff& BGTileMapDisplayDiff{};
+		const PPUAddressLYDiff& WindowTileMapDisplayDiff{};
 	};
 
 	class PPU

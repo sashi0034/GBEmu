@@ -147,7 +147,11 @@ namespace GBEmu::HW
 
 		const auto renderBGAndWindowArgs = PPURenderBGAndWindowArgs{
 			memory, lcd, vram,
-			m_windowPriorityBuffer};
+			m_windowPriorityBuffer,
+			m_bgAndWindowTileDataDiff,
+			m_bgTileMapDisplayDiff,
+			m_windowTileMapDisplayDiff
+		};
 
 		// BGとウィンドウ描画
 		renderBGAndWindow(renderBGAndWindowArgs);
@@ -218,12 +222,21 @@ namespace GBEmu::HW
 		const int scxModulo = scx % 8;
 		const int scyModulo = scy % 8;
 
-		const uint16 bgBaseAddr = arg.LCD.BGTileMapDisplayAddress();
-		const uint16 tileDataBaseAddr = arg.LCD.BGAndWindowTileDataAddress();
-
-		for (int x = -8 + scxModulo; x< displayWidth_160 + scxModulo; x += 8)
+		int tileDataBaseIndex = 0;
+		int bgBaseIndex = 0;
+		for (int y= -8 + scyModulo; y < displayHeight_144 + scyModulo; y += 8)
 		{
-			for (int y= -8 + scyModulo; y < displayHeight_144 + scyModulo; y += 8)
+			// 描画中に割り込みでベースアドレスが変わっているかもしれないので、差分経歴を確認して反映
+			if (arg.BGAndWindowTileDataDiff.History().size() > tileDataBaseIndex + 1 &&
+				arg.BGAndWindowTileDataDiff.History()[tileDataBaseIndex + 1].LY <= y) tileDataBaseIndex++;
+			const uint16 tileDataBaseAddr = arg.BGAndWindowTileDataDiff.History()[tileDataBaseIndex].Address;
+
+			if (arg.BGTileMapDisplayDiff.History().size() > bgBaseIndex + 1 &&
+				arg.BGTileMapDisplayDiff.History()[bgBaseIndex + 1].LY <= y) bgBaseIndex++;
+			const uint16 bgBaseAddr = arg.BGTileMapDisplayDiff.History()[bgBaseIndex].Address;
+
+			// 水平方向描画
+			for (int x = -8 + scxModulo; x< displayWidth_160 + scxModulo; x += 8)
 			{
 				const uint8 scrolledX = static_cast<uint8>(x + scx);
 				const uint8 scrolledY = static_cast<uint8>(y + scy);
@@ -245,12 +258,21 @@ namespace GBEmu::HW
 		const uint8 wy = arg.LCD.WY();
 		const uint8 wx = arg.LCD.WX();
 
-		const uint16 tileDataBaseAddr = arg.LCD.BGAndWindowTileDataAddress();
-
-		const uint16 windowBaseAddr = arg.LCD.WindowTileMapDisplayAddress();
-		for (int x = wx - 7; x< displayWidth_160 + 8; x += 8)
+		int tileDataBaseIndex = 0;
+		int windowBaseIndex = 0;
+		for (int y= wy; y < displayHeight_144; y += 8)
 		{
-			for (int y= wy; y < displayHeight_144; y += 8)
+			// 描画中に割り込みでベースアドレスが変わっているかもしれないので、差分経歴を確認して反映
+			if (arg.BGAndWindowTileDataDiff.History().size() > tileDataBaseIndex + 1 &&
+				arg.BGAndWindowTileDataDiff.History()[tileDataBaseIndex + 1].LY <= y) tileDataBaseIndex++;
+			const uint16 tileDataBaseAddr = arg.BGAndWindowTileDataDiff.History()[tileDataBaseIndex].Address;
+
+			if (arg.WindowTileMapDisplayDiff.History().size() > windowBaseIndex + 1 &&
+				arg.WindowTileMapDisplayDiff.History()[windowBaseIndex + 1].LY <= y) windowBaseIndex++;
+			const uint16 windowBaseAddr = arg.WindowTileMapDisplayDiff.History()[windowBaseIndex].Address;
+
+			// 水平方向描画
+			for (int x = wx - 7; x< displayWidth_160 + 8; x += 8)
 			{
 				const uint8 tileX = static_cast<uint8>(x - (wx - 7)) / 8;
 				const uint8 tileY = static_cast<uint8>(y - wy) / 8;
