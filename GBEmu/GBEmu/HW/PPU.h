@@ -37,17 +37,6 @@ namespace GBEmu::HW
 		bool Palette() const {return (Flags >> 4) & 0b1; };
 	};
 
-	struct PPURenderBGAndWindowArgs
-	{
-		Memory& Memory;
-		const LCD& LCD;
-		VRAM& VRAM;
-		const std::array<unsigned, 5>& WindowEnableBuffer;
-		const PPUAddressLYDiff& BGAndWindowTileDataDiff{};
-		const PPUAddressLYDiff& BGTileMapDisplayDiff{};
-		const PPUAddressLYDiff& WindowTileMapDisplayDiff{};
-	};
-
 	class PPU
 	{
 	public:
@@ -57,10 +46,9 @@ namespace GBEmu::HW
 		PPUResult StepCycle(HWEnv& env);
 
 		void Draw(const Point& pos, double scale) const;
-	private:
-		struct TileBgAndWindowDmgCb;
-		struct TileObjDmgCb;
 
+		static constexpr int WindowPriorityBufferSize_5 = 5; // displayHeight_144 / 32 + 1
+	private:
 		int m_dotCycle{};
 		PPUMode m_nextMode = PPUMode::OAMSearch;
 		PPUMode m_mode = PPUMode::OAMSearch;
@@ -68,8 +56,7 @@ namespace GBEmu::HW
 		RenderTexture m_renderBuffer{HWParam::DisplayResolution, ColorF{1.0}};
 		RenderTexture m_objMaskBuffer{HWParam::DisplayResolution, TextureFormat::R16G16_Float};
 
-		static constexpr int windowPriorityBufferSize_5 = 5; // displayHeight_144 / 32 + 1
-		std::array<uint32, windowPriorityBufferSize_5> m_windowPriorityBuffer{};
+		std::array<uint32, WindowPriorityBufferSize_5> m_windowPriorityBuffer{};
 
 		PPUAddressLYDiff m_bgAndWindowTileDataDiff{};
 		PPUAddressLYDiff m_bgTileMapDisplayDiff{};
@@ -81,17 +68,8 @@ namespace GBEmu::HW
 
 		void renderAtVBlank(Memory& memory, const LCD& lcd) const;
 
-		static void renderBGAndWindow(const PPURenderBGAndWindowArgs& arg);
-		static void renderBGCompletely(const PPURenderBGAndWindowArgs& arg);
-		static void renderWindowCompletely(const PPURenderBGAndWindowArgs& arg);
-		static void renderOBJCompletely(Memory& memory, const LCD& lcd, VRAM& vram, const RenderTexture& objMask);
-		static void renderObjMaskFromBGAndWindow(const PPURenderBGAndWindowArgs& arg, const RenderTexture& objMaskBuffer);
-
-		static Array<OAMData> correctOAM(Memory& memory, const LCD& lcd);
-
 		static void updateLY(LCD& lcd, int dotCycle);
 		static PPUMode judgePPUMode(int dotCycle);
-
 
 		// Array<OAMData> m_oamBuffer{};
 		// Image m_bitmap{HWParam::DisplayResolution, ColorF{1.0}};
