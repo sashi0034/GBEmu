@@ -32,13 +32,6 @@ namespace GBEmu::HW
 		bool isMasking;
 	};
 
-	static const std::array<Color, 4> displayColorPalette{
-		Color{ 221, 255, 212 },
-		Palette::Lightgreen,
-		Color{ 29, 114, 61 },
-		Color{ 0, 51, 0 },
-	};
-
 	static const std::array<ColorF, 4> displayColorPaletteF{
 		ColorF{ 221 / 255.0, 255 / 255.0, 212 / 255.0 },
 		ColorF{ 144 / 255.0, 238 / 255.0, 144 / 255.0 },
@@ -68,25 +61,26 @@ namespace GBEmu::HW
 		if (isModeChanged) lcd.SetMode(m_mode);
 
 		// モード分岐
-		// if (m_mode == PPUMode::OAMSearch && m_mode != m_nextMode)
-		// {
-		// 	m_oamBuffer = scanOAM(env, lcd);
-		// 	m_fetcherX = 0;
-		// }
-		// else if (m_mode == PPUMode::PixelTransfer && m_fetcherX < displayWidth_160)
-		// {
-		// 	scanLineX(env, lcd, m_fetcherX, m_oamBuffer, m_bitmap);
-		// 	m_fetcherX++;
-		// }
 		if (m_mode == PPUMode::PixelTransfer && m_nextMode == PPUMode::HBlank)
 		{
 			// WindowEnableFlagを記憶
 			updateWindowPriorityBuffer(lcd);
+
+			// アドレス差分を記憶
+			const auto ly = lcd.LY();
+			m_bgAndWindowTileDataDiff.TrackAddressLY(lcd.BGAndWindowTileDataAddress(), ly);
+			m_bgTileMapDisplayDiff.TrackAddressLY(lcd.BGTileMapDisplayAddress(), ly);
+			m_windowTileMapDisplayDiff.TrackAddressLY(lcd.WindowTileMapDisplayAddress(), ly);
 		}
 		else if (m_mode == PPUMode::HBlank && m_nextMode == PPUMode::VBlank)
 		{
 			// 画面描画
 			renderAtVBlank(env.GetMemory(), lcd);
+
+			// いろいろクリア
+			m_bgAndWindowTileDataDiff.Clear();
+			m_bgTileMapDisplayDiff.Clear();
+			m_windowTileMapDisplayDiff.Clear();
 		}
 
 		// 割り込みチェック
@@ -151,42 +145,44 @@ namespace GBEmu::HW
 
 		(void)m_renderBuffer.clear(Palette::Black);
 
+		const auto renderBGAndWindowArgs = PPURenderBGAndWindowArgs{
+			memory, lcd, vram,
+			m_windowPriorityBuffer};
+
 		// BGとウィンドウ描画
-		renderBGAndWindow(memory, lcd, vram, m_windowPriorityBuffer);
+		renderBGAndWindow(renderBGAndWindowArgs);
 
 		// OBJマスク作成
-		renderObjMaskFromBGAndWindow(memory, lcd, vram, m_objMaskBuffer, m_windowPriorityBuffer);
+		renderObjMaskFromBGAndWindow(renderBGAndWindowArgs, m_objMaskBuffer);
 
 		// OBJ描画
 		renderOBJCompletely(memory, lcd, vram, m_objMaskBuffer);
 	}
 
-	void PPU::renderBGAndWindow(
-		Memory& memory, const LCD& lcd, VRAM& vram, const std::array<uint32, windowPriorityBufferSize_5>& windowEnableBuffer)
+	void PPU::renderBGAndWindow(const PPURenderBGAndWindowArgs& arg)
 	{
 		// パレット
 		ConstantBuffer<TileBgAndWindowDmgCb> tileCb{};
 
 		// BG兼 ウィンドウパレットを設定
-		for (int i=0; i<4; ++i) tileCb->palette[i] = displayColorPaletteF[lcd.BGPaletteData(i)].toFloat4();
+		for (int i=0; i<4; ++i) tileCb->palette[i] = displayColorPaletteF[arg.LCD.BGPaletteData(i)].toFloat4();
 
 		// WindowEnable情報を設定
-		for (int i=0; i<windowEnableBuffer.size(); ++i) tileCb->windowPriorityBuffer[i * hlslPacking_4] = windowEnableBuffer[i];
+		for (int i=0; i<arg.WindowEnableBuffer.size(); ++i)
+			tileCb->windowPriorityBuffer[i * hlslPacking_4] = arg.WindowEnableBuffer[i];
 
 		// 転送
 		Graphics2D::SetPSConstantBuffer(1, tileCb);
 
 		// BG描画
-		renderBGCompletely(memory, lcd, vram);
+		renderBGCompletely(arg);
 
 		// ウィンドウ描画
-		renderWindowCompletely(memory, lcd, vram);
+		renderWindowCompletely(arg);
 	}
 
 	// Priorityフラグが付いたOBJ用のマスクを作成
-	void PPU::renderObjMaskFromBGAndWindow(
-		Memory& memory, const LCD& lcd, VRAM& vram,
-		const RenderTexture& objMaskBuffer, const std::array<uint32, windowPriorityBufferSize_5>& windowEnableBuffer)
+	void PPU::renderObjMaskFromBGAndWindow(const PPURenderBGAndWindowArgs& arg, const RenderTexture& objMaskBuffer)
 	{
 		ConstantBuffer<TileBgAndWindowDmgCb> tileCb{};
 
@@ -200,30 +196,30 @@ namespace GBEmu::HW
 		tileCb->palette[3] = Float4(0, 0, 0, 0);
 
 		// WindowEnable情報を設定
-		for (int i=0; i<windowEnableBuffer.size(); ++i) tileCb->windowPriorityBuffer[i] = windowEnableBuffer[i];
+		for (int i=0; i<arg.WindowEnableBuffer.size(); ++i) tileCb->windowPriorityBuffer[i] = arg.WindowEnableBuffer[i];
 
 		// 転送
 		Graphics2D::SetPSConstantBuffer(1, tileCb);
 
 		// BG描画
-		renderBGCompletely(memory, lcd, vram);
+		renderBGCompletely(arg);
 
 		// ウィンドウ描画
-		renderWindowCompletely(memory, lcd, vram);
+		renderWindowCompletely(arg);
 	}
 
-	void PPU::renderBGCompletely(Memory& memory, const LCD& lcd, VRAM& vram)
+	void PPU::renderBGCompletely(const PPURenderBGAndWindowArgs& arg)
 	{
 		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileBgDMG };
 
-		const uint8 scy = lcd.SCY();
-		const uint8 scx = lcd.SCX();
+		const uint8 scy = arg.LCD.SCY();
+		const uint8 scx = arg.LCD.SCX();
 
 		const int scxModulo = scx % 8;
 		const int scyModulo = scy % 8;
 
-		const uint16 bgBaseAddr = lcd.BGTileMapDisplayAddress();
-		const uint16 tileDataBaseAddr = lcd.BGAndWindowTileDataAddress();
+		const uint16 bgBaseAddr = arg.LCD.BGTileMapDisplayAddress();
+		const uint16 tileDataBaseAddr = arg.LCD.BGAndWindowTileDataAddress();
 
 		for (int x = -8 + scxModulo; x< displayWidth_160 + scxModulo; x += 8)
 		{
@@ -236,22 +232,22 @@ namespace GBEmu::HW
 				const uint8 tileY = scrolledY / 8;
 
 				const uint16 tileIdAddr = bgBaseAddr + ((tileX + tileY * 32) & 0x03FF);
-				const uint8 tileId = memory.Read(tileIdAddr);
-				(void)vram.GetTileData(tileDataBaseAddr, tileId).draw(x, y);
+				const uint8 tileId = arg.Memory.Read(tileIdAddr);
+				(void)arg.VRAM.GetTileData(tileDataBaseAddr, tileId).draw(x, y);
 			}
 		}
 	}
 
-	void PPU::renderWindowCompletely(Memory& memory, const LCD& lcd, VRAM& vram)
+	void PPU::renderWindowCompletely(const PPURenderBGAndWindowArgs& arg)
 	{
 		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileWindowDMG };
 
-		const uint8 wy = lcd.WY();
-		const uint8 wx = lcd.WX();
+		const uint8 wy = arg.LCD.WY();
+		const uint8 wx = arg.LCD.WX();
 
-		const uint16 tileDataBaseAddr = lcd.BGAndWindowTileDataAddress();
+		const uint16 tileDataBaseAddr = arg.LCD.BGAndWindowTileDataAddress();
 
-		const uint16 windowBaseAddr = lcd.WindowTileMapDisplayAddress();
+		const uint16 windowBaseAddr = arg.LCD.WindowTileMapDisplayAddress();
 		for (int x = wx - 7; x< displayWidth_160 + 8; x += 8)
 		{
 			for (int y= wy; y < displayHeight_144; y += 8)
@@ -260,8 +256,8 @@ namespace GBEmu::HW
 				const uint8 tileY = static_cast<uint8>(y - wy) / 8;
 
 				const uint16 tileIdAddr = windowBaseAddr + ((tileX + tileY * 32) & 0x03FF);
-				const uint8 tileId = memory.Read(tileIdAddr);
-				(void)vram.GetTileData(tileDataBaseAddr, tileId).draw(x, y);
+				const uint8 tileId = arg.Memory.Read(tileIdAddr);
+				(void)arg.VRAM.GetTileData(tileDataBaseAddr, tileId).draw(x, y);
 			}
 		}
 	}

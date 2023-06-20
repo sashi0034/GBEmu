@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "HWParams.h"
 #include "LCD.h"
+#include "PPUAddressLYDiff.h"
 #include "VRAM.h"
 
 namespace GBEmu::HW
@@ -36,6 +37,14 @@ namespace GBEmu::HW
 		bool Palette() const {return (Flags >> 4) & 0b1; };
 	};
 
+	struct PPURenderBGAndWindowArgs
+	{
+		Memory& Memory;
+		const LCD& LCD;
+		VRAM& VRAM;
+		const std::array<unsigned, 5>& WindowEnableBuffer;
+	};
+
 	class PPU
 	{
 	public:
@@ -59,25 +68,27 @@ namespace GBEmu::HW
 		static constexpr int windowPriorityBufferSize_5 = 5; // displayHeight_144 / 32 + 1
 		std::array<uint32, windowPriorityBufferSize_5> m_windowPriorityBuffer{};
 
+		PPUAddressLYDiff m_bgAndWindowTileDataDiff{};
+		PPUAddressLYDiff m_bgTileMapDisplayDiff{};
+		PPUAddressLYDiff m_windowTileMapDisplayDiff{};
+
 		bool m_canSTATInterruptBefore{};
 
 		void checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged);
 
 		void renderAtVBlank(Memory& memory, const LCD& lcd) const;
 
-		static void renderBGAndWindow(
-			Memory& memory, const LCD& lcd, VRAM& vram, const std::array<unsigned, 5>& windowEnableBuffer);
-		static void renderBGCompletely(Memory& memory, const LCD& lcd, VRAM& vram);
-		static void renderWindowCompletely(Memory& memory, const LCD& lcd, VRAM& vram);
+		static void renderBGAndWindow(const PPURenderBGAndWindowArgs& arg);
+		static void renderBGCompletely(const PPURenderBGAndWindowArgs& arg);
+		static void renderWindowCompletely(const PPURenderBGAndWindowArgs& arg);
 		static void renderOBJCompletely(Memory& memory, const LCD& lcd, VRAM& vram, const RenderTexture& objMask);
-		static void renderObjMaskFromBGAndWindow(
-			Memory& memory, const LCD& lcd, VRAM& vram,
-			const RenderTexture& objMaskBuffer, const std::array<unsigned, 5>&windowEnableBuffer);
+		static void renderObjMaskFromBGAndWindow(const PPURenderBGAndWindowArgs& arg, const RenderTexture& objMaskBuffer);
 
 		static Array<OAMData> correctOAM(Memory& memory, const LCD& lcd);
 
 		static void updateLY(LCD& lcd, int dotCycle);
 		static PPUMode judgePPUMode(int dotCycle);
+
 
 		// Array<OAMData> m_oamBuffer{};
 		// Image m_bitmap{HWParam::DisplayResolution, ColorF{1.0}};
