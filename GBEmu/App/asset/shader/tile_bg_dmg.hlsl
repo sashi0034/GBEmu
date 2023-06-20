@@ -47,9 +47,10 @@ float4 PS(s3d::PSInput input) : SV_TARGET
 	float4 color0 = g_texture0.Sample(g_sampler0, input.uv);
 
 	const float y = input.position.y;
+	const uint y32 = uint(y) & 0x1F; // y mod 32 
 	const BGAndWindowFlag128 flag = g_windowPriorityBuffer[uint(y / 32)]; 
-	const bool windowPriority = flag.windowPriority & (1 << uint(y % 32));
-	const bool enable = flag.enable & (1 << uint(y % 32));
+	const bool windowPriority = flag.windowPriority & (1 << y32);
+	const bool enable = flag.enable & (1 << y32);
 
 	const int paletteIndex = (uint)(color0.x) * 2 + (uint)(color0.y);
 	color0 = g_palette[(uint)(enable) * paletteIndex];
