@@ -29,8 +29,8 @@ namespace GBEmu::HW
 		uint8 TileIndex;
 		uint8 Flags;
 
-		uint8 ActualY() const {return Y - 16; }
-		uint8 ActualX() const {return X - 8; }
+		int ActualY() const {return static_cast<int>(Y) - 16; }
+		int ActualX() const {return static_cast<int>(X) - 8; }
 		bool FlagPriorityBGAndWindow() const {return (Flags >> 7) & 0b1; };
 		bool FlagYFlip() const {return (Flags >> 6) & 0b1; };
 		bool FlagXFlip() const {return (Flags >> 5) & 0b1; };
