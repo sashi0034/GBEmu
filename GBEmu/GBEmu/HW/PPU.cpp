@@ -235,7 +235,7 @@ namespace GBEmu::HW
 				const uint8 tileX = scrolledX / 8;
 				const uint8 tileY = scrolledY / 8;
 
-				const uint16 tileIdAddr = bgBaseAddr + ((tileX + tileY * 32) & 0x3FFF);
+				const uint16 tileIdAddr = bgBaseAddr + ((tileX + tileY * 32) & 0x03FF);
 				const uint8 tileId = memory.Read(tileIdAddr);
 				(void)vram.GetTileData(tileDataBaseAddr, tileId).draw(x, y);
 			}
@@ -259,7 +259,7 @@ namespace GBEmu::HW
 				const uint8 tileX = static_cast<uint8>(x - (wx - 7)) / 8;
 				const uint8 tileY = static_cast<uint8>(y - wy) / 8;
 
-				const uint16 tileIdAddr = windowBaseAddr + ((tileX + tileY * 32) & 0x3FFF);
+				const uint16 tileIdAddr = windowBaseAddr + ((tileX + tileY * 32) & 0x03FF);
 				const uint8 tileId = memory.Read(tileIdAddr);
 				(void)vram.GetTileData(tileDataBaseAddr, tileId).draw(x, y);
 			}
