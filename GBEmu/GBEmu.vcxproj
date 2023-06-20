@@ -229,6 +229,10 @@
     <ClCompile Include="GBEmu\HW\PPURender.cpp" />
     <ClCompile Include="GBEmu\HW\VRAM.cpp" />
     <ClCompile Include="GBEmu\HW\Timer.cpp" />
+    <ClCompile Include="GBEmu\UI\UIAsset.cpp" />
+    <ClCompile Include="GBEmu\UI\UIBack.cpp" />
+    <ClCompile Include="GBEmu\UI\UIHud.cpp" />
+    <ClCompile Include="GBEmu\UI\UIEnv.cpp" />
     <ClCompile Include="GBEmu\Util\Range.cpp" />
     <ClCompile Include="GBEmu\Util\Utils.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -460,6 +464,10 @@
     <ClInclude Include="GBEmu\HW\PPURender.h" />
     <ClInclude Include="GBEmu\HW\VRAM.h" />
     <ClInclude Include="GBEmu\HW\Timer.h" />
+    <ClInclude Include="GBEmu\UI\UIAsset.h" />
+    <ClInclude Include="GBEmu\UI\UIBack.h" />
+    <ClInclude Include="GBEmu\UI\UIHud.h" />
+    <ClInclude Include="GBEmu\UI\UIEnv.h" />
     <ClInclude Include="GBEmu\Util\Range.h" />
     <ClInclude Include="GBEmu\Util\Utils.h" />
     <ClInclude Include="Include\magic_enum\magic_enum.hpp" />

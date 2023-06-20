@@ -44,11 +44,13 @@ float4 PS(s3d::PSInput input) : SV_TARGET
 {
 	float4 texColor = g_texture0.Sample(g_sampler0, input.uv);
 
-	texColor.rgb = texColor.r * 0.5 + texColor.g * 0.25;
+	const float black = 0.1;
+	const float brightness = 0.3;
+	texColor.rgb = black + brightness * (texColor.r * 0.5 + texColor.g * 0.25);
 	
 	texColor.r *= 0.9;
-	texColor.g *= 1.0;
-	texColor.b *= 1.1;
+	texColor.g *= 1.1;
+	texColor.b *= 0.9;
 
 	return (texColor * input.color) + g_colorAdd;
 }

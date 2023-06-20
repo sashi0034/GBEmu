@@ -6,6 +6,8 @@
 #include "HW/HWEnv.h"
 #include "HW/HWFrame.h"
 #include "HW/Memory.h"
+#include "UI/UIAsset.h"
+#include "UI/UIEnv.h"
 
 namespace GBEmu::EmuFlowchart
 {
@@ -30,6 +32,7 @@ namespace GBEmu::EmuFlowchart
 	{
 		// シングルトン系の生成
 		HW::HWAsset hwAsset{};
+		UI::UIAsset uiAsset{};
 
 		// シーン設定など
 		Window::SetStyle(WindowStyle::Sizable);
@@ -49,24 +52,33 @@ namespace GBEmu::EmuFlowchart
 		Console.open();
 		Console.writeln(U"setup ...");
 
-		HW::HWEnv env{};
+		HW::HWEnv hwEnv{};
+		UI::UIEnv uiEnv{};
 
-		env.GetMemory().LoadCartridge(config.CartridgePath);
+		hwEnv.GetMemory().LoadCartridge(config.CartridgePath);
 
+		// TODO: 60FPS control
 		while (System::Update())
 		{
-			HW::HWFrame::EmulateFrame(env);
-			constexpr double pixelScale = 4;
+			HW::HWFrame::EmulateFrame(hwEnv);
+			constexpr double pixelScale = 5;
+
+			// 背景描画
+			uiEnv.Back().Draw();
 
 			// エミュレータ画面描画
-			const auto hwScreen = env.GetPPU().DrawAt(Scene::Center(),  pixelScale);
+			const auto hwScreen = hwEnv.GetPPU().DrawAt(Scene::Center(),  pixelScale);
 			constexpr int padding = 64;
-			env.Debugger().Draw(env, Scene::Center() + Point::Right(hwScreen.x / 2 + padding));
+			// hwEnv.Debugger().Draw(hwEnv, Point(padding, padding));
 
 			// VRAM領域描画
-			env.GetMemory().GetVRAM().DumpDrawAt(
+			hwEnv.GetMemory().GetVRAM().DumpDrawAt(
 				Scene::Center() + Point::Down(hwScreen.y / 2 + (Scene::Size().y - hwScreen.y) / 4),
 				pixelScale / 2.0);
+
+			// HUD描画
+			const int hudWidth = Scene::Center().x - (hwScreen.x / 2) - (padding * 2);
+			uiEnv.Hud().DrawLeft(uiEnv, hwEnv, Point(padding, Scene::Center().y - hwScreen.y / 2), hudWidth);
 		}
 	}
 }

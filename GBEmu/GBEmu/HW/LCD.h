@@ -54,7 +54,6 @@ namespace GBEmu::HW
 		uint8 BGPaletteData(uint8 colorNumber) const;
 		uint8 ObjectPaletteData(bool isUseOBP1, uint8 colorNumber) const;
 	private:
-		// TODO: メモリ参照をしない
 		uint8 lcdc() const;
 		uint8 stat() const;
 
