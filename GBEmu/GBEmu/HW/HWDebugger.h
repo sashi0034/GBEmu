@@ -35,8 +35,8 @@ namespace GBEmu::HW
 		void OnMemoryWrite(uint16 address, uint8 data);
 		bool IsDebugSuspend() const { return m_isDebugSuspend; };
 	private:
-		const Font m_font{16};
-		static constexpr int lineMargin = 20;
+		const Font m_font{28};
+		static constexpr int lineMargin = 32;
 
 		std::array<unsigned short, 256> m_foundInstructionDistribution{};
 		std::array<unsigned short, 256> m_foundInstructionCBDistribution{};

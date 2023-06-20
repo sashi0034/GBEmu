@@ -28,10 +28,19 @@ namespace GBEmu::EmuFlowchart
 
 	void RunEmu()
 	{
-		HW::HWAsset::CreateInstance();
+		// シングルトン系の生成
+		HW::HWAsset hwAsset{};
 
+		// シーン設定など
+		Window::SetStyle(WindowStyle::Sizable);
+		Scene::SetResizeMode(ResizeMode::Keep);
+		constexpr Size sceneSize = {1920, 1080};
+		Scene::Resize(sceneSize.x, sceneSize.y);
+		Window::Resize(1280, 720);
+		Scene::SetBackground(ColorF{ 0.3, 0.3, 0.3 });
+
+		// エミュレータ設定
 		EmuConfig config = DefaultEmuConfig;
-
 		if (FileSystem::Exists(config.CartridgePath) == false)
 		{
 			if (selectFileFromExplorer(config) == false) return;
@@ -47,11 +56,17 @@ namespace GBEmu::EmuFlowchart
 		while (System::Update())
 		{
 			HW::HWFrame::EmulateFrame(env);
-			env.GetPPU().Draw(Point{0, 0},  3);
-			env.Debugger().Draw(env, Point{512, 100});
-			env.GetMemory().GetVRAM().DumpDraw(Point{16, 480});
-		}
+			constexpr double pixelScale = 4;
 
-		HW::HWAsset::DestroyInstance();
+			// エミュレータ画面描画
+			const auto hwScreen = env.GetPPU().DrawAt(Scene::Center(),  pixelScale);
+			constexpr int padding = 64;
+			env.Debugger().Draw(env, Scene::Center() + Point::Right(hwScreen.x / 2 + padding));
+
+			// VRAM領域描画
+			env.GetMemory().GetVRAM().DumpDrawAt(
+				Scene::Center() + Point::Down(hwScreen.y / 2 + (Scene::Size().y - hwScreen.y) / 4),
+				pixelScale / 2.0);
+		}
 	}
 }

@@ -45,7 +45,7 @@ namespace GBEmu::HW
 
 		PPUResult StepCycle(HWEnv& env);
 
-		void Draw(const Point& pos, double scale) const;
+		Size DrawAt(const Point& pos, double scale) const;
 	private:
 		int m_dotCycle{};
 		PPUMode m_nextMode = PPUMode::OAMSearch;

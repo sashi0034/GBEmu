@@ -150,6 +150,90 @@
     <ClCompile Include="GBEmu\EmuFlowchart.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GBEmu\ConstParam.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\DebugParam.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\EmuLogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\Cartridge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\CPU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\CPUInstruction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\CPUInstructionCB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\CPUOperation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\CPUOperationCB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\HWAsset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\HWDebugger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\HWEnv.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\HWFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\HWLogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\Interruption.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\Joypad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\LCD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\MBC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\Memory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\MemoryAddress.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\HWParams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\PPU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\PPUAddressLYDiff.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\PPURender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\VRAM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\HW\Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\Util\Range.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBEmu\Util\Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -738,6 +822,9 @@
     <None Include="App\engine\font\min\siv3d-min.woff">
       <Filter>Resource Files\engine\font\min</Filter>
     </None>
+    <None Include="App\asset\shader\tile_obj_dmg.hlsl" />
+    <None Include="App\asset\shader\tile_window_dmg.hlsl" />
+    <None Include="App\asset\shader\tile_bg_dmg.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="App\example\test.mp3">
@@ -786,6 +873,96 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GBEmu\EmuFlowchart.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\ConstParam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\DebugParam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\EmuLogger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\Cartridge.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\CPU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\CPUInstruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\CPUInstructionCB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\CPUOperation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\CPUOperationCB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\HWAsset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\HWDebugger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\HWEnv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\HWFrame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\HWLogger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\Interruption.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\Joypad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\LCD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\MBC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\Memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\MemoryAddress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\HWParams.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\PPU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\PPUAddressLYDiff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\PPURender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\VRAM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\HW\Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\Util\Range.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBEmu\Util\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\magic_enum\magic_enum.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\nameof\nameof.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

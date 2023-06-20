@@ -17,7 +17,7 @@ namespace GBEmu::HW
 
 		TextureRegion GetTileData(uint16 baseAddr, uint8 tileId);
 
-		void DumpDraw(const Vec2& pos);
+		void DumpDrawAt(const Vec2& pos, double scale);
 		void CheckRefreshAtlas();
 
 		RenderTexture& Atlas(){return m_tileAtlas; }

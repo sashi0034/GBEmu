@@ -99,11 +99,13 @@ namespace GBEmu::HW
 		}
 	}
 
-	void PPU::Draw(const Point& pos, double scale) const
+	Size PPU::DrawAt(const Point& pos, double scale) const
 	{
 		const ScopedRenderStates2D sampler{ SamplerState::ClampNearest };
 
-		(void)m_renderBuffer.scaled(scale).draw(pos);
+		(void)m_renderBuffer.scaled(scale).drawAt(pos);
+
+		return (m_renderBuffer.size() * scale).asPoint();
 	}
 
 	void PPU::checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged)

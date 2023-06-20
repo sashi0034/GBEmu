@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "VRAM.h"
 
+#include "HWAsset.h"
 #include "MemoryAddress.h"
 
 namespace GBEmu::HW
@@ -50,17 +51,26 @@ namespace GBEmu::HW
 		return m_tileAtlas(tileIndex * tileEdge_8, 0, tileEdge_8, tileEdge_8);
 	}
 
-	void VRAM::DumpDraw(const Vec2& pos)
+	void VRAM::DumpDrawAt(const Vec2& pos, double scale)
 	{
 		CheckRefreshAtlas();
 
+		constexpr int rows = 6;
+		constexpr int columns = tileAmount_384 / rows;
+		constexpr int width = tileEdge_8 * columns;
+		constexpr int height = tileEdge_8 * rows;
+
+		// const ScopedRenderStates2D sampler{ SamplerState::ClampNearest };
+		const Transformer2D transformer{ Mat3x2::Scale(scale)
+			.translated(pos - scale * Point(width, height) / 2) };
+		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileDump };
+
 		for (int y=0;; y+=tileEdge_8)
 		{
-			constexpr int columns = 64;
 			for (int x=0; x < columns * tileEdge_8; x+=tileEdge_8)
 			{
-				m_tileAtlas((x + y * columns), 0, tileEdge_8, tileEdge_8).draw(pos + Point(x, y));
 				if ((x + y * columns) >= tileAmount_384 * tileEdge_8) goto exit;
+				m_tileAtlas((x + y * columns), 0, tileEdge_8, tileEdge_8).draw(Point(x, y));
 			}
 		}
 		exit:;

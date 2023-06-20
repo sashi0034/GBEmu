@@ -3,20 +3,20 @@
 
 namespace GBEmu::HW
 {
-	HWAsset* HWAsset::m_instance = nullptr;
+	HWAsset* HWAsset::globalInstance = nullptr;
 
 	HWAsset& HWAsset::Instance()
 	{
-		return *m_instance;
+		return *globalInstance;
 	}
 
-	void HWAsset::CreateInstance()
+	HWAsset::HWAsset()
 	{
-		m_instance = new HWAsset();
+		if (globalInstance == nullptr) globalInstance = this;
 	}
 
-	void HWAsset::DestroyInstance()
+	HWAsset::~HWAsset()
 	{
-		delete m_instance;
+		if (globalInstance == this) globalInstance = nullptr;
 	}
 }

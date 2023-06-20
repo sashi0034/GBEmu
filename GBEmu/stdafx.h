@@ -7,3 +7,4 @@
 #include <Siv3D.hpp>
 #include "Include/magic_enum/magic_enum.hpp"
 #include "Include/nameof/nameof.hpp"
+#include <boost/coroutine2/coroutine.hpp>
