@@ -2,7 +2,7 @@
 #include "HWParams.h"
 #include "LCD.h"
 #include "PPUAddressLYDiff.h"
-#include "VRAM.h"
+#include "PPURender.h"
 
 namespace GBEmu::HW
 {
@@ -41,13 +41,11 @@ namespace GBEmu::HW
 	{
 	public:
 		PPU();
-		void updateWindowPriorityBuffer(LCD& lcd);
+		void updateBGAndWindowFlagBuffer(LCD& lcd);
 
 		PPUResult StepCycle(HWEnv& env);
 
 		void Draw(const Point& pos, double scale) const;
-
-		static constexpr int WindowPriorityBufferSize_5 = 5; // displayHeight_144 / 32 + 1
 	private:
 		int m_dotCycle{};
 		PPUMode m_nextMode = PPUMode::OAMSearch;
@@ -56,7 +54,7 @@ namespace GBEmu::HW
 		RenderTexture m_renderBuffer{HWParam::DisplayResolution, ColorF{1.0}};
 		RenderTexture m_objMaskBuffer{HWParam::DisplayResolution, TextureFormat::R16G16_Float};
 
-		std::array<uint32, WindowPriorityBufferSize_5> m_windowPriorityBuffer{};
+		std::array<BGAndWindowFlag128, BGAndWindowFlagBufferSize_5> m_bgAndWindowFlagBuffer{};
 
 		PPUAddressLYDiff m_bgAndWindowTileDataDiff{};
 		PPUAddressLYDiff m_bgTileMapDisplayDiff{};

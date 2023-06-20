@@ -44,7 +44,7 @@ namespace GBEmu::HW
 		if (m_mode == PPUMode::PixelTransfer && m_nextMode == PPUMode::HBlank)
 		{
 			// WindowEnableFlagを記憶
-			updateWindowPriorityBuffer(lcd);
+			updateBGAndWindowFlagBuffer(lcd);
 
 			// アドレス差分を記憶
 			const auto ly = lcd.LY();
@@ -71,18 +71,31 @@ namespace GBEmu::HW
 		};
 	}
 
-	void PPU::updateWindowPriorityBuffer(LCD& lcd)
+	void PPU::updateBGAndWindowFlagBuffer(LCD& lcd)
 	{
 		const int ly = lcd.LY(); // 0~143
 		if (ly < 0 || 144 <= ly) return;
 
+		auto&& buffer = m_bgAndWindowFlagBuffer[ly / 32];
+
+		// 0x00
 		if (lcd.IsWindowDisplayEnable() && ly >= lcd.WY())
 		{
-			m_windowPriorityBuffer[ly / 32] |= 1 << (ly % 32);
+			buffer.WindowPriority |= 1 << (ly % 32);
 		}
 		else
 		{
-			m_windowPriorityBuffer[ly / 32] &= ~(1 << (ly % 32));
+			buffer.WindowPriority &= ~(1 << (ly % 32));
+		}
+
+		// 0x20
+		if (lcd.IsBGAndWindowEnable())
+		{
+			buffer.Enable |= 1 << (ly % 32);
+		}
+		else
+		{
+			buffer.Enable &= ~(1 << (ly % 32));
 		}
 	}
 
@@ -127,7 +140,7 @@ namespace GBEmu::HW
 
 		const auto renderBGAndWindowArgs = PPURenderBGAndWindowArgs{
 			memory, lcd, vram,
-			m_windowPriorityBuffer,
+			m_bgAndWindowFlagBuffer,
 			m_bgAndWindowTileDataDiff,
 			m_bgTileMapDisplayDiff,
 			m_windowTileMapDisplayDiff

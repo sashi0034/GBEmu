@@ -10,7 +10,6 @@ namespace GBEmu::HW::PPURender
 {
 	constexpr int displayWidth_160 = HWParam::DisplayResolution.x;
 	constexpr int displayHeight_144 = HWParam::DisplayResolution.y;
-	constexpr int windowPriorityBufferSize_5 = PPU::WindowPriorityBufferSize_5;
 
 	using namespace MemoryAddress;
 
@@ -21,12 +20,10 @@ namespace GBEmu::HW::PPURender
 		ColorF{ 0 / 255.0, 51 / 255.0, 0 / 255.0 },
 	};
 
-	constexpr int hlslPacking_4 = 4;
-
 	struct TileBgAndWindowDmgCb
 	{
 		Float4 palette[4];
-		uint32 windowPriorityBuffer[windowPriorityBufferSize_5 * hlslPacking_4];
+		BGAndWindowFlag128 windowPriorityBuffer[BGAndWindowFlagBufferSize_5];
 	};
 
 	struct TileObjDmgCb
@@ -45,7 +42,7 @@ namespace GBEmu::HW::PPURender
 
 		// WindowEnable情報を設定
 		for (int i=0; i<arg.WindowEnableBuffer.size(); ++i)
-			tileCb->windowPriorityBuffer[i * hlslPacking_4] = arg.WindowEnableBuffer[i];
+			tileCb->windowPriorityBuffer[i] = arg.WindowEnableBuffer[i];
 
 		// 転送
 		Graphics2D::SetPSConstantBuffer(1, tileCb);
@@ -205,12 +202,12 @@ namespace GBEmu::HW::PPURender
 	void RenderOBJCompletely(const RenderOBJArgs& arg)
 	{
 		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileObjDMG };
-		Graphics2D::SetPSTexture(1, arg.objMask);
+		Graphics2D::SetPSTexture(1, arg.ObjMask);
 
 		ConstantBuffer<TileObjDmgCb> tileCb{};
 		tileCb->palette[0] = Float4(0, 0, 0, 0);
 
-		const Array<OAMData> oamList = correctOAM(arg.memory, arg.lcd);
+		const Array<OAMData> oamList = correctOAM(arg.Memory, arg.LCD);
 
 		// 末尾から描画していく
 		for (int i=oamList.size()-1; i>=0; --i)
@@ -220,14 +217,14 @@ namespace GBEmu::HW::PPURender
 			tileCb->isMasking = oam.FlagPriorityBGAndWindow();
 
 			auto texture =
-				oam.FlagXFlip() ? arg.vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).mirrored() :
-					oam.FlagYFlip() ? arg.vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).flipped() :
-					arg.vram.GetTileData(TileDataTableStart_0x8000, oam.TileIndex);
+				oam.FlagXFlip() ? arg.VRAM.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).mirrored() :
+					oam.FlagYFlip() ? arg.VRAM.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).flipped() :
+					arg.VRAM.GetTileData(TileDataTableStart_0x8000, oam.TileIndex);
 
 			// パレット設定
 			for (int color = 1; color < 4; ++color)
 				tileCb->palette[color] =
-					displayColorPaletteF[arg.lcd.ObjectPaletteData(oam.Palette(), color)].toFloat4();
+					displayColorPaletteF[arg.LCD.ObjectPaletteData(oam.Palette(), color)].toFloat4();
 
 			Graphics2D::SetPSConstantBuffer(1, tileCb);
 

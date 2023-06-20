@@ -9,6 +9,6 @@ namespace GBEmu
 	};
 
 	static const EmuConfig DefaultEmuConfig = EmuConfig{
-		DebugParam::RomPathZeldaYumeShima
+		DebugParam::RomPathPuyoPuyo2
 	};
 }
