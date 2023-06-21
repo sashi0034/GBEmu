@@ -5,7 +5,7 @@
 #include "EmuSingleton.h"
 #include "HW/HWEnv.h"
 #include "HW/HWFrame.h"
-#include "HW/Memory.h"W
+#include "HW/Memory.h"
 #include "UI/UIEnv.h"
 
 namespace GBEmu::EmuFlowchart
@@ -76,6 +76,7 @@ namespace GBEmu::EmuFlowchart
 			constexpr int padding = 64;
 			const int hudWidth = Scene::Center().x - (hwScreen.x / 2) - (padding * 2);
 			uiEnv.Hud().DrawLeft(uiEnv, hwEnv, Point(padding, Scene::Center().y - hwScreen.y / 2), hudWidth, hwScreen.y);
+			uiEnv.Hud().DrawRight(uiEnv, hwEnv, Point(Scene::Width() - padding - hudWidth, Scene::Center().y - hwScreen.y / 2), hudWidth, hwScreen.y);
 		}
 	}
 }

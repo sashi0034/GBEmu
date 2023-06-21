@@ -13,6 +13,7 @@ namespace GBEmu::UI
 	{
 	public:
 		void DrawLeft(UIEnv& ui, HW::HWEnv& hw, const Point& start, int width, int height);
+		void DrawRight(UIEnv& ui, HW::HWEnv& hw, const Point& start, int width, int height);
 	private:
 
 	};

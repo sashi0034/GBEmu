@@ -3,10 +3,17 @@
 
 #include "UIAsset.h"
 #include "GBEmu/ConstParam.h"
+#include "GBEmu/EmuGamepad.h"
 #include "GBEmu/HW/HWEnv.h"
 
 namespace GBEmu::UI
 {
+	constexpr int borderThickness = 3;
+
+	constexpr int paddingY = 4;
+	constexpr int paddingX = 12;
+	constexpr ColorF hudGray = ColorF(0.3f, 0.3f, 0.3f);
+
 	void drawBorder(const Rect& rect)
 	{
 		constexpr double thickness = 4.0;
@@ -18,12 +25,19 @@ namespace GBEmu::UI
 		(void)rect.left().draw(LineStyle::SquareDot(offset), thickness);
 	}
 
+	void drawGreenBorder(int width, int height, int startY)
+	{
+		(void)Rect{Point(-borderThickness, 0), Point(borderThickness, height) }.draw(ConstParam::ColorGamingGreen);
+
+		(void)Rect{Point(0, startY), Point(width, height) }.draw(
+			Arg::left = Color{ 16, 16, 16 },
+			Arg::right = Color{ 16, 16, 16, 0 });
+	}
+
 	void UIHud::DrawLeft(UIEnv& ui, HW::HWEnv& hw, const Point& start, int width, int height)
 	{
 		const Transformer2D transformer{ Mat3x2::Scale(1).translated(start) };
 		auto&& font = UIAsset::Instance().FontDotGothic18;
-
-		constexpr int lineH = 24;
 
 		auto&& cpu = hw.GetCPU();
 		auto&& lcd = hw.GetMemory().GetLCD();
@@ -37,18 +51,63 @@ namespace GBEmu::UI
 		text += U"WX  =  {:02X}  WY  =  {:02X}\n\n"_fmt(lcd.WX(), lcd.WY());
 		hw.GetMemory().DumpIOPort(text);
 
-		constexpr int borderThickness = 3;
+		// 緑帯描画
+		drawGreenBorder(width, height, 0);
+
+		font(text).draw(Vec2(paddingX, paddingY), hudGray);
+	}
+
+	void UIHud::DrawRight(UIEnv& ui, HW::HWEnv& hw, const Point& start, int width, int height)
+	{
+		const Transformer2D transformer{ Mat3x2::Scale(1).translated(start) };
+		auto&& buttonFont = UIAsset::Instance().FontDotGothic18;
 
 		// 緑帯描画
-		(void)Rect{Point(-borderThickness, 0), Point(borderThickness, height) }.draw(ConstParam::ColorGamingGreen);
+		drawGreenBorder(width, height / 2 - paddingY, 0);
 
-		(void)Rect{Point(0, 0), Point(width, height) }.draw(
-			Arg::left = Color{ 16, 16, 16 },
-			Arg::right = Color{ 16, 16, 16, 0 });
+		// ボタン描画
+		constexpr Size buttonSize{40, 40};
+		constexpr Point buttonPad = Point(paddingX, 40 + paddingY);
+		constexpr int buttonRound = 8;
+		static const auto buttonLeft = Rect(buttonPad + Point(0, buttonSize.y), buttonSize).rounded(buttonRound);
+		static const auto buttonRight = Rect(buttonPad + Point(buttonSize.x * 2, buttonSize.y), buttonSize).rounded(buttonRound);
+		static const auto buttonUp = Rect(buttonPad + Point(buttonSize.x, 0), buttonSize).rounded(buttonRound);
+		static const auto buttonDown = Rect(buttonPad + Point(buttonSize.x,  buttonSize.y * 2), buttonSize).rounded(buttonRound);
 
-		constexpr int paddingY = 4;
-		constexpr int paddingX = 12;
+		constexpr int buttonCircleRound = 20;
+		static const auto buttonA = Rect(buttonPad + Point(int(buttonSize.x * 3.5),  buttonSize.y * 0), buttonSize).rounded(buttonCircleRound);
+		static const auto buttonB = Rect(buttonPad + Point(int(buttonSize.x * 3.5),  buttonSize.y * 2), buttonSize).rounded(buttonCircleRound);
 
-		font(text).draw(Vec2(paddingX, paddingY), ColorF(0.3f, 0.3f, 0.3f));
+		static const auto buttonSelect = Rect(buttonPad + Point(buttonSize.x * 5,  buttonSize.y * 0), buttonSize + buttonSize.x0()).rounded(buttonRound);
+		static const auto buttonStart = Rect(buttonPad + Point(buttonSize.x * 5,  buttonSize.y * 2), buttonSize + buttonSize.x0()).rounded(buttonRound);
+
+		using bt = std::tuple<RoundRect, EmuGamepadKey, String>;
+		static const std::array buttonArray{
+			bt{buttonLeft, EmuGamepadKey::Left, U"L"},
+			bt{buttonRight, EmuGamepadKey::Right, U"R"},
+			bt{buttonUp, EmuGamepadKey::Up, U"Up"},
+			bt{buttonDown, EmuGamepadKey::Down, U"Dn"},
+			bt{buttonA, EmuGamepadKey::A, U"A"},
+			bt{buttonB, EmuGamepadKey::B, U"B"},
+			bt{buttonSelect, EmuGamepadKey::Select, U"Select"},
+			bt{buttonStart, EmuGamepadKey::Start, U"Start"},};
+
+		auto&& gamepad = EmuGamepad::Instance();
+		for (auto&& button : buttonArray)
+		{
+			if (gamepad.IsPressed(std::get<1>(button)))
+			{
+				// ボタン押してるとき
+				(void)std::get<0>(button).draw(hudGray);
+				buttonFont(std::get<2>(button)).drawAt(std::get<0>(button).center(), ColorF(0.1f, 0.1f, 0.1f));
+			}
+			else
+			{
+				// ボタン押してないとき
+				(void)buttonFont(std::get<2>(button)).drawAt(std::get<0>(button).rect.center(), hudGray);
+			}
+		}
+
+
 	}
 }
