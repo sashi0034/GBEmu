@@ -2,11 +2,10 @@
 #include "EmuFlowchart.h"
 
 #include "EmuConfig.h"
-#include "HW/HWAsset.h"
+#include "EmuSingleton.h"
 #include "HW/HWEnv.h"
 #include "HW/HWFrame.h"
-#include "HW/Memory.h"
-#include "UI/UIAsset.h"
+#include "HW/Memory.h"W
 #include "UI/UIEnv.h"
 
 namespace GBEmu::EmuFlowchart
@@ -30,9 +29,7 @@ namespace GBEmu::EmuFlowchart
 
 	void RunEmu()
 	{
-		// シングルトン系の生成
-		HW::HWAsset hwAsset{};
-		UI::UIAsset uiAsset{};
+		EmuSingleton emuSingleton{};
 
 		// シーン設定など
 		Window::SetStyle(WindowStyle::Sizable);
@@ -41,6 +38,7 @@ namespace GBEmu::EmuFlowchart
 		Scene::Resize(sceneSize.x, sceneSize.y);
 		Window::Resize(1280, 720);
 		Scene::SetBackground(ColorF{ 0.3, 0.3, 0.3 });
+		System::SetTerminationTriggers(UserAction::CloseButtonClicked);
 
 		// エミュレータ設定
 		EmuConfig config = DefaultEmuConfig;

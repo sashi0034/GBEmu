@@ -8,9 +8,5 @@ namespace GBEmu::UI
 		const Font FontDotGothic18{ 18, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bold };
 
 		static UIAsset& Instance();
-		UIAsset();
-		~UIAsset();
-	private:
-		static UIAsset* globalInstance;
 	};
 }
