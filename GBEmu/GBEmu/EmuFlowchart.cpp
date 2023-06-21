@@ -68,8 +68,6 @@ namespace GBEmu::EmuFlowchart
 
 			// エミュレータ画面描画
 			const auto hwScreen = hwEnv.GetPPU().DrawAt(Scene::Center(),  pixelScale);
-			constexpr int padding = 64;
-			// hwEnv.Debugger().Draw(hwEnv, Point(padding, padding));
 
 			// VRAM領域描画
 			hwEnv.GetMemory().GetVRAM().DumpDrawAt(
@@ -77,6 +75,7 @@ namespace GBEmu::EmuFlowchart
 				pixelScale / 2.0);
 
 			// HUD描画
+			constexpr int padding = 64;
 			const int hudWidth = Scene::Center().x - (hwScreen.x / 2) - (padding * 2);
 			uiEnv.Hud().DrawLeft(uiEnv, hwEnv, Point(padding, Scene::Center().y - hwScreen.y / 2), hudWidth, hwScreen.y);
 		}
