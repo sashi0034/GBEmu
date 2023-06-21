@@ -53,10 +53,10 @@ namespace GBEmu::HW
 
 		uint8 BGPaletteData(uint8 colorNumber) const;
 		uint8 ObjectPaletteData(bool isUseOBP1, uint8 colorNumber) const;
-	private:
-		uint8 lcdc() const;
-		uint8 stat() const;
 
+		uint8 LCDC() const;
+		uint8 STAT() const;
+	private:
 		uint8* m_lcdcPtr;
 		uint8* m_statPtr;
 		uint8* m_bg0Ptr;

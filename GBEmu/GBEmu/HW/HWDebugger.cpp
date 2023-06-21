@@ -259,7 +259,7 @@ namespace GBEmu::HW
 
 	void HWDebugger::OnExecuteInstruction(const CPU& cpu, const CPUInstructionProperty& fetchedInstruction)
 	{
-		m_executedInstructionLatest = fetchedInstruction;
+		m_lastExecutedInstruction = fetchedInstruction;
 
 		m_impl->OnExecuteInstruction(cpu, fetchedInstruction);
 	}

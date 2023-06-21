@@ -25,15 +25,17 @@ namespace GBEmu::UI
 
 		constexpr int lineH = 24;
 
-		// Array<String> message{};
-		// message.push_back(U"OP={}"_fmt(hw.GetCPU().FetchInstruction(hw.GetMemory()).ToString()));
-		// message.push_back(U"PC={:04X}"_fmt(hw.GetCPU().PC()));
-		// message.push_back(U"SP={:04X}"_fmt(hw.GetCPU().SP()));
-
-		String message1{};
-		message1 += U"OP={}"_fmt(hw.GetCPU().FetchInstruction(hw.GetMemory()).ToString());
-		message1 += U"\nPC={:04X}"_fmt(hw.GetCPU().PC());
-		message1 += U"\nSP={:04X}"_fmt(hw.GetCPU().SP());
+		auto&& cpu = hw.GetCPU();
+		auto&& lcd = hw.GetMemory().GetLCD();
+		String text{};
+		text += U"OP={}\n"_fmt(hw.Debugger().LastExecutedInstruction().ToString());
+		text += U"PC={:04X}  SP={:04X}\n"_fmt(cpu.PC(), cpu.SP());
+		text += U"AF={:04X}  BC={:04X}  DE={:04X}  HL={:04X}\n\n"_fmt(cpu.RegAF(), cpu.RegBC(), cpu.RegDE(), cpu.RegHL());
+		text += U"IE=  {:02X}  IF=  {:02X}\n\n"_fmt(hw.GetMemory().Interrupt().IE(), hw.GetMemory().Interrupt().IF());
+		text += U"LCDC={:04X}  STAT={:04X}\n"_fmt(lcd.LCDC(), lcd.STAT());
+		text += U"SCX =  {:02X}  SCY =  {:02X}\n"_fmt(lcd.SCX(), lcd.SCY());
+		text += U"WX  =  {:02X}  WY  =  {:02X}\n\n"_fmt(lcd.WX(), lcd.WY());
+		hw.GetMemory().DumpIOPort(text);
 
 		constexpr int borderThickness = 3;
 
@@ -47,10 +49,6 @@ namespace GBEmu::UI
 		constexpr int paddingY = 4;
 		constexpr int paddingX = 12;
 
-		font(message1).draw(Vec2(paddingX, paddingY), ColorF(0.5f, 0.5f, 0.5f));
-		// for (int i=0; i<message.size(); ++i)
-		// {
-		// 	font(message[i]).draw(Vec2(paddingX, paddingY) + Vec2::Down(lineH * i), ColorF(0.5f, 0.5f, 0.5f));
-		// }
+		font(text).draw(Vec2(paddingX, paddingY), ColorF(0.3f, 0.3f, 0.3f));
 	}
 }

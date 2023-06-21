@@ -136,6 +136,19 @@ namespace GBEmu::HW
 		initMemory();
 	}
 
+	void Memory::DumpIOPort(String& dest) const
+	{
+		for (uint16 addr = IOPortsStart_0xFF00; addr <= IOPortsEnd_0xFF7F; addr += 0x08)
+		{
+			dest += U"{:04X}:"_fmt(addr);
+			for (uint16 i=0; i<0x08; ++i)
+			{
+				dest += U" {:02X}"_fmt(m_memory[addr + i]);
+			}
+			dest += U"\n";
+		}
+	}
+
 	void Memory::writeIO(HWEnv& env, uint16 addr, uint8 data)
 	{
 		// 0xFF00 - 0xFF7F

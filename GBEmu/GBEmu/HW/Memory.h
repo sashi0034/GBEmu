@@ -28,6 +28,8 @@ namespace GBEmu::HW
 
 		void LoadCartridge(const FilePath& cartridgePath);
 
+		void DumpIOPort(String& dest) const;
+
 		static constexpr int MemorySize_0x10000 = 0x10000;
 
 	private:

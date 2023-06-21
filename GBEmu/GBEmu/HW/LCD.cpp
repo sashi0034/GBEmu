@@ -34,78 +34,78 @@ namespace GBEmu::HW
 
 	bool LCD::IsLCDDisplayEnable() const
 	{
-		return lcdc() & (1 << 7);
+		return LCDC() & (1 << 7);
 	}
 
 	uint16 LCD::WindowTileMapDisplayAddress() const
 	{
-		return lcdc() & (1 << 6) ? TimeMap1Start_0x9C00 : TimeMap0Start_0x9800;
+		return LCDC() & (1 << 6) ? TimeMap1Start_0x9C00 : TimeMap0Start_0x9800;
 	}
 
 	bool LCD::IsWindowDisplayEnable() const
 	{
-		return lcdc() & (1 << 5);
+		return LCDC() & (1 << 5);
 	}
 
 	uint16 LCD::BGAndWindowTileDataAddress() const
 	{
-		return lcdc() & (1 << 4) ? BGAndWindowTileData1Start_0x8000 : BGAndWindowTileData2Start_0x9000;
+		return LCDC() & (1 << 4) ? BGAndWindowTileData1Start_0x8000 : BGAndWindowTileData2Start_0x9000;
 	}
 
 	uint16 LCD::BGTileMapDisplayAddress() const
 	{
-		return lcdc() & (1 << 3) ? BGTimeMapDisplay1Start_0x9C00 : BGTimeMapDisplay0Start_0x9800;
+		return LCDC() & (1 << 3) ? BGTimeMapDisplay1Start_0x9C00 : BGTimeMapDisplay0Start_0x9800;
 	}
 
 	uint16 LCD::OBJHeight() const
 	{
-		return lcdc() & (1 << 2) ? 16 : 8;
+		return LCDC() & (1 << 2) ? 16 : 8;
 		// widthは常に8
 	}
 
 	bool LCD::IsOBJDisplayEnable() const
 	{
-		return lcdc() & (1 << 1);
+		return LCDC() & (1 << 1);
 	}
 
 	bool LCD::IsBGAndWindowEnable() const
 	{
-		return lcdc() & (1 << 0);
+		return LCDC() & (1 << 0);
 	}
 
 	bool LCD::IsLYCoincidenceInterruptEnable() const
 	{
-		return stat() & (1 << 6);
+		return STAT() & (1 << 6);
 	}
 
 	bool LCD::IsOAMInterruptEnable() const
 	{
-		return stat() & (1 << 5);
+		return STAT() & (1 << 5);
 	}
 
 	bool LCD::IsVBlankInterruptEnable() const
 	{
-		return stat() & (1 << 4);
+		return STAT() & (1 << 4);
 	}
 
 	bool LCD::IsHBlankInterruptEnable() const
 	{
-		return stat() & (1 << 3);
+		return STAT() & (1 << 3);
 	}
 
 	bool LCD::LYCoincidenceFlag() const
 	{
-		return stat() & (1 << 2);
+		return STAT() & (1 << 2);
 	}
 
 	void LCD::UpdateLYCoincidenceFlag()
 	{
-		*m_statPtr = 0x80 | (stat() & ~0b100) | (LY() == LYC() ? 0b100 : 0);
+		*m_statPtr = 0x80 | (STAT() & ~0b100) | (LY() == LYC() ? 0b100 : 0);
 	}
 
 	void LCD::SetMode(PPUMode mode)
 	{
-		*m_statPtr = 0x80 | (stat() & ~0b11) | (IsLCDDisplayEnable() ? static_cast<uint8>(mode) : 0);
+		*m_statPtr = 0x80 | (STAT() & ~0b11) | (IsLCDDisplayEnable() ? static_cast<uint8>(mode) : 0);
 	}
 
 	uint8 LCD::SCY() const
@@ -155,12 +155,12 @@ namespace GBEmu::HW
 		return (obp >> (colorNumber * 2)) & 0b11;
 	}
 
-	uint8 LCD::lcdc() const
+	uint8 LCD::LCDC() const
 	{
 		return *m_lcdcPtr;
 	}
 
-	uint8 LCD::stat() const
+	uint8 LCD::STAT() const
 	{
 		return *m_statPtr;
 	}

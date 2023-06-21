@@ -31,8 +31,8 @@ namespace GBEmu::HW
 		else if ((control & (1 << 5)) == 0)
 		{
 			return 0b11010000 |
-				(KeySlash.pressed() || KeyZ.pressed() ? 0 : 1 << 0) | // A
-				(KeyUnderscore_JIS.pressed() || KeyX.pressed() ? 0 : 1 << 1) | // B
+				(KeyUnderscore_JIS.pressed() || KeyX.pressed() ? 0 : 1 << 0) | // A
+				(KeySlash.pressed() || KeyZ.pressed() ? 0 : 1 << 1) | // B
 				(KeySpace.pressed() ? 0 : 1 << 2) | // Select
 				(KeyEnter.pressed() ? 0 : 1 << 3); // Start
 		}
