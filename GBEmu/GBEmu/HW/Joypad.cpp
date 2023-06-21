@@ -13,12 +13,6 @@ namespace GBEmu::HW
 		memory.WriteDirect(MemoryAddress::JOYP_0xFF00, fetchInput(control));
 	}
 
-	void Joypad::UpdateFrame(Memory& memory)
-	{
-		// TODO: 除く?
-		// Update(memory, m_controlBefore);
-	}
-
 	uint8 Joypad::fetchInput(uint8 control)
 	{
 		auto&& pad = EmuGamepad::Instance();

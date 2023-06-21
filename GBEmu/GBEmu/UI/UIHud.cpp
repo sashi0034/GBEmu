@@ -60,14 +60,26 @@ namespace GBEmu::UI
 	void UIHud::DrawRight(UIEnv& ui, HW::HWEnv& hw, const Point& start, int width, int height)
 	{
 		const Transformer2D transformer{ Mat3x2::Scale(1).translated(start) };
-		auto&& buttonFont = UIAsset::Instance().FontDotGothic18;
+		auto&& font = UIAsset::Instance().FontDotGothic18;
 
 		// 緑帯描画
-		drawGreenBorder(width, height / 2 - paddingY, 0);
+		drawGreenBorder(width, height / 3 - paddingY, 0);
+
+		// CPU稼働率を表示
+		constexpr Size monitorSize{320, 24};
+		const float cpuWorkedRate = hw.Debugger().CPUWorkedRate();
+		auto monitorColor = Color(40, 40, 24);
+		constexpr Point monitorStart = Point(paddingX, paddingY + 16);
+		(void)Rect(monitorStart, Size(static_cast<int>(monitorSize.x * cpuWorkedRate), monitorSize.y))
+			.draw(monitorColor.setR(monitorColor.r * (0.5 + cpuWorkedRate)));
+		constexpr Rect monitorRect = Rect(monitorStart, monitorSize);
+		(void)monitorRect.drawFrame(1.0, hudGray);
+		(void)font(U"CPU {:8.4f} %"_fmt(cpuWorkedRate * 100))
+			.drawAt(monitorRect.center(), hudGray); // fmtの{:N.Mf}のNは「全体で」N文字になるみたい
 
 		// ボタン描画
 		constexpr Size buttonSize{40, 40};
-		constexpr Point buttonPad = Point(paddingX, 40 + paddingY);
+		constexpr Point buttonPad = Point(paddingX, 80 + paddingY);
 		constexpr int buttonRound = 8;
 		static const auto buttonLeft = Rect(buttonPad + Point(0, buttonSize.y), buttonSize).rounded(buttonRound);
 		static const auto buttonRight = Rect(buttonPad + Point(buttonSize.x * 2, buttonSize.y), buttonSize).rounded(buttonRound);
@@ -99,12 +111,12 @@ namespace GBEmu::UI
 			{
 				// ボタン押してるとき
 				(void)std::get<0>(button).draw(hudGray);
-				buttonFont(std::get<2>(button)).drawAt(std::get<0>(button).center(), ColorF(0.1f, 0.1f, 0.1f));
+				(void)font(std::get<2>(button)).drawAt(std::get<0>(button).center(), ColorF(0.1f, 0.1f, 0.1f));
 			}
 			else
 			{
 				// ボタン押してないとき
-				(void)buttonFont(std::get<2>(button)).drawAt(std::get<0>(button).rect.center(), hudGray);
+				(void)font(std::get<2>(button)).drawAt(std::get<0>(button).rect.center(), hudGray);
 			}
 		}
 

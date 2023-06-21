@@ -26,8 +26,7 @@ namespace GBEmu::HW::CPUOperation
 	[[nodiscard]]
 	CPUOperationResult operateSTOP_d8(HWEnv& env)
 	{
-		// TODO: STOPの確認
-		// env.GetCPU().SetState(CPUState::Stopped);
+		env.GetCPU().SetState(CPUState::Stopped);
 		return CPUOperationResult(2, 4);
 	}
 

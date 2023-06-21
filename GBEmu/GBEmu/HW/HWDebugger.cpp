@@ -245,6 +245,9 @@ namespace GBEmu::HW
 
 	void HWDebugger::UpdateFrame(HWEnv& env)
 	{
+		// フレーム間CPU稼働率のリセット
+		m_cpuWorkedCycleInFrame = 0;
+
 		// デバッグ用休止状態に
 		if (KeyC.down() && KeyControl.pressed())
 		{
@@ -252,8 +255,10 @@ namespace GBEmu::HW
 		}
 	}
 
-	void HWDebugger::UpdateCycle(HWEnv& env)
+	void HWDebugger::UpdateCycle(HWEnv& env, CPUCycle cycle)
 	{
+		if (env.GetCPU().State() == CPUState::Running) m_cpuWorkedCycleInFrame += cycle.Count;
+
 		m_impl->UpdateCycle(env);
 	}
 

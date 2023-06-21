@@ -11,5 +11,7 @@ namespace GBEmu::HW
 		constexpr int DisplayWidth_160 = DisplayResolution.x;
 
 		constexpr uint16 VRamSize_0x2000 = 0x2000;
+
+		constexpr int PPUCyclePeriod_70224 = 70224;
 	};
 }

@@ -8,7 +8,6 @@ namespace GBEmu::HW
 	{
 	public:
 		void Update(Memory& memory, uint8 control);
-		void UpdateFrame(Memory& memory);
 	private:
 		uint8 m_controlBefore{};
 

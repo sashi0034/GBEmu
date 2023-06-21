@@ -5,8 +5,6 @@ namespace GBEmu::HW::HWFrame
 {
 	void EmulateFrame(HWEnv& env)
 	{
-		env.GetJoypad().UpdateFrame(env.GetMemory());
-
 		env.Debugger().UpdateFrame(env);
 		if (env.Debugger().IsDebugSuspend()) return;
 
@@ -14,8 +12,6 @@ namespace GBEmu::HW::HWFrame
 
 		while (true)
 		{
-			env.Debugger().UpdateCycle(env);
-
 			// CPU実行
 			const auto cpuCycle = env.GetCPU().StepOperation(env);
 
@@ -37,9 +33,11 @@ namespace GBEmu::HW::HWFrame
 			// フラグ更新
 			lcd.UpdateLYCoincidenceFlag();
 
+			// デバッガ更新
+			env.Debugger().UpdateCycle(env, cpuCycle);
+
 			passedCycle += cpuCycle.Count;
-			constexpr int ppuCycle = 70224;
-			if (passedCycle > ppuCycle) return;
+			if (passedCycle > HWParam::PPUCyclePeriod_70224) return;
 		}
 	}
 }

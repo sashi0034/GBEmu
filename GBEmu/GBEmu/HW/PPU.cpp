@@ -9,7 +9,7 @@ namespace GBEmu::HW
 {
 	using namespace MemoryAddress;
 
-	constexpr int dotCycleFreq_70224 = 70224;
+	constexpr int dotCycleFreq_70224 = HWParam::PPUCyclePeriod_70224;
 	constexpr int scanLineFreq_456 = 456;
 	constexpr int scanLineSize_144 = 144;
 	constexpr int displayWidth_160 = HWParam::DisplayResolution.x;
