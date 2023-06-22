@@ -8,8 +8,15 @@ A game Boy emulator written in C++
 
 <img src="https://github.com/sashi0034/GBEmu/assets/82739042/2338a340-3469-48e6-9362-9d47105607bb" width="800">
 
-This project was inspired by:
+## Not implemented
+
+  * APU
+  * GCB mode
+  * Many MBCs except MBC1
+
+## References
   
-  - [DMG Emulator](https://github.com/voidproc/dmge)
-  - [gbemu](https://github.com/jgilchrist/gbemu)
-  - [gb-docs-ja](https://github.com/pokemium/gb-docs-ja)
+  * [DMG Emulator](https://github.com/voidproc/dmge)
+  * [gbemu](https://github.com/jgilchrist/gbemu)
+  * [gb-docs-ja](https://github.com/pokemium/gb-docs-ja)
+  * [Pan Docs](http://bgb.bircd.org/pandocs.htm)
