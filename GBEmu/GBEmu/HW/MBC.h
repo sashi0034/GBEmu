@@ -29,10 +29,10 @@ namespace GBEmu::HW
 		void Write(Cartridge& cartridge, uint16 addr, uint8 data) override;
 
 	private:
-		uint16 m_romBankIndex = 01;
+		uint16 m_romBankIndex = 1;
 		uint16 m_secondBankIndex{};
 		uint8 m_bankMode{};
-		bool m_ramEnableFrag;
+		bool m_ramEnableFrag{};
 
 		uint16 romBankIndexExtended(Cartridge& cartridge) const;
 	};
