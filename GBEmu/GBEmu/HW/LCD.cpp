@@ -10,7 +10,7 @@ namespace GBEmu::HW
 	LCD::LCD(
 		uint8* lcdcPtr,
 		uint8* statPtr,
-		uint8* bg0Ptr,
+		uint8* bgpPtr,
 		uint8* obp0Ptr,
 		uint8* obp1Ptr,
 		uint8* scxPtr,
@@ -21,7 +21,7 @@ namespace GBEmu::HW
 		uint8* wyPtr) :
 			m_lcdcPtr(lcdcPtr),
 			m_statPtr(statPtr),
-			m_bg0Ptr(bg0Ptr),
+			m_bgpPtr(bgpPtr),
 			m_obp0Ptr(obp0Ptr),
 			m_obp1Ptr(obp1Ptr),
 			m_scxPtr(scxPtr),
@@ -145,7 +145,7 @@ namespace GBEmu::HW
 
 	uint8 LCD::BGPaletteData(uint8 colorNumber) const
 	{
-		const uint8 bgp = *m_bg0Ptr;
+		const uint8 bgp = *m_bgpPtr;
 		return (bgp >> (colorNumber * 2)) & 0b11;
 	}
 

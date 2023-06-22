@@ -14,7 +14,7 @@ namespace GBEmu::HW
 		LCD(
 			uint8* lcdcPtr,
 			uint8* statPtr,
-			uint8* bg0Ptr,
+			uint8* bgpPtr,
 			uint8* obp0Ptr,
 			uint8* obp1Ptr,
 			uint8* scxPtr,
@@ -59,7 +59,7 @@ namespace GBEmu::HW
 	private:
 		uint8* m_lcdcPtr;
 		uint8* m_statPtr;
-		uint8* m_bg0Ptr;
+		uint8* m_bgpPtr;
 		uint8* m_obp0Ptr;
 		uint8* m_obp1Ptr;
 		uint8* m_scxPtr;
