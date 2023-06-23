@@ -112,13 +112,6 @@ namespace GBEmu::HW
 		m_memory[addr] = data;
 	}
 
-	void Memory::WriteDirect16(uint16 addr, uint16 data16)
-	{
-		m_memory[addr] = data16 & 0xFF;
-		m_memory[addr + 1] = (data16 >> 8) & 0xFF;
-	}
-
-
 	void Memory::LoadCartridge(const FilePath& cartridgePath)
 	{
 		BinaryReader reader{cartridgePath};
@@ -136,7 +129,7 @@ namespace GBEmu::HW
 		initMemory();
 	}
 
-	void Memory::DumpIOPort(String& dest) const
+	void Memory::DumpIOPorts(String& dest) const
 	{
 		for (uint16 addr = IOPortsStart_0xFF00; addr <= IOPortsEnd_0xFF7F; addr += 0x08)
 		{

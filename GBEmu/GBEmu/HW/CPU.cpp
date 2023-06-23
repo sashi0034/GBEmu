@@ -116,7 +116,7 @@ namespace GBEmu::HW
 		memory.Interrupt().ResetFlag(InterruptFlag(1 << interruptBit));
 
 		// PCをスタックにプッシュ
-		memory.WriteDirect16(m_sp - 2, m_pc);
+		memory.Write16(env, m_sp - 2, m_pc);
 		m_sp -= 2;
 
 		// 割り込み先へジャンプ

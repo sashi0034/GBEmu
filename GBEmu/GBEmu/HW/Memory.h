@@ -23,12 +23,12 @@ namespace GBEmu::HW
 		void Write(HWEnv& env, uint16 addr, uint8 data);
 		void Write16(HWEnv& env, uint16 addr, uint16 data16);
 
+		// TODO: WriteDirectを廃止して、IOPortクラスをつくる
 		void WriteDirect(uint16 addr, uint8 data);
-		void WriteDirect16(uint16 addr, uint16 data16);
 
 		void LoadCartridge(const FilePath& cartridgePath);
 
-		void DumpIOPort(String& dest) const;
+		void DumpIOPorts(String& dest) const;
 
 		static constexpr int MemorySize_0x10000 = 0x10000;
 

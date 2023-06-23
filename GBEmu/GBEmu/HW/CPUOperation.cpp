@@ -825,7 +825,7 @@ namespace GBEmu::HW::CPUOperation
 		dispatch.second.Flag = CPUOperationZNHC{
 			a == r,
 			true,
-			(a & 0xF) - (r & 0xF) < 0,
+			((a & 0xF) - (r & 0xF)) < 0,
 			a < r};
 
 		return dispatch.second;
