@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Cartridge.h"
 #include "Interruption.h"
+#include "IOPort.h"
 #include "LCD.h"
 #include "VRAM.h"
 
@@ -15,7 +16,8 @@ namespace GBEmu::HW
 		VRAM& GetVRAM() {return m_vram; }
 
 		LCD& GetLCD() {return m_lcd; }
-		Interruption& Interrupt() {return m_interrupt; }
+		Interruption& GetInterrupt() {return m_interrupt; }
+		IOPort& GetIOPort() {return m_ioPort; } // その他のIOポート
 
 		uint8 Read(uint16 addr);
 		uint16 Read16(uint16 addr);
@@ -23,15 +25,11 @@ namespace GBEmu::HW
 		void Write(HWEnv& env, uint16 addr, uint8 data);
 		void Write16(HWEnv& env, uint16 addr, uint16 data16);
 
-		// TODO: WriteDirectを廃止して、IOPortクラスをつくる
-		void WriteDirect(uint16 addr, uint8 data);
-
 		void LoadCartridge(const FilePath& cartridgePath);
 
 		void DumpIOPorts(String& dest) const;
 
 		static constexpr int MemorySize_0x10000 = 0x10000;
-
 	private:
 		std::array<uint8, MemorySize_0x10000> m_memory{};
 		VRAM m_vram{};
@@ -39,6 +37,7 @@ namespace GBEmu::HW
 
 		LCD m_lcd;
 		Interruption m_interrupt;
+		IOPort m_ioPort;
 
 		void writeIO(HWEnv& env, uint16 addr, uint8 data);
 

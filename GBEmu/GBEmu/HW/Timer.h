@@ -2,6 +2,7 @@
 
 namespace GBEmu::HW
 {
+	class IOPort;
 	class HWEnv;
 	class Memory;
 
@@ -17,10 +18,8 @@ namespace GBEmu::HW
 		Optional<int> m_timaOverflowedCountdown = none;
 		uint8 m_oldTAC{};
 
-		uint8 getTIMA(Memory& memory);
-		void setTIMA(Memory& memory, uint8 value);
-		void checkIncTIMA(Memory& memory, uint8 newTAC, uint8 oldTAC);
+		void checkIncTIMA(IOPort& ioPort, uint8 newTAC, uint8 oldTAC);
 		static bool canIncTIMA(uint8 newTAC, uint8 oldTAC, uint16 sysClock);
-		void checkUpdateTIMAOverflowedCountdown(HWEnv& env, Memory& memory);
+		void checkUpdateTIMAOverflowedCountdown(Memory& memory);
 	};
 }

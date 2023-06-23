@@ -7,22 +7,21 @@
 
 namespace GBEmu::HW
 {
-	using namespace MemoryAddress;
-
 	void Timer::StepCycle(HWEnv& env)
 	{
 		auto&& memory = env.GetMemory();
+		auto&& ioPort = memory.GetIOPort();
 
 		// 本来DIVレジスタは256クロックサイクルごとにインクリメントされるので、メモリに反映するとき下位8bitを捨てる
 		m_divDetail++;
-		memory.WriteDirect(DIV_0xFF04, m_divDetail >> 8);
+		ioPort.SetDIV(m_divDetail >> 8);
 
 		// Timer制御レジスタ
-		const uint8 tac = env.GetMemory().Read(TAC_0xFF07);
+		const uint8 tac = ioPort.TAC();
 
-		checkIncTIMA(memory, tac, m_oldTAC);
+		checkIncTIMA(ioPort, tac, m_oldTAC);
 
-		checkUpdateTIMAOverflowedCountdown(env, memory);
+		checkUpdateTIMAOverflowedCountdown(memory);
 
 		m_oldTAC = tac;
 	}
@@ -32,29 +31,19 @@ namespace GBEmu::HW
 		m_divDetail = 0;
 	}
 
-	uint8 Timer::getTIMA(Memory& memory)
-	{
-		return memory.Read(TIMA_0xFF05);
-	}
-
-	void Timer::setTIMA(Memory& memory, uint8 value)
-	{
-		memory.WriteDirect(TIMA_0xFF05, value);
-	}
-
-	void Timer::checkIncTIMA(Memory& memory, uint8 newTAC, uint8 oldTAC)
+	void Timer::checkIncTIMA(IOPort& ioPort, uint8 newTAC, uint8 oldTAC)
 	{
 		if (m_timaOverflowedCountdown.has_value()) return;
 		if (canIncTIMA(newTAC, oldTAC, m_divDetail) == false) return;
 
 		// TIMAをインクリメント
-		setTIMA(memory, getTIMA(memory) + 1);
+		ioPort.SetTIMA(ioPort.TIMA() + 1);
 
-		if (getTIMA(memory) != 0) return;
+		if (ioPort.TIMA() != 0) return;
 
 		// オーバーフロー
 		// TIMAがオーバーフローした後の1マシンサイクルでは、TIMAの値がTMAからの値ではなく0x00になる
-		setTIMA(memory, memory.Read(0x00));
+		ioPort.SetTIMA(0x00);
 		m_timaOverflowedCountdown = HWParam::MachineCycle; // Timer割り込みを遅延実行
 		// TIMA周波数はいずれも十分大きいから、m_timaOverflowedCountdownを直接上書きして大丈夫
 	}
@@ -79,7 +68,7 @@ namespace GBEmu::HW
 			: (sysClockBefore & (oldClock / 2)) != 0 && (sysClock & (newClock / 2)) == 0;
 	}
 
-	void Timer::checkUpdateTIMAOverflowedCountdown(HWEnv& env, Memory& memory)
+	void Timer::checkUpdateTIMAOverflowedCountdown(Memory& memory)
 	{
 		if (m_timaOverflowedCountdown == none) return;
 
@@ -88,9 +77,9 @@ namespace GBEmu::HW
 		m_timaOverflowedCountdown = none;
 
 		// Timer割り込み要求
-		memory.Interrupt().SetFlag(InterruptFlags::Timer);
+		memory.GetInterrupt().SetFlag(InterruptFlags::Timer);
 
 		// TIMAをTMAの値にする
-		setTIMA(memory, memory.Read(TMA_0xFF06));
+		memory.GetIOPort().SetTIMA(memory.GetIOPort().TMA());
 	}
 }

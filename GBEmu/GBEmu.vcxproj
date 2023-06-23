@@ -224,6 +224,7 @@
     <ClCompile Include="GBEmu\HW\HWFrame.cpp" />
     <ClCompile Include="GBEmu\HW\HWLogger.cpp" />
     <ClCompile Include="GBEmu\HW\Interruption.cpp" />
+    <ClCompile Include="GBEmu\HW\IOPort.cpp" />
     <ClCompile Include="GBEmu\HW\Joypad.cpp" />
     <ClCompile Include="GBEmu\HW\LCD.cpp" />
     <ClCompile Include="GBEmu\HW\MBC.cpp" />
@@ -465,6 +466,7 @@
     <ClInclude Include="GBEmu\HW\HWFrame.h" />
     <ClInclude Include="GBEmu\HW\HWLogger.h" />
     <ClInclude Include="GBEmu\HW\Interruption.h" />
+    <ClInclude Include="GBEmu\HW\IOPort.h" />
     <ClInclude Include="GBEmu\HW\Joypad.h" />
     <ClInclude Include="GBEmu\HW\LCD.h" />
     <ClInclude Include="GBEmu\HW\MBC.h" />

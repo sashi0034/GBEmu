@@ -1103,8 +1103,8 @@ namespace GBEmu::HW::CPUOperation
 		}
 		else
 		{
-			const uint8 interruptEnable = memory.Interrupt().IE();
-			const uint8 interruptFlag = memory.Interrupt().IF();
+			const uint8 interruptEnable = memory.GetInterrupt().IE();
+			const uint8 interruptFlag = memory.GetInterrupt().IF();
 			if ((interruptEnable & interruptFlag) != 0)
 			{
 				// https://github.com/pokemium/gb-docs-ja/blob/main/cpu/instruction/misc.md#halt

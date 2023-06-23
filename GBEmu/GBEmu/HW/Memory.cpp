@@ -42,7 +42,13 @@ namespace GBEmu::HW
 			),
 		m_interrupt(
 			&m_memory[IE_0xFFFF],
-			&m_memory[IF_0xFF0F])
+			&m_memory[IF_0xFF0F]),
+		m_ioPort(
+			&m_memory[JOYP_0xFF00],
+			&m_memory[DIV_0xFF04],
+			&m_memory[TIMA_0xFF05],
+			&m_memory[TAC_0xFF07],
+			&m_memory[TMA_0xFF06])
 	{}
 
 	uint8 Memory::Read(uint16 addr)
@@ -105,11 +111,6 @@ namespace GBEmu::HW
 	{
 		Write(env, addr, data16 & 0xFF);
 		Write(env, addr + 1, (data16 >> 8) & 0xFF);
-	}
-
-	void Memory::WriteDirect(uint16 addr, uint8 data)
-	{
-		m_memory[addr] = data;
 	}
 
 	void Memory::LoadCartridge(const FilePath& cartridgePath)
