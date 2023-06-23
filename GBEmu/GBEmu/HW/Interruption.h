@@ -2,12 +2,6 @@
 
 namespace GBEmu::HW
 {
-	constexpr int InterruptJoypad = 1 << 4;
-	constexpr int InterruptSerial = 1 << 3;
-	constexpr int InterruptTimer = 1 << 2;
-	constexpr int InterruptSTAT = 1 << 1;
-	constexpr int InterruptVBlank = 1 << 0;
-
 	struct InterruptFlag
 	{
 	private:
