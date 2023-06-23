@@ -35,7 +35,7 @@ namespace GBEmu::HW
 		}
 		else
 		{
-			return 0b11010000;
+			return 0xCF;
 		}
 	}
 }
