@@ -68,13 +68,5 @@ namespace GBEmu::HW
 
 		static void updateLY(LCD& lcd, int dotCycle);
 		static PPUMode judgePPUMode(int dotCycle);
-
-		// Array<OAMData> m_oamBuffer{};
-		// Image m_bitmap{HWParam::DisplayResolution, ColorF{1.0}};
-		// int m_fetcherX{};
-
-		// static Array<OAMData> scanOAM(HWEnv& env, LCD& lcd);
-		// static void scanLineX(HWEnv& env, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, Image& bitmap);
-		// static Color fetchPixelByMergeOAM(Memory& memory, LCD& lcd, int fetcherX, const Array<OAMData>& oamBuffer, uint8 ly, uint8 bgWindowTileDataColor);
 	};
 }
