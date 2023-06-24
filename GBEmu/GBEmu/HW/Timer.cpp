@@ -77,7 +77,7 @@ namespace GBEmu::HW
 		m_timaOverflowedCountdown = none;
 
 		// Timer割り込み要求
-		memory.GetInterrupt().SetFlag(InterruptFlags::Timer);
+		memory.Interrupt().SetFlag(InterruptFlags::Timer);
 
 		// TIMAをTMAの値にする
 		memory.GetIOPort().SetTIMA(memory.GetIOPort().TMA());

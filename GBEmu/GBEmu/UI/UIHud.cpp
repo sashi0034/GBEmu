@@ -45,7 +45,7 @@ namespace GBEmu::UI
 		text += U"OP={}\n"_fmt(hw.Debugger().LastExecutedInstruction().ToString());
 		text += U"PC={:04X}  SP={:04X}\n"_fmt(cpu.PC(), cpu.SP());
 		text += U"AF={:04X}  BC={:04X}  DE={:04X}  HL={:04X}\n\n"_fmt(cpu.RegAF(), cpu.RegBC(), cpu.RegDE(), cpu.RegHL());
-		text += U"IE=  {:02X}  IF=  {:02X}\n\n"_fmt(hw.GetMemory().GetInterrupt().IE(), hw.GetMemory().GetInterrupt().IF());
+		text += U"IE=  {:02X}  IF=  {:02X}\n\n"_fmt(hw.GetMemory().Interrupt().IE(), hw.GetMemory().Interrupt().IF());
 		text += U"LCDC={:04X}  STAT={:04X}\n"_fmt(lcd.LCDC(), lcd.STAT());
 		text += U"SCX =  {:02X}  SCY =  {:02X}\n"_fmt(lcd.SCX(), lcd.SCY());
 		text += U"WX  =  {:02X}  WY  =  {:02X}\n\n"_fmt(lcd.WX(), lcd.WY());

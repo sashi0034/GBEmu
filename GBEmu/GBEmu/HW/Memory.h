@@ -16,8 +16,9 @@ namespace GBEmu::HW
 		VRAM& GetVRAM() {return m_vram; }
 
 		LCD& GetLCD() {return m_lcd; }
-		Interruption& GetInterrupt() {return m_interrupt; }
-		IOPort& GetIOPort() {return m_ioPort; } // その他のIOポート
+		IOPort& GetIOPort() {return m_ioPort; }
+
+		Interruption& Interrupt() {return m_interrupt; }
 
 		uint8 Read(uint16 addr);
 		uint16 Read16(uint16 addr);
@@ -36,8 +37,9 @@ namespace GBEmu::HW
 		Cartridge m_cartridge{};
 
 		LCD m_lcd;
-		Interruption m_interrupt;
 		IOPort m_ioPort;
+
+		Interruption m_interrupt;
 
 		void writeIO(HWEnv& env, uint16 addr, uint8 data);
 

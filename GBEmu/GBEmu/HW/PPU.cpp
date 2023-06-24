@@ -111,7 +111,7 @@ namespace GBEmu::HW
 	void PPU::checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged)
 	{
 		auto&& memory = env.GetMemory();
-		auto&& interrupt = memory.GetInterrupt();
+		auto&& interrupt = memory.Interrupt();
 
 		// VBlank割り込みチェック
 		if (isModeChanged && m_mode == PPUMode::VBlank) { interrupt.SetFlag(InterruptFlags::VBlank); }
