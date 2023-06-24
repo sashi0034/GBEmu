@@ -48,7 +48,28 @@ namespace GBEmu::HW
 			&m_memory[DIV_0xFF04],
 			&m_memory[TIMA_0xFF05],
 			&m_memory[TAC_0xFF07],
-			&m_memory[TMA_0xFF06])
+			&m_memory[TMA_0xFF06],
+			&m_memory[NR10_0xFF10],
+			&m_memory[NR11_0xFF11],
+			&m_memory[NR12_0xFF12],
+			&m_memory[NR13_0xFF13],
+			&m_memory[NR14_0xFF14],
+			&m_memory[NR21_0xFF16],
+			&m_memory[NR22_0xFF17],
+			&m_memory[NR23_0xFF18],
+			&m_memory[NR24_0xFF19],
+			&m_memory[NR30_0xFF1A],
+			&m_memory[NR31_0xFF1B],
+			&m_memory[NR32_0xFF1C],
+			&m_memory[NR33_0xFF1D],
+			&m_memory[NR34_0xFF1E],
+			&m_memory[NR41_0xFF20],
+			&m_memory[NR42_0xFF21],
+			&m_memory[NR43_0xFF22],
+			&m_memory[NR44_0xFF23],
+			&m_memory[NR50_0xFF24],
+			&m_memory[NR51_0xFF25],
+			&m_memory[NR52_0xFF26])
 	{}
 
 	uint8 Memory::Read(uint16 addr)

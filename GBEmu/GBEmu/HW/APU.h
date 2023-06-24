@@ -5,6 +5,7 @@ namespace GBEmu::HW
 {
 	class HWEnv;
 
+	// 参考: https://github.com/voidproc/dmge/tree/main/dmge/APU
 	class APU
 	{
 	public:
