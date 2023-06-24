@@ -13,5 +13,7 @@ namespace GBEmu::HW
 		constexpr uint16 VRamSize_0x2000 = 0x2000;
 
 		constexpr int PPUCyclePeriod_70224 = 70224;
+
+		constexpr int AudioSampleRate = 44100;
 	};
 }

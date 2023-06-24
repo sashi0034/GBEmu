@@ -212,6 +212,8 @@
     <ClCompile Include="GBEmu\EmuGamepad.cpp" />
     <ClCompile Include="GBEmu\EmuLogger.cpp" />
     <ClCompile Include="GBEmu\EmuSingleton.cpp" />
+    <ClCompile Include="GBEmu\HW\APU.cpp" />
+    <ClCompile Include="GBEmu\HW\APUStream.cpp" />
     <ClCompile Include="GBEmu\HW\Cartridge.cpp" />
     <ClCompile Include="GBEmu\HW\CPU.cpp" />
     <ClCompile Include="GBEmu\HW\CPUInstruction.cpp" />
@@ -454,6 +456,8 @@
     <ClInclude Include="GBEmu\EmuGamepad.h" />
     <ClInclude Include="GBEmu\EmuLogger.h" />
     <ClInclude Include="GBEmu\EmuSingleton.h" />
+    <ClInclude Include="GBEmu\HW\APU.h" />
+    <ClInclude Include="GBEmu\HW\APUStream.h" />
     <ClInclude Include="GBEmu\HW\Cartridge.h" />
     <ClInclude Include="GBEmu\HW\CPU.h" />
     <ClInclude Include="GBEmu\HW\CPUInstruction.h" />
