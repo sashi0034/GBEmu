@@ -11,7 +11,6 @@ namespace GBEmu::HW
 	class Memory
 	{
 	public:
-		Memory();
 		VRAM& GetVRAM() {return m_vram; }
 
 		Interruption& Interrupt() {return m_interrupt; }
@@ -33,7 +32,7 @@ namespace GBEmu::HW
 		VRAM m_vram{};
 		Cartridge m_cartridge{};
 
-		Interruption m_interrupt;
+		Interruption m_interrupt{};
 
 		uint8 readIO(HWEnv& env, uint16 addr);
 		void writeIO(HWEnv& env, uint16 addr, uint8 data);

@@ -23,14 +23,16 @@ namespace GBEmu::HW
 	class Interruption
 	{
 	public:
-		Interruption(uint8* iePtr, uint8* ifPtr);
-
 		uint8 IE() const;
 		uint8 IF() const;
+
+		void SetIE(uint8 data){ m_ie = data; }
+		void SetIF(uint8 data){ m_if = data | 0xE0; }
+
 		void SetFlag(InterruptFlag flag);
 		void ResetFlag(InterruptFlag flag);
 	private:
-		uint8* m_iePtr;
-		uint8* m_ifPtr;
+		uint8 m_ie{};
+		uint8 m_if{};
 	};
 }

@@ -26,12 +26,6 @@ namespace GBEmu::HW
 	class HWEnv;
 	using namespace MemoryAddress;
 
-	Memory::Memory() :
-		m_interrupt(
-			&m_memory[IE_0xFFFF],
-			&m_memory[IF_0xFF0F])
-	{}
-
 	uint8 Memory::Read(HWEnv& env, uint16 addr)
 	{
 		// https://github.com/pokemium/gb-docs-ja/blob/main/cartridge/mbc/mbc1.md
@@ -49,6 +43,11 @@ namespace GBEmu::HW
 		{
 			return readIO(env, addr);
 		}
+		if (addr == IE_0xFFFF)
+		{
+			return m_interrupt.IE();
+		}
+
 		return m_memory[addr];
 	}
 
@@ -83,6 +82,10 @@ namespace GBEmu::HW
 		else if (RangeUint16(IOPortsStart_0xFF00, IOPortsEnd_0xFF7F).IsBetween(addr))
 		{
 			writeIO(env, addr, data);
+		}
+		else if (addr == IE_0xFFFF)
+		{
+			m_interrupt.SetIE(data);
 		}
 		else
 		{
@@ -164,6 +167,9 @@ namespace GBEmu::HW
 		case WY_0xFF4A:
 			return env.GetPPU().GetLCD().ReadAddr<WY_0xFF4A>();
 
+		case IF_0xFF0F:
+			return m_interrupt.IF();
+
 		default:
 			return m_memory[addr];
 		}
@@ -209,10 +215,11 @@ namespace GBEmu::HW
 		case WY_0xFF4A:
 			env.GetPPU().GetLCD().WriteAddr<WY_0xFF4A>(data); break;
 
-		case DMA_0xFF46:
-			transferDMA(env, data);
 		case IF_0xFF0F:
-			m_memory[addr] = data | 0xE0; break;
+			m_interrupt.SetIF(data); break;
+
+		case DMA_0xFF46:
+			transferDMA(env, data); break;
 		default:
 			m_memory[addr] = data; break;
 		}
