@@ -18,13 +18,13 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateNOP()
+	inline CPUOperationResult operateNOP()
 	{
 		return CPUOperationResult(1, 4);
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateSTOP_d8(HWEnv& env)
+	inline CPUOperationResult operateSTOP_d8(HWEnv& env)
 	{
 		// TODO: STOPの対応を検討
 		// env.GetCPU().SetState(CPUState::Stopped);
@@ -32,7 +32,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_XX_d16(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateLD_XX_d16(HWEnv& env, CPUInstruction instr)
 	{
 		const uint16 d16 = env.GetMemory().Read16(env.GetCPU().PC() + 1);
 
@@ -54,7 +54,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_X_d8(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateLD_X_d8(HWEnv& env, CPUInstruction instr)
 	{
 		const uint8 d8 = env.GetMemory().Read(env.GetCPU().PC() + 1);
 
@@ -80,7 +80,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_X_A(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateLD_X_A(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -121,7 +121,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_A_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateLD_A_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -154,7 +154,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_X_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateLD_X_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -235,7 +235,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_ma16_SP(HWEnv& env)
+	inline CPUOperationResult operateLD_ma16_SP(HWEnv& env)
 	{
 		// 0x08
 		const uint16 a16 = env.GetMemory().Read16(env.GetCPU().PC() + 1);
@@ -244,7 +244,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_mHLi_A(HWEnv& env)
+	inline CPUOperationResult operateLD_mHLi_A(HWEnv& env)
 	{
 		// 0x22
 		auto&& cpu = env.GetCPU();
@@ -254,7 +254,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_A_mHLi(HWEnv& env)
+	inline CPUOperationResult operateLD_A_mHLi(HWEnv& env)
 	{
 		// 0x2A
 		auto&& cpu = env.GetCPU();
@@ -264,7 +264,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_mHLd_A(HWEnv& env)
+	inline CPUOperationResult operateLD_mHLd_A(HWEnv& env)
 	{
 		// 0x32
 		auto&& cpu = env.GetCPU();
@@ -274,7 +274,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_A_mHLd(HWEnv& env)
+	inline CPUOperationResult operateLD_A_mHLd(HWEnv& env)
 	{
 		// 0x3A
 		auto&& cpu = env.GetCPU();
@@ -284,7 +284,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_mC_A(HWEnv& env)
+	inline CPUOperationResult operateLD_mC_A(HWEnv& env)
 	{
 		// 0xE2
 		auto&& cpu = env.GetCPU();
@@ -293,7 +293,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_A_mC(HWEnv& env)
+	inline CPUOperationResult operateLD_A_mC(HWEnv& env)
 	{
 		// 0xF2
 		auto&& cpu = env.GetCPU();
@@ -302,7 +302,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_SP_HL(HWEnv& env)
+	inline CPUOperationResult operateLD_SP_HL(HWEnv& env)
 	{
 		// 0xF9
 		auto&& cpu = env.GetCPU();
@@ -311,7 +311,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLD_HL_SPir8(HWEnv& env)
+	inline CPUOperationResult operateLD_HL_SPir8(HWEnv& env)
 	{
 		// 0xF8
 		auto&& cpu = env.GetCPU();
@@ -326,7 +326,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateLDH_X_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateLDH_X_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -347,7 +347,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateINC_XX(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateINC_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		const auto result = CPUOperationResult(1, 8);
@@ -369,7 +369,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateINC_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateINC_X(HWEnv& env, CPUInstruction instr)
 	{
 		// https://github.com/pokemium/gb-docs-ja/blob/main/cpu/instruction/alu8.md
 
@@ -396,7 +396,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateINC_mHL(HWEnv& env)
+	inline CPUOperationResult operateINC_mHL(HWEnv& env)
 	{
 		auto&& cpu = env.GetCPU();
 
@@ -411,7 +411,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateDEC_XX(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateDEC_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		const auto result = CPUOperationResult(1, 8);
@@ -433,7 +433,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateDEC_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateDEC_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 
@@ -458,7 +458,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateDEC_mHL(HWEnv& env)
+	inline CPUOperationResult operateDEC_mHL(HWEnv& env)
 	{
 		// 0x35
 		auto&& cpu = env.GetCPU();
@@ -474,7 +474,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateRLCA(HWEnv& env)
+	inline CPUOperationResult operateRLCA(HWEnv& env)
 	{
 		auto&& cpu = env.GetCPU();
 
@@ -486,7 +486,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateRLA(HWEnv& env)
+	inline CPUOperationResult operateRLA(HWEnv& env)
 	{
 		// 0x0F
 		auto&& cpu = env.GetCPU();
@@ -501,7 +501,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateRRA(HWEnv& env)
+	inline CPUOperationResult operateRRA(HWEnv& env)
 	{
 		// 0x1F
 		auto&& cpu = env.GetCPU();
@@ -515,7 +515,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateRRCA(HWEnv& env)
+	inline CPUOperationResult operateRRCA(HWEnv& env)
 	{
 		auto&& cpu = env.GetCPU();
 
@@ -528,7 +528,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateADD_HL_XX(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateADD_HL_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 
@@ -548,7 +548,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateADD_A_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateADD_A_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -583,7 +583,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateADD_SP_r8(HWEnv& env)
+	inline CPUOperationResult operateADD_SP_r8(HWEnv& env)
 	{
 		// 0xE8
 		auto&& cpu = env.GetCPU();
@@ -601,7 +601,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateADC_A_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateADC_A_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -637,7 +637,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateSUB_A_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateSUB_A_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -672,7 +672,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateSBC_A_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateSBC_A_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -708,7 +708,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateAND_A_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateAND_A_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -738,7 +738,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateXOR_A_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateXOR_A_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -768,7 +768,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateOR_A_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateOR_A_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -798,7 +798,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateCP_A_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateCP_A_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -832,7 +832,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateJR_X_r8(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateJR_X_r8(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		const int8 r8 = static_cast<int8>(env.GetMemory().Read(cpu.PC() + 1));
@@ -853,7 +853,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateJP_X_a16(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateJP_X_a16(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 
@@ -871,7 +871,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateJP_HL(HWEnv& env)
+	inline CPUOperationResult operateJP_HL(HWEnv& env)
 	{
 		// 0xE9
 		auto&& cpu = env.GetCPU();
@@ -879,7 +879,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateCALL_X_a16(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateCALL_X_a16(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -907,7 +907,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateRST_XXh(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateRST_XXh(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -931,7 +931,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operatePUSH_XX(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operatePUSH_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
@@ -952,7 +952,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateRET_X(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operateRET_X(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 
@@ -983,7 +983,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateRETI(HWEnv& env)
+	inline CPUOperationResult operateRETI(HWEnv& env)
 	{
 		// 0xD9
 		auto&& cpu = env.GetCPU();
@@ -994,7 +994,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operatePOP_XX(HWEnv& env, CPUInstruction instr)
+	inline CPUOperationResult operatePOP_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
 
@@ -1020,7 +1020,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateCPL(HWEnv& env)
+	inline CPUOperationResult operateCPL(HWEnv& env)
 	{
 		// 0x2F
 		auto&& cpu = env.GetCPU();
@@ -1031,7 +1031,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateSCF(HWEnv& env)
+	inline CPUOperationResult operateSCF(HWEnv& env)
 	{
 		// 0x37
 		auto&& cpu = env.GetCPU();
@@ -1039,7 +1039,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateCCF(HWEnv& env)
+	inline CPUOperationResult operateCCF(HWEnv& env)
 	{
 		// 0x3F
 		auto&& cpu = env.GetCPU();
@@ -1047,7 +1047,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateDI(HWEnv& env)
+	inline CPUOperationResult operateDI(HWEnv& env)
 	{
 		// 0xF3
 		auto&& cpu = env.GetCPU();
@@ -1056,7 +1056,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateEI(HWEnv& env)
+	inline CPUOperationResult operateEI(HWEnv& env)
 	{
 		// 0xFB
 		auto&& cpu = env.GetCPU();
@@ -1065,7 +1065,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateDAA(HWEnv& env)
+	inline CPUOperationResult operateDAA(HWEnv& env)
 	{
 		// 0x27
 		auto&& cpu = env.GetCPU();
@@ -1091,7 +1091,7 @@ namespace GBEmu::HW::CPUOperation
 	}
 
 	[[nodiscard]]
-	CPUOperationResult operateHALT(HWEnv& env)
+	inline CPUOperationResult operateHALT(HWEnv& env)
 	{
 		// 0x76
 		auto&& cpu = env.GetCPU();
