@@ -52,7 +52,7 @@ namespace GBEmu::HW::CPUOperationCB
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const uint8 data = memory.Read(cpu.RegHL());
+		const uint8 data = memory.Read(env, cpu.RegHL());
 		const uint8 bit7 = data >> 7;
 
 		const bool z = data == 0;
@@ -96,7 +96,7 @@ namespace GBEmu::HW::CPUOperationCB
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const uint8 data = memory.Read(cpu.RegHL());
+		const uint8 data = memory.Read(env, cpu.RegHL());
 		const uint8 bit0 = data & 0b1;
 
 		const bool z = data == 0;
@@ -143,7 +143,7 @@ namespace GBEmu::HW::CPUOperationCB
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const uint8 before = memory.Read(cpu.RegHL());
+		const uint8 before = memory.Read(env, cpu.RegHL());
 		const uint8 bit7 = before >> 7;
 		const uint8 carry = cpu.FlagC();
 
@@ -193,7 +193,7 @@ namespace GBEmu::HW::CPUOperationCB
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const uint8 before = memory.Read(cpu.RegHL());
+		const uint8 before = memory.Read(env, cpu.RegHL());
 		const uint8 bit0 = before & 0b1;
 		const uint8 carry = cpu.FlagC();
 
@@ -240,7 +240,7 @@ namespace GBEmu::HW::CPUOperationCB
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const uint8 before = memory.Read(cpu.RegHL());
+		const uint8 before = memory.Read(env, cpu.RegHL());
 		const uint8 after = before << 1;
 
 		const bool z = after == 0;
@@ -284,7 +284,7 @@ namespace GBEmu::HW::CPUOperationCB
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const uint8 before = memory.Read(cpu.RegHL());
+		const uint8 before = memory.Read(env, cpu.RegHL());
 		const uint8 after = (before >> 1) | (before & (1 << 7));
 
 		const bool z = after == 0;
@@ -328,7 +328,7 @@ namespace GBEmu::HW::CPUOperationCB
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const uint8 before = memory.Read(cpu.RegHL());
+		const uint8 before = memory.Read(env, cpu.RegHL());
 		const uint8 after = before >> 1;
 
 		const bool z = after == 0;
@@ -372,7 +372,7 @@ namespace GBEmu::HW::CPUOperationCB
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const uint8 before = memory.Read(cpu.RegHL());
+		const uint8 before = memory.Read(env, cpu.RegHL());
 		const uint8 after = (before >> 4) | (before << 4);
 
 		const bool z = after == 0;
@@ -414,7 +414,7 @@ namespace GBEmu::HW::CPUOperationCB
 
 		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::BIT_0_B_0x40)) / 8;
 
-		const uint8 value = env.GetMemory().Read(cpu.RegHL());
+		const uint8 value = env.GetMemory().Read(env, cpu.RegHL());
 		const bool z = (value & (1 << u3)) == 0;
 
 		return CPUOperationResult::ByCalc(2, 12, CPUOperationZNHC{z, false, true, cpu.FlagC()});
@@ -452,7 +452,7 @@ namespace GBEmu::HW::CPUOperationCB
 
 		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::RES_0_B_0x80)) / 8;
 
-		const uint8 value = memory.Read(cpu.RegHL());
+		const uint8 value = memory.Read(env, cpu.RegHL());
 		memory.Write(env, cpu.RegHL(), value & (~(1 << u3)));
 
 		return CPUOperationResult(2, 16);
@@ -490,7 +490,7 @@ namespace GBEmu::HW::CPUOperationCB
 
 		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::SET_0_B_0xC0)) / 8;
 
-		const uint8 value = memory.Read(cpu.RegHL());
+		const uint8 value = memory.Read(env, cpu.RegHL());
 		memory.Write(env, cpu.RegHL(), value | (1 << u3));
 
 		return CPUOperationResult(2, 16);

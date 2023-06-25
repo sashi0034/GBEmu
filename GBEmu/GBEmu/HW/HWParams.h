@@ -15,5 +15,10 @@ namespace GBEmu::HW
 		constexpr int PPUCyclePeriod_70224 = 70224;
 
 		constexpr int AudioSampleRate = 44100;
+
+		constexpr int AudioChSquare_1 = 1;
+		constexpr int AudioChSquare_2 = 2;
+		constexpr int AudioChWave_3 = 3;
+		constexpr int AudioChNoise_4 = 4;
 	};
 }

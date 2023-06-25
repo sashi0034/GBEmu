@@ -27,35 +27,33 @@ namespace GBEmu::HW
 
 	PPUResult PPU::StepCycle(HWEnv& env)
 	{
-		auto&& lcd = env.GetMemory().GetLCD();
-
 		m_dotCycle = (m_dotCycle + 1) % dotCycleFreq_70224;
 
-		updateLY(lcd, m_dotCycle);
+		updateLY(m_lcd, m_dotCycle);
 
 		const auto modeBefore = m_mode;
 		m_mode = m_nextMode;
 		m_nextMode = judgePPUMode((m_dotCycle + 1) % dotCycleFreq_70224);
 
 		const bool isModeChanged = modeBefore != m_mode;
-		if (isModeChanged) lcd.SetMode(m_mode);
+		if (isModeChanged) m_lcd.SetMode(m_mode);
 
 		// モード分岐
 		if (m_mode == PPUMode::PixelTransfer && m_nextMode == PPUMode::HBlank)
 		{
 			// WindowEnableFlagを記憶
-			updateBGAndWindowFlagBuffer(lcd);
+			updateBGAndWindowFlagBuffer(m_lcd);
 
 			// アドレス差分を記憶
-			const auto ly = lcd.LY();
-			m_bgAndWindowTileDataDiff.TrackAddressLY(lcd.BGAndWindowTileDataAddress(), ly);
-			m_bgTileMapDisplayDiff.TrackAddressLY(lcd.BGTileMapDisplayAddress(), ly);
-			m_windowTileMapDisplayDiff.TrackAddressLY(lcd.WindowTileMapDisplayAddress(), ly);
+			const auto ly = m_lcd.LY();
+			m_bgAndWindowTileDataDiff.TrackAddressLY(m_lcd.BGAndWindowTileDataAddress(), ly);
+			m_bgTileMapDisplayDiff.TrackAddressLY(m_lcd.BGTileMapDisplayAddress(), ly);
+			m_windowTileMapDisplayDiff.TrackAddressLY(m_lcd.WindowTileMapDisplayAddress(), ly);
 		}
 		else if (m_mode == PPUMode::HBlank && m_nextMode == PPUMode::VBlank)
 		{
 			// 画面描画
-			renderAtVBlank(env.GetMemory(), lcd);
+			renderAtVBlank(env, env.GetMemory(), m_lcd);
 
 			// いろいろクリア
 			m_bgAndWindowTileDataDiff.Clear();
@@ -64,7 +62,7 @@ namespace GBEmu::HW
 		}
 
 		// 割り込みチェック
-		checkInterrupt(env, lcd, isModeChanged);
+		checkInterrupt(env, m_lcd, isModeChanged);
 
 		return PPUResult{
 			isModeChanged && m_mode == PPUMode::VBlank
@@ -128,7 +126,7 @@ namespace GBEmu::HW
 		m_canSTATInterruptBefore = canSTATInterrupt;
 	}
 
-	void PPU::renderAtVBlank(Memory& memory, const LCD& lcd) const
+	void PPU::renderAtVBlank(HWEnv& env, Memory& memory, const LCD& lcd) const
 	{
 		// TODO: バッファにLCD経歴を格納して、IsWindowDisplayEnableが付いてる行だけ描画したい
 
@@ -141,7 +139,7 @@ namespace GBEmu::HW
 		(void)m_renderBuffer.clear(Palette::Black);
 
 		const auto renderBGAndWindowArgs = PPURenderBGAndWindowArgs{
-			memory, lcd, vram,
+			env, memory, lcd, vram,
 			m_bgAndWindowFlagBuffer,
 			m_bgAndWindowTileDataDiff,
 			m_bgTileMapDisplayDiff,
@@ -155,7 +153,7 @@ namespace GBEmu::HW
 		PPURender::RenderObjMaskFromBGAndWindow(renderBGAndWindowArgs, m_objMaskBuffer);
 
 		// OBJ描画
-		PPURender::RenderOBJCompletely({memory, lcd, vram, m_objMaskBuffer});
+		PPURender::RenderOBJCompletely({env, memory, lcd, vram, m_objMaskBuffer});
 	}
 
 	void PPU::updateLY(LCD& lcd, int dotCycle)

@@ -27,52 +27,12 @@ namespace GBEmu::HW
 	using namespace MemoryAddress;
 
 	Memory::Memory() :
-		m_lcd(
-			&m_memory[LCDC_0xFF40],
-			&m_memory[STAT_0xFF41],
-			&m_memory[BGP_0xFF47],
-			&m_memory[OBP0_0xFF48],
-			&m_memory[OBP1_0xFF49],
-			&m_memory[SCX_0xFF43],
-			&m_memory[SCY_0xFF42],
-			&m_memory[LY_0xFF44],
-			&m_memory[LYC_0xFF45],
-			&m_memory[WX_0xFF4B],
-			&m_memory[WY_0xFF4A]
-			),
 		m_interrupt(
 			&m_memory[IE_0xFFFF],
-			&m_memory[IF_0xFF0F]),
-		m_ioPort(
-			&m_memory[JOYP_0xFF00],
-			&m_memory[DIV_0xFF04],
-			&m_memory[TIMA_0xFF05],
-			&m_memory[TAC_0xFF07],
-			&m_memory[TMA_0xFF06],
-			&m_memory[NR10_0xFF10],
-			&m_memory[NR11_0xFF11],
-			&m_memory[NR12_0xFF12],
-			&m_memory[NR13_0xFF13],
-			&m_memory[NR14_0xFF14],
-			&m_memory[NR21_0xFF16],
-			&m_memory[NR22_0xFF17],
-			&m_memory[NR23_0xFF18],
-			&m_memory[NR24_0xFF19],
-			&m_memory[NR30_0xFF1A],
-			&m_memory[NR31_0xFF1B],
-			&m_memory[NR32_0xFF1C],
-			&m_memory[NR33_0xFF1D],
-			&m_memory[NR34_0xFF1E],
-			&m_memory[NR41_0xFF20],
-			&m_memory[NR42_0xFF21],
-			&m_memory[NR43_0xFF22],
-			&m_memory[NR44_0xFF23],
-			&m_memory[NR50_0xFF24],
-			&m_memory[NR51_0xFF25],
-			&m_memory[NR52_0xFF26])
+			&m_memory[IF_0xFF0F])
 	{}
 
-	uint8 Memory::Read(uint16 addr)
+	uint8 Memory::Read(HWEnv& env, uint16 addr)
 	{
 		// https://github.com/pokemium/gb-docs-ja/blob/main/cartridge/mbc/mbc1.md
 
@@ -81,17 +41,20 @@ namespace GBEmu::HW
 		{
 			return m_cartridge.Read(addr);
 		}
-		else if (RangeUint16(VRamStart_0x8000, VRamEnd_0x9FFF).IsBetween(addr))
+		if (RangeUint16(VRamStart_0x8000, VRamEnd_0x9FFF).IsBetween(addr))
 		{
 			return m_vram.Read(addr);
 		}
-
+		if (RangeUint16(IOPortsStart_0xFF00, IOPortsEnd_0xFF7F).IsBetween(addr))
+		{
+			return readIO(env, addr);
+		}
 		return m_memory[addr];
 	}
 
-	uint16 Memory::Read16(uint16 addr)
+	uint16 Memory::Read16(HWEnv& env, uint16 addr)
 	{
-		return Read(addr) | (Read(addr + 1) << 8);
+		return Read(env, addr) | (Read(env, addr + 1) << 8);
 	}
 
 	void Memory::Write(HWEnv& env, uint16 addr, uint8 data)
@@ -146,100 +109,160 @@ namespace GBEmu::HW
 		const auto cartridgeHeader = loadCartridgeHeader(cartridgeData);
 
 		m_cartridge = Cartridge(cartridgeHeader, cartridgeData);
-
-		// メモリ内容を電源投入時のものにする
-		initMemory();
 	}
 
-	void Memory::DumpIOPorts(String& dest) const
+	void Memory::DumpIOPort(HWEnv& env, String& dest)
 	{
 		for (uint16 addr = IOPortsStart_0xFF00; addr <= IOPortsEnd_0xFF7F; addr += 0x08)
 		{
 			dest += U"{:04X}:"_fmt(addr);
 			for (uint16 i=0; i<0x08; ++i)
 			{
-				dest += U" {:02X}"_fmt(m_memory[addr + i]);
+				dest += U" {:02X}"_fmt(readIO(env, addr + i));
 			}
 			dest += U"\n";
+		}
+	}
+
+	uint8 Memory::readIO(HWEnv& env, uint16 addr)
+	{
+		// 0xFF00 - 0xFF7F
+		switch (addr)
+		{
+		case JOYP_0xFF00:
+			return env.GetJoypad().ReadJOYP();
+
+		case DIV_0xFF04:
+			return env.GetTimer().ReadAddr<DIV_0xFF04>();
+		case TIMA_0xFF05:
+			return env.GetTimer().ReadAddr<TIMA_0xFF05>();
+		case TAC_0xFF07:
+			return env.GetTimer().ReadAddr<TAC_0xFF07>();
+		case TMA_0xFF06:
+			return env.GetTimer().ReadAddr<TMA_0xFF06>();
+
+		case LCDC_0xFF40:
+			return env.GetPPU().GetLCD().ReadAddr<LCDC_0xFF40>();
+		case STAT_0xFF41:
+			return env.GetPPU().GetLCD().ReadAddr<STAT_0xFF41>();
+		case BGP_0xFF47:
+			return env.GetPPU().GetLCD().ReadAddr<BGP_0xFF47>();
+		case OBP0_0xFF48:
+			return env.GetPPU().GetLCD().ReadAddr<OBP0_0xFF48>();
+		case OBP1_0xFF49:
+			return env.GetPPU().GetLCD().ReadAddr<OBP1_0xFF49>();
+		case SCX_0xFF43:
+			return env.GetPPU().GetLCD().ReadAddr<SCX_0xFF43>();
+		case SCY_0xFF42:
+			return env.GetPPU().GetLCD().ReadAddr<SCY_0xFF42>();
+		case LY_0xFF44:
+			return env.GetPPU().GetLCD().ReadAddr<LY_0xFF44>();
+		case LYC_0xFF45:
+			return env.GetPPU().GetLCD().ReadAddr<LYC_0xFF45>();
+		case WX_0xFF4B:
+			return env.GetPPU().GetLCD().ReadAddr<WX_0xFF4B>();
+		case WY_0xFF4A:
+			return env.GetPPU().GetLCD().ReadAddr<WY_0xFF4A>();
+
+		default:
+			return m_memory[addr];
 		}
 	}
 
 	void Memory::writeIO(HWEnv& env, uint16 addr, uint8 data)
 	{
 		// 0xFF00 - 0xFF7F
+		switch (addr)
+		{
+		case JOYP_0xFF00:
+			env.GetJoypad().WriteJOYP(data); break;
 
-		if (addr == JOYP_0xFF00)
-		{
-			env.GetJoypad().Update(*this, data);
-		}
-		else if (addr == DIV_0xFF04)
-		{
-			env.GetTimer().ResetDIVDetail();
-		}
-		else if (addr == TIMA_0xFF05)
-		{
-			// TODO: 割り込み中断?
-			m_memory[addr] = data;
-		}
-		else if (addr == TAC_0xFF07)
-		{
-			m_memory[addr] = 0xF8 | (data & 0xF07);
-		}
-		else if (addr == DMA_0xFF46)
-		{
-			// ROMまたはRAMからOAMへのDMA転送
-			const uint16 src = data * 0x100;
-			for (uint16 offset = 0; offset < 0x100; ++offset)
-			{
-				m_memory[OAMStart_0xFE00 + offset] = Read(src + offset);
-			}
-			m_memory[addr] = 0xFF;
-		}
-		else if (addr == IF_0xFF0F)
-		{
-			m_memory[addr] = data | 0xE0;
-		}
-		// TODO: 他のも
-		else
-		{
-			m_memory[addr] = data;
+		case DIV_0xFF04:
+			env.GetTimer().WriteAddr<DIV_0xFF04>(data); break;
+		case TIMA_0xFF05:
+			env.GetTimer().WriteAddr<TIMA_0xFF05>(data); break;
+		case TAC_0xFF07:
+			env.GetTimer().WriteAddr<TAC_0xFF07>(data); break;
+		case TMA_0xFF06:
+			env.GetTimer().WriteAddr<TMA_0xFF06>(data); break;
+
+		case LCDC_0xFF40:
+			env.GetPPU().GetLCD().WriteAddr<LCDC_0xFF40>(data); break;
+		case STAT_0xFF41:
+			env.GetPPU().GetLCD().WriteAddr<STAT_0xFF41>(data); break;
+		case BGP_0xFF47:
+			env.GetPPU().GetLCD().WriteAddr<BGP_0xFF47>(data); break;
+		case OBP0_0xFF48:
+			env.GetPPU().GetLCD().WriteAddr<OBP0_0xFF48>(data); break;
+		case OBP1_0xFF49:
+			env.GetPPU().GetLCD().WriteAddr<OBP1_0xFF49>(data); break;
+		case SCX_0xFF43:
+			env.GetPPU().GetLCD().WriteAddr<SCX_0xFF43>(data); break;
+		case SCY_0xFF42:
+			env.GetPPU().GetLCD().WriteAddr<SCY_0xFF42>(data); break;
+		case LY_0xFF44:
+			env.GetPPU().GetLCD().WriteAddr<LY_0xFF44>(data); break;
+		case LYC_0xFF45:
+			env.GetPPU().GetLCD().WriteAddr<LYC_0xFF45>(data); break;
+		case WX_0xFF4B:
+			env.GetPPU().GetLCD().WriteAddr<WX_0xFF4B>(data); break;
+		case WY_0xFF4A:
+			env.GetPPU().GetLCD().WriteAddr<WY_0xFF4A>(data); break;
+
+		case DMA_0xFF46:
+			transferDMA(env, data);
+		case IF_0xFF0F:
+			m_memory[addr] = data | 0xE0; break;
+		default:
+			m_memory[addr] = data; break;
 		}
 	}
 
-	void Memory::initMemory()
+	void Memory::transferDMA(HWEnv& env, uint8 data)
 	{
-		m_memory[0xFF05] = 0x00; // TIMA
-		m_memory[0xFF06] = 0x00; // TMA
-		m_memory[0xFF07] = 0x00; // TAC
-		m_memory[0xFF10] = 0x80; // NR10
-		m_memory[0xFF11] = 0xBF; // NR11
-		m_memory[0xFF12] = 0xF3; // NR12
-		m_memory[0xFF14] = 0xBF; // NR14
-		m_memory[0xFF16] = 0x3F; // NR21
-		m_memory[0xFF17] = 0x00; // NR22
-		m_memory[0xFF19] = 0xBF; // NR24
-		m_memory[0xFF1A] = 0x7F; // NR30
-		m_memory[0xFF1B] = 0xFF; // NR31
-		m_memory[0xFF1C] = 0x9F; // NR32
-		m_memory[0xFF1E] = 0xBF; // NR33
-		m_memory[0xFF20] = 0xFF; // NR41
-		m_memory[0xFF21] = 0x00; // NR42
-		m_memory[0xFF22] = 0x00; // NR43
-		m_memory[0xFF23] = 0xBF; // NR30
-		m_memory[0xFF24] = 0x77; // NR50
-		m_memory[0xFF25] = 0xF3; // NR51
-		m_memory[0xFF26] = 0xF0; // NR52 // GB: 0xF1, SGB: 0xFD
-		m_memory[0xFF40] = 0x91; // LCDC
-		m_memory[0xFF42] = 0x00; // SCY
-		m_memory[0xFF43] = 0x00; // SCX
-		m_memory[0xFF45] = 0x00; // LYC
-		m_memory[0xFF47] = 0xFC; // BGP
-		m_memory[0xFF48] = 0xFF; // OBP0
-		m_memory[0xFF49] = 0xFF; // OBP1
-		m_memory[0xFF4A] = 0x00; // WY
-		m_memory[0xFF4B] = 0x00; // WX
-		m_memory[0xFF0F] = 0xE0; // IF
-		m_memory[0xFFFF] = 0x00; // IE
+		// ROMまたはRAMからOAMへのDMA転送
+		const uint16 src = data * 0x100;
+		for (uint16 offset = 0; offset < 0x100; ++offset)
+		{
+			m_memory[OAMStart_0xFE00 + offset] = Read(env, src + offset);
+		}
+		m_memory[DMA_0xFF46] = 0xFF;
+	}
+
+	void Memory::Initialize(HWEnv& env)
+	{
+		Write(env, 0xFF05, 0x00); // TIMA
+		Write(env, 0xFF06, 0x00); // TMA
+		Write(env, 0xFF07, 0x00); // TAC
+		Write(env, 0xFF10, 0x80); // NR10
+		Write(env, 0xFF11, 0xBF); // NR11
+		Write(env, 0xFF12, 0xF3); // NR12
+		Write(env, 0xFF14, 0xBF); // NR14
+		Write(env, 0xFF16, 0x3F); // NR21
+		Write(env, 0xFF17, 0x00); // NR22
+		Write(env, 0xFF19, 0xBF); // NR24
+		Write(env, 0xFF1A, 0x7F); // NR30
+		Write(env, 0xFF1B, 0xFF); // NR31
+		Write(env, 0xFF1C, 0x9F); // NR32
+		Write(env, 0xFF1E, 0xBF); // NR33
+		Write(env, 0xFF20, 0xFF); // NR41
+		Write(env, 0xFF21, 0x00); // NR42
+		Write(env, 0xFF22, 0x00); // NR43
+		Write(env, 0xFF23, 0xBF); // NR30
+		Write(env, 0xFF24, 0x77); // NR50
+		Write(env, 0xFF25, 0xF3); // NR51
+		Write(env, 0xFF26, 0xF0); // NR52
+		Write(env, 0xFF40, 0x91); // LCDC
+		Write(env, 0xFF42, 0x00); // SCY
+		Write(env, 0xFF43, 0x00); // SCX
+		Write(env, 0xFF45, 0x00); // LYC
+		Write(env, 0xFF47, 0xFC); // BGP
+		Write(env, 0xFF48, 0xFF); // OBP0
+		Write(env, 0xFF49, 0xFF); // OBP1
+		Write(env, 0xFF4A, 0x00); // WY
+		Write(env, 0xFF4B, 0x00); // WX
+		Write(env, 0xFF0F, 0xE0); // IF
+		Write(env, 0xFFFF, 0x00); // IE
 	}
 
 	CartridgeHeader Memory::loadCartridgeHeader(const Array<uint8>& cartridgeData)

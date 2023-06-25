@@ -2,6 +2,7 @@
 
 namespace GBEmu::HW
 {
+	class HWEnv;
 	class Memory;
 	class PPUAddressLYDiff;
 	class LCD;
@@ -21,6 +22,7 @@ namespace GBEmu::HW
 
 	struct PPURenderBGAndWindowArgs
 	{
+		HWEnv& Env;
 		Memory& Memory;
 		const LCD& LCD;
 		VRAM& VRAM;
@@ -32,6 +34,7 @@ namespace GBEmu::HW
 
 	struct RenderOBJArgs
 	{
+		HWEnv& Env;
 		Memory& Memory;
 		const LCD& LCD;
 		VRAM& VRAM;

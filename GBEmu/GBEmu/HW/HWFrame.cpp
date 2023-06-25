@@ -22,7 +22,7 @@ namespace GBEmu::HW::HWFrame
 				env.GetTimer().StepCycle(env);
 			}
 
-			auto&& lcd = env.GetMemory().GetLCD();
+			auto&& lcd = env.GetPPU().GetLCD();
 			for (int i=0; i<(lcd.IsLCDDisplayEnable() ? cpuCycle.Count : 0); ++i)
 			{
 				// PPU更新

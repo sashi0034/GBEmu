@@ -54,6 +54,7 @@ namespace GBEmu::EmuFlowchart
 		UI::UIEnv uiEnv{};
 
 		hwEnv.GetMemory().LoadCartridge(config.CartridgePath);
+		hwEnv.GetMemory().Initialize(hwEnv);
 
 		// TODO: 60FPS control
 		while (System::Update())

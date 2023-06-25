@@ -2,7 +2,6 @@
 #include "Timer.h"
 
 #include "HWEnv.h"
-#include "MemoryAddress.h"
 #include "HWParams.h"
 
 namespace GBEmu::HW
@@ -10,40 +9,28 @@ namespace GBEmu::HW
 	void Timer::StepCycle(HWEnv& env)
 	{
 		auto&& memory = env.GetMemory();
-		auto&& ioPort = memory.GetIOPort();
 
-		// 本来DIVレジスタは256クロックサイクルごとにインクリメントされるので、メモリに反映するとき下位8bitを捨てる
 		m_divDetail++;
-		ioPort.SetDIV(m_divDetail >> 8);
 
 		// Timer制御レジスタ
-		const uint8 tac = ioPort.TAC();
-
-		checkIncTIMA(ioPort, tac, m_oldTAC);
+		m_tacBefore = m_tac;
+		checkIncTIMA(m_tac, m_tacBefore);
 
 		checkUpdateTIMAOverflowedCountdown(memory);
-
-		m_oldTAC = tac;
 	}
 
-	void Timer::ResetDIVDetail()
-	{
-		m_divDetail = 0;
-	}
-
-	void Timer::checkIncTIMA(IOPort& ioPort, uint8 newTAC, uint8 oldTAC)
+	void Timer::checkIncTIMA(uint8 newTAC, uint8 oldTAC)
 	{
 		if (m_timaOverflowedCountdown.has_value()) return;
 		if (canIncTIMA(newTAC, oldTAC, m_divDetail) == false) return;
 
 		// TIMAをインクリメント
-		ioPort.SetTIMA(ioPort.TIMA() + 1);
+		m_tima++;
 
-		if (ioPort.TIMA() != 0) return;
+		if (m_tima != 0) return;
 
 		// オーバーフロー
 		// TIMAがオーバーフローした後の1マシンサイクルでは、TIMAの値がTMAからの値ではなく0x00になる
-		ioPort.SetTIMA(0x00);
 		m_timaOverflowedCountdown = HWParam::MachineCycle; // Timer割り込みを遅延実行
 		// TIMA周波数はいずれも十分大きいから、m_timaOverflowedCountdownを直接上書きして大丈夫
 	}
@@ -80,6 +67,6 @@ namespace GBEmu::HW
 		memory.Interrupt().SetFlag(InterruptFlags::Timer);
 
 		// TIMAをTMAの値にする
-		memory.GetIOPort().SetTIMA(memory.GetIOPort().TMA());
+		m_tima = m_tma;
 	}
 }

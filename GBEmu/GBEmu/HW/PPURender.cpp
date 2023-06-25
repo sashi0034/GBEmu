@@ -114,7 +114,7 @@ namespace GBEmu::HW::PPURender
 				const uint8 tileY = scrolledY / 8;
 
 				const uint16 tileIdAddr = bgBaseAddr + ((tileX + tileY * 32) & 0x03FF);
-				const uint8 tileId = arg.Memory.Read(tileIdAddr);
+				const uint8 tileId = arg.Memory.Read(arg.Env, tileIdAddr);
 				(void)arg.VRAM.GetTileData(tileDataBaseAddr, tileId).draw(x, y);
 			}
 		}
@@ -147,13 +147,13 @@ namespace GBEmu::HW::PPURender
 				const uint8 tileY = static_cast<uint8>(y - wy) / 8;
 
 				const uint16 tileIdAddr = windowBaseAddr + ((tileX + tileY * 32) & 0x03FF);
-				const uint8 tileId = arg.Memory.Read(tileIdAddr);
+				const uint8 tileId = arg.Memory.Read(arg.Env, tileIdAddr);
 				(void)arg.VRAM.GetTileData(tileDataBaseAddr, tileId).draw(x, y);
 			}
 		}
 	}
 
-	Array<OAMData> correctOAM(Memory& memory, const LCD& lcd)
+	Array<OAMData> correctOAM(HWEnv& env, Memory& memory, const LCD& lcd)
 	{
 		const int objHeight = lcd.OBJHeight(); // 16 or 8
 
@@ -162,11 +162,11 @@ namespace GBEmu::HW::PPURender
 		{
 			OAMData oam{};
 
-			oam.Y = memory.Read(addr + 0);
-			oam.X = memory.Read(addr + 1);
+			oam.Y = memory.Read(env, addr + 0);
+			oam.X = memory.Read(env, addr + 1);
 
-			oam.TileIndex = memory.Read(addr + 2);
-			oam.Flags = memory.Read(addr + 3);
+			oam.TileIndex = memory.Read(env, addr + 2);
+			oam.Flags = memory.Read(env, addr + 3);
 
 			if (objHeight == 16)
 			{
@@ -207,7 +207,7 @@ namespace GBEmu::HW::PPURender
 		ConstantBuffer<TileObjDmgCb> tileCb{};
 		tileCb->palette[0] = Float4(0, 0, 0, 0);
 
-		const Array<OAMData> oamList = correctOAM(arg.Memory, arg.LCD);
+		const Array<OAMData> oamList = correctOAM(arg.Env, arg.Memory, arg.LCD);
 
 		// 末尾から描画していく
 		for (int i=oamList.size()-1; i>=0; --i)

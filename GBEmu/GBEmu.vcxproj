@@ -215,8 +215,8 @@
     <ClCompile Include="GBEmu\HW\APU.cpp" />
     <ClCompile Include="GBEmu\HW\APUStream.cpp" />
     <ClCompile Include="GBEmu\HW\AudioChSquare.cpp" />
-    <ClCompile Include="GBEmu\HW\AudioLengthCounter.cpp" />
     <ClCompile Include="GBEmu\HW\AudioToggle.cpp" />
+    <ClCompile Include="GBEmu\HW\AudioVolumeEnvelope.cpp" />
     <ClCompile Include="GBEmu\HW\Cartridge.cpp" />
     <ClCompile Include="GBEmu\HW\CPU.cpp" />
     <ClCompile Include="GBEmu\HW\CPUInstruction.cpp" />
@@ -229,7 +229,6 @@
     <ClCompile Include="GBEmu\HW\HWFrame.cpp" />
     <ClCompile Include="GBEmu\HW\HWLogger.cpp" />
     <ClCompile Include="GBEmu\HW\Interruption.cpp" />
-    <ClCompile Include="GBEmu\HW\IOPort.cpp" />
     <ClCompile Include="GBEmu\HW\Joypad.cpp" />
     <ClCompile Include="GBEmu\HW\LCD.cpp" />
     <ClCompile Include="GBEmu\HW\MBC.cpp" />
@@ -462,8 +461,8 @@
     <ClInclude Include="GBEmu\HW\APU.h" />
     <ClInclude Include="GBEmu\HW\APUStream.h" />
     <ClInclude Include="GBEmu\HW\AudioChSquare.h" />
-    <ClInclude Include="GBEmu\HW\AudioLengthCounter.h" />
     <ClInclude Include="GBEmu\HW\AudioToggle.h" />
+    <ClInclude Include="GBEmu\HW\AudioVolumeEnvelope.h" />
     <ClInclude Include="GBEmu\HW\Cartridge.h" />
     <ClInclude Include="GBEmu\HW\CPU.h" />
     <ClInclude Include="GBEmu\HW\CPUInstruction.h" />
@@ -476,7 +475,6 @@
     <ClInclude Include="GBEmu\HW\HWFrame.h" />
     <ClInclude Include="GBEmu\HW\HWLogger.h" />
     <ClInclude Include="GBEmu\HW\Interruption.h" />
-    <ClInclude Include="GBEmu\HW\IOPort.h" />
     <ClInclude Include="GBEmu\HW\Joypad.h" />
     <ClInclude Include="GBEmu\HW\LCD.h" />
     <ClInclude Include="GBEmu\HW\MBC.h" />

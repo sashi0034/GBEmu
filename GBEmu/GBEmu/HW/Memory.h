@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Cartridge.h"
 #include "Interruption.h"
-#include "IOPort.h"
 #include "LCD.h"
 #include "VRAM.h"
 
@@ -15,20 +14,18 @@ namespace GBEmu::HW
 		Memory();
 		VRAM& GetVRAM() {return m_vram; }
 
-		LCD& GetLCD() {return m_lcd; }
-		IOPort& GetIOPort() {return m_ioPort; }
-
 		Interruption& Interrupt() {return m_interrupt; }
 
-		uint8 Read(uint16 addr);
-		uint16 Read16(uint16 addr);
+		uint8 Read(HWEnv& env, uint16 addr);
+		uint16 Read16(HWEnv& env, uint16 addr);
 
 		void Write(HWEnv& env, uint16 addr, uint8 data);
 		void Write16(HWEnv& env, uint16 addr, uint16 data16);
 
 		void LoadCartridge(const FilePath& cartridgePath);
+		void Initialize(HWEnv& env);
 
-		void DumpIOPorts(String& dest) const;
+		void DumpIOPort(HWEnv& env, String& dest);
 
 		static constexpr int MemorySize_0x10000 = 0x10000;
 	private:
@@ -36,14 +33,11 @@ namespace GBEmu::HW
 		VRAM m_vram{};
 		Cartridge m_cartridge{};
 
-		LCD m_lcd;
-		IOPort m_ioPort;
-
 		Interruption m_interrupt;
 
+		uint8 readIO(HWEnv& env, uint16 addr);
 		void writeIO(HWEnv& env, uint16 addr, uint8 data);
-
-		void initMemory();
+		void transferDMA(HWEnv& env, uint8 data);
 
 		static CartridgeHeader loadCartridgeHeader(const Array<uint8>& cartridgeData);
 	};

@@ -1,23 +1,20 @@
 ﻿#include "stdafx.h"
 #include "Joypad.h"
 
-#include "Memory.h"
-#include "MemoryAddress.h"
 #include "GBEmu/EmuGamepad.h"
 
 namespace GBEmu::HW
 {
-	void Joypad::Update(Memory& memory, uint8 control)
+	void Joypad::WriteJOYP(uint8 joyp)
 	{
-		m_controlBefore = control;
-		memory.GetIOPort().SetJOYP(fetchInput(control));
+		m_joyp = fetchInput(joyp);
 	}
 
-	uint8 Joypad::fetchInput(uint8 control)
+	uint8 Joypad::fetchInput(uint8 joyp)
 	{
 		auto&& pad = EmuGamepad::Instance();
 
-		if ((control & (1 << 4)) == 0)
+		if ((joyp & (1 << 4)) == 0)
 		{
 			return 0b11100000 |
 				(pad.IsPressed(EmuGamepadKey::Right) ? 0 : 1 << 0) |
@@ -25,7 +22,7 @@ namespace GBEmu::HW
 				(pad.IsPressed(EmuGamepadKey::Up) ? 0 : 1 << 2) |
 				(pad.IsPressed(EmuGamepadKey::Down) ? 0 : 1 << 3);
 		}
-		else if ((control & (1 << 5)) == 0)
+		else if ((joyp & (1 << 5)) == 0)
 		{
 			return 0b11010000 |
 				(pad.IsPressed(EmuGamepadKey::A) ? 0 : 1 << 0) | // A

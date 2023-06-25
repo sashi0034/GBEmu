@@ -46,6 +46,8 @@ namespace GBEmu::HW
 		PPUResult StepCycle(HWEnv& env);
 
 		Size DrawAt(const Point& pos, double scale) const;
+
+		LCD& GetLCD() {return m_lcd; };
 	private:
 		int m_dotCycle{};
 		PPUMode m_nextMode = PPUMode::OAMSearch;
@@ -60,11 +62,13 @@ namespace GBEmu::HW
 		PPUAddressLYDiff m_bgTileMapDisplayDiff{};
 		PPUAddressLYDiff m_windowTileMapDisplayDiff{};
 
+		LCD m_lcd{};
+
 		bool m_canSTATInterruptBefore{};
 
 		void checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged);
 
-		void renderAtVBlank(Memory& memory, const LCD& lcd) const;
+		void renderAtVBlank(HWEnv& env, Memory& memory, const LCD& lcd) const;
 
 		static void updateLY(LCD& lcd, int dotCycle);
 		static PPUMode judgePPUMode(int dotCycle);

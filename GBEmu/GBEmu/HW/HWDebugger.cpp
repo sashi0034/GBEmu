@@ -144,7 +144,7 @@ namespace GBEmu::HW
 		{
 			for (uint16 addr = 0xFFFF;;)
 			{
-				auto searched = SearchMemoryBlob(env.GetMemory(), RangeUint16(addr + 1, 0xFFFF), blob);
+				auto searched = SearchMemoryBlob(env, env.GetMemory(), RangeUint16(addr + 1, 0xFFFF), blob);
 				if (searched.has_value() == false) break;
 				addr = searched.value();
 				Console.writeln(U"{:04X}"_fmt(addr));
@@ -275,16 +275,16 @@ namespace GBEmu::HW
 	}
 
 	// データ列を受け取って、そのメモリ列が存在するならアドレスを返す
-	Optional<uint16> HWDebugger::SearchMemoryBlob(Memory& memory, const RangeUint16& range, const Array<uint16>& blob)
+	Optional<uint16> HWDebugger::SearchMemoryBlob(HWEnv& env, Memory& memory, const RangeUint16& range, const Array<uint16>& blob)
 	{
 		for (uint16 i=range.Min(); i<= range.Max() - blob.size() + 1; ++i)
 		{
-			if (memory.Read(i) != blob[0]) continue;
+			if (memory.Read(env, i) != blob[0]) continue;
 
 			bool isMatch = true;
 			for (int x = 1; x<blob.size(); ++x)
 			{
-				if (memory.Read(i + x) == blob[x]) continue;
+				if (memory.Read(env, i + x) == blob[x]) continue;
 				isMatch = false;
 				break;
 			}

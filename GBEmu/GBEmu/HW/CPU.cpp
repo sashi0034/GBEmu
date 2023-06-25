@@ -49,7 +49,7 @@ namespace GBEmu::HW
 		}
 
 		// 命令フェッチ
-		auto fetched = FetchInstruction(env.GetMemory());
+		auto fetched = FetchInstruction(env);
 
 		// 実行イベントを通知
 		env.Debugger().OnExecuteInstruction(*this, fetched);
@@ -158,16 +158,18 @@ namespace GBEmu::HW
 		}
 	}
 
-	CPUInstructionProperty CPU::FetchInstruction(Memory& memory) const
+	CPUInstructionProperty CPU::FetchInstruction(HWEnv& env) const
 	{
-		const uint8 nextCode = memory.Read(m_pc);
+		auto&& memory = env.GetMemory();
+
+		const uint8 nextCode = memory.Read(env, m_pc);
 
 		if (nextCode != 0xCB) return {false, nextCode};
 
-		return {true, memory.Read(m_pc + 1)};
+		return {true, memory.Read(env, m_pc + 1)};
 	}
 
-	String CPU::StringifyInfo(Memory& memory) const
+	String CPU::StringifyInfo(HWEnv& env) const
 	{
 		String str{};
 		str += U"PC: {:04X}, "_fmt(m_pc);
@@ -178,7 +180,7 @@ namespace GBEmu::HW
 		str += U"HL: {:04X},\n"_fmt(RegHL());
 		str += U"IME: {}, "_fmt(IME());
 		str += U"state: {},\n"_fmt(Util::StringifyEnum(m_state));
-		str += U"instr: {}"_fmt(FetchInstruction(memory).ToString());
+		str += U"instr: {}"_fmt(FetchInstruction(env).ToString());
 		return str;
 	}
 

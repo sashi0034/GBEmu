@@ -7,10 +7,11 @@ namespace GBEmu::HW
 	class Joypad
 	{
 	public:
-		void Update(Memory& memory, uint8 control);
+		uint8 ReadJOYP() const { return m_joyp; }
+		void WriteJOYP(uint8 joyp);
 	private:
-		uint8 m_controlBefore{};
+		uint8 m_joyp{};
 
-		static uint8 fetchInput(uint8 control);
+		static uint8 fetchInput(uint8 joyp);
 	};
 }

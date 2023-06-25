@@ -7,31 +7,6 @@ namespace GBEmu::HW
 {
 	using namespace MemoryAddress;
 
-	LCD::LCD(
-		uint8* lcdcPtr,
-		uint8* statPtr,
-		uint8* bgpPtr,
-		uint8* obp0Ptr,
-		uint8* obp1Ptr,
-		uint8* scxPtr,
-		uint8* scyPtr,
-		uint8* lyPtr,
-		uint8* lycPtr,
-		uint8* wxPtr,
-		uint8* wyPtr) :
-			m_lcdcPtr(lcdcPtr),
-			m_statPtr(statPtr),
-			m_bgpPtr(bgpPtr),
-			m_obp0Ptr(obp0Ptr),
-			m_obp1Ptr(obp1Ptr),
-			m_scxPtr(scxPtr),
-			m_scyPtr(scyPtr),
-			m_lyPtr(lyPtr),
-			m_lycPtr(lycPtr),
-			m_wxPtr(wxPtr),
-			m_wyPtr(wyPtr)
-	{}
-
 	bool LCD::IsLCDDisplayEnable() const
 	{
 		return LCDC() & (1 << 7);
@@ -100,68 +75,68 @@ namespace GBEmu::HW
 
 	void LCD::UpdateLYCoincidenceFlag()
 	{
-		*m_statPtr = 0x80 | (STAT() & ~0b100) | (LY() == LYC() ? 0b100 : 0);
+		m_stat = 0x80 | (STAT() & ~0b100) | (LY() == LYC() ? 0b100 : 0);
 	}
 
 	void LCD::SetMode(PPUMode mode)
 	{
-		*m_statPtr = 0x80 | (STAT() & ~0b11) | (IsLCDDisplayEnable() ? static_cast<uint8>(mode) : 0);
+		m_stat = 0x80 | (STAT() & ~0b11) | (IsLCDDisplayEnable() ? static_cast<uint8>(mode) : 0);
 	}
 
 	uint8 LCD::SCY() const
 	{
-		return *m_scyPtr;
+		return m_scy;
 	}
 
 	uint8 LCD::SCX() const
 	{
-		return *m_scxPtr;
+		return m_scx;
 	}
 
 	uint8 LCD::LY() const
 	{
-		return *m_lyPtr;
+		return m_ly;
 	}
 
 	void LCD::SetLY(uint8 ly)
 	{
-		*m_lyPtr = ly;
+		m_ly = ly;
 	}
 
 	uint8 LCD::LYC() const
 	{
-		return *m_lycPtr;
+		return m_lyc;
 	}
 
 	uint8 LCD::WX() const
 	{
-		return *m_wxPtr;
+		return m_wx;
 	}
 
 	uint8 LCD::WY() const
 	{
-		return *m_wyPtr;
+		return m_wy;
 	}
 
 	uint8 LCD::BGPaletteData(uint8 colorNumber) const
 	{
-		const uint8 bgp = *m_bgpPtr;
+		const uint8 bgp = m_bgp;
 		return (bgp >> (colorNumber * 2)) & 0b11;
 	}
 
 	uint8 LCD::ObjectPaletteData(bool isUseOBP1, uint8 colorNumber) const
 	{
-		const uint8 obp = isUseOBP1 ? *m_obp1Ptr : *m_obp0Ptr;
+		const uint8 obp = isUseOBP1 ? m_obp1 : m_obp0;
 		return (obp >> (colorNumber * 2)) & 0b11;
 	}
 
 	uint8 LCD::LCDC() const
 	{
-		return *m_lcdcPtr;
+		return m_lcdc;
 	}
 
 	uint8 LCD::STAT() const
 	{
-		return *m_statPtr;
+		return m_stat;
 	}
 }

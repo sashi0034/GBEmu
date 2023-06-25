@@ -40,7 +40,7 @@ namespace GBEmu::UI
 		auto&& font = UIAsset::Instance().FontDotGothic18;
 
 		auto&& cpu = hw.GetCPU();
-		auto&& lcd = hw.GetMemory().GetLCD();
+		auto&& lcd = hw.GetPPU().GetLCD();
 		String text{};
 		text += U"OP={}\n"_fmt(hw.Debugger().LastExecutedInstruction().ToString());
 		text += U"PC={:04X}  SP={:04X}\n"_fmt(cpu.PC(), cpu.SP());
@@ -49,7 +49,7 @@ namespace GBEmu::UI
 		text += U"LCDC={:04X}  STAT={:04X}\n"_fmt(lcd.LCDC(), lcd.STAT());
 		text += U"SCX =  {:02X}  SCY =  {:02X}\n"_fmt(lcd.SCX(), lcd.SCY());
 		text += U"WX  =  {:02X}  WY  =  {:02X}\n\n"_fmt(lcd.WX(), lcd.WY());
-		hw.GetMemory().DumpIOPorts(text);
+		hw.GetMemory().DumpIOPort(hw, text);
 
 		// 緑帯描画
 		drawGreenBorder(width, height, 0);

@@ -24,7 +24,7 @@ namespace GBEmu::HW
 		const CPUInstructionProperty& LastExecutedInstruction() const { return m_lastExecutedInstruction; };
 		double CPUWorkedRate() const {return m_cpuWorkedCycleInFrame / static_cast<double>(HWParam::PPUCyclePeriod_70224); }
 
-		static Optional<uint16> SearchMemoryBlob(Memory& memory, const RangeUint16& range, const Array<uint16>& blob);
+		static Optional<uint16> SearchMemoryBlob(HWEnv& env, Memory& memory, const RangeUint16& range, const Array<uint16>& blob);
 	private:
 		// UIで使わず開発でのみ使うものはImplに入れる
 		class Impl;

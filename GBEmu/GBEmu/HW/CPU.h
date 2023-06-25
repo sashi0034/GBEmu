@@ -50,7 +50,7 @@ namespace GBEmu::HW
 		CPU();
 		CPUCycle StepOperation(HWEnv& env);
 
-		CPUInstructionProperty FetchInstruction(Memory& memory) const;
+		CPUInstructionProperty FetchInstruction(HWEnv& env) const;
 
 		void SetSP(uint16 sp) { m_sp = sp; }
 
@@ -99,7 +99,7 @@ namespace GBEmu::HW
 		bool IME() const { return m_imeFlag; }
 		void DisableIME() { m_imeFlag = false; }
 		void RequestEnableIME() { m_imeRequested = true; };
-		String StringifyInfo(Memory& memory) const;
+		String StringifyInfo(HWEnv& env) const;
 	private:
 		uint16 m_pc{};
 		uint16 m_sp{};

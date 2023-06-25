@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "AudioLengthCounter.h"
 #include "AudioToggle.h"
 
 namespace GBEmu::HW
@@ -10,6 +9,5 @@ namespace GBEmu::HW
 		AudioToggle& Toggle() { return m_toggle; }
 	private:
 		AudioToggle m_toggle;
-		AudioLengthCounter<1> m_lengthCounter{};
 	};
 }
