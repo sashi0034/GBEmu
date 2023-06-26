@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "APUStream.h"
+#include "AudioChSquare.h"
 
 namespace GBEmu::HW
 {
@@ -15,5 +16,8 @@ namespace GBEmu::HW
 	private:
 		std::shared_ptr<APUStream> m_stream{};
 		Audio m_audio{};
+
+		AudioChSquare<1> m_ch1{};
+		AudioChSquare<2> m_ch2{};
 	};
 }

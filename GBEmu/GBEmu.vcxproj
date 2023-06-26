@@ -215,7 +215,9 @@
     <ClCompile Include="GBEmu\HW\APU.cpp" />
     <ClCompile Include="GBEmu\HW\APUStream.cpp" />
     <ClCompile Include="GBEmu\HW\AudioChSquare.cpp" />
-    <ClCompile Include="GBEmu\HW\AudioToggle.cpp" />
+    <ClCompile Include="GBEmu\HW\AudioFrequency.cpp" />
+    <ClCompile Include="GBEmu\HW\AudioFrequencySweep.cpp" />
+    <ClCompile Include="GBEmu\HW\AudioLengthCounter.cpp" />
     <ClCompile Include="GBEmu\HW\AudioVolumeEnvelope.cpp" />
     <ClCompile Include="GBEmu\HW\Cartridge.cpp" />
     <ClCompile Include="GBEmu\HW\CPU.cpp" />
@@ -461,7 +463,9 @@
     <ClInclude Include="GBEmu\HW\APU.h" />
     <ClInclude Include="GBEmu\HW\APUStream.h" />
     <ClInclude Include="GBEmu\HW\AudioChSquare.h" />
-    <ClInclude Include="GBEmu\HW\AudioToggle.h" />
+    <ClInclude Include="GBEmu\HW\AudioFrequency.h" />
+    <ClInclude Include="GBEmu\HW\AudioFrequencySweep.h" />
+    <ClInclude Include="GBEmu\HW\AudioLengthCounter.h" />
     <ClInclude Include="GBEmu\HW\AudioVolumeEnvelope.h" />
     <ClInclude Include="GBEmu\HW\Cartridge.h" />
     <ClInclude Include="GBEmu\HW\CPU.h" />
