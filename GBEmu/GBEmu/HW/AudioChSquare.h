@@ -13,21 +13,62 @@ namespace GBEmu::HW
 	{
 		static_assert(ch == ch_1 || ch == ch_2);
 	public:
+		void StepFreqTimer();
+		void StepFreqSweep();
+		void StepLengthCounter();
+		void StepVolumeEnvelope();
+
 		template <int x> void WriteNR(uint8 data);
 		template <int x> uint8 ReadNR() const;
 
 		const AudioFrequency& Freq() const {return m_freq; }
+		int Amplitude() const;
 	private:
 		bool m_channelEnabled{};
 		bool m_dacEnabled{};
-		uint8 m_duty{};
+		uint8 m_dutyIndex{};
+		uint8 m_dutyDigit{};
+		int m_freqTimer{};
 		AudioFrequency m_freq{};
+
 		AudioLengthCounter m_lengthCounter{};
-		std::conditional_t<ch == ch_1, AudioFrequencySweep, void*> m_frequencySweep{}; // チャンネル1はスイープレジスタを持つ
+		std::conditional_t<ch == ch_1, AudioFrequencySweep, void*> m_freqSweep{}; // チャンネル1はスイープレジスタを持つ
 		AudioVolumeEnvelope m_volumeEnvelope{};
 
 		void trigger();
 	};
+
+	template <int ch>
+	void AudioChSquare<ch>::StepFreqTimer()
+	{
+		m_freqTimer--;
+		if (m_freqTimer <= 0)
+		{
+			m_freqTimer = (2048 - m_freq()) * 4;
+			m_dutyDigit = (m_dutyDigit + 1) % 8;
+		}
+	}
+
+	template <int ch>
+	void AudioChSquare<ch>::StepFreqSweep()
+	{
+		if constexpr (ch == ch_1)
+		{
+			m_channelEnabled &= m_freqSweep.Step(m_freq);
+		}
+	}
+
+	template <int ch>
+	void AudioChSquare<ch>::StepLengthCounter()
+	{
+		 m_channelEnabled &= m_lengthCounter.Step();
+	}
+
+	template <int ch>
+	void AudioChSquare<ch>::StepVolumeEnvelope()
+	{
+		m_volumeEnvelope.Step();
+	}
 
 	template <int ch>
 	template <int x>
@@ -37,11 +78,11 @@ namespace GBEmu::HW
 
 		if constexpr (x == 0 && ch == ch_1)
 		{
-			m_frequencySweep.WriteNR10(data);
+			m_freqSweep.WriteNR10(data);
 		}
 		else if constexpr (x == 1)
 		{
-			m_duty = data >> 6;
+			m_dutyIndex = data >> 6;
 			m_lengthCounter.SetCounter(64 - (data & 0b111111));
 		}
 		else if constexpr (x == 2)
@@ -70,11 +111,11 @@ namespace GBEmu::HW
 
 		if constexpr (x == 0 && ch == ch_1)
 		{
-			return m_frequencySweep.ReadNR10();
+			return m_freqSweep.ReadNR10();
 		}
 		else if constexpr (x == 1)
 		{
-			return (m_duty << 6) | (64 - m_lengthCounter.GetCounter());
+			return (m_dutyIndex << 6) | (64 - m_lengthCounter.GetCounter());
 		}
 		else if constexpr (x == 2)
 		{
@@ -95,11 +136,21 @@ namespace GBEmu::HW
 	}
 
 	template <int ch>
+	int AudioChSquare<ch>::Amplitude() const
+	{
+		constexpr std::array<uint8, 4> dutyTable = {
+			0b00000001, 0b00000011, 0b00001111, 0b11111100,
+		};
+		const int wave = (dutyTable[m_dutyIndex] >> (7 - m_dutyDigit)) & 0b1;
+		return wave * m_volumeEnvelope.Volume();
+	}
+
+	template <int ch>
 	void AudioChSquare<ch>::trigger()
 	{
 		if (m_dacEnabled) m_channelEnabled = true;
 
-		if constexpr (ch == ch_1) m_channelEnabled &= m_frequencySweep.Trigger(m_freq);
+		if constexpr (ch == ch_1) m_channelEnabled &= m_freqSweep.Trigger(m_freq);
 		m_volumeEnvelope.Trigger();
 		m_lengthCounter.Trigger(64);
 	}
