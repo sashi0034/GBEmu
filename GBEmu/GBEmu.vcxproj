@@ -214,6 +214,7 @@
     <ClCompile Include="GBEmu\EmuSingleton.cpp" />
     <ClCompile Include="GBEmu\HW\APU.cpp" />
     <ClCompile Include="GBEmu\HW\APUStream.cpp" />
+    <ClCompile Include="GBEmu\HW\AudioChNoise.cpp" />
     <ClCompile Include="GBEmu\HW\AudioChSquare.cpp" />
     <ClCompile Include="GBEmu\HW\AudioChWave.cpp" />
     <ClCompile Include="GBEmu\HW\AudioFrequency.cpp" />
@@ -463,6 +464,7 @@
     <ClInclude Include="GBEmu\EmuSingleton.h" />
     <ClInclude Include="GBEmu\HW\APU.h" />
     <ClInclude Include="GBEmu\HW\APUStream.h" />
+    <ClInclude Include="GBEmu\HW\AudioChNoise.h" />
     <ClInclude Include="GBEmu\HW\AudioChSquare.h" />
     <ClInclude Include="GBEmu\HW\AudioChWave.h" />
     <ClInclude Include="GBEmu\HW\AudioFrequency.h" />

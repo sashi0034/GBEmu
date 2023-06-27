@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "APUStream.h"
+#include "AudioChNoise.h"
 #include "AudioChSquare.h"
+#include "AudioChWave.h"
 
 namespace GBEmu::HW
 {
@@ -19,5 +21,7 @@ namespace GBEmu::HW
 
 		AudioChSquare<1> m_ch1{};
 		AudioChSquare<2> m_ch2{};
+		AudioChWave m_ch3{};
+		AudioChNoise m_ch4{};
 	};
 }

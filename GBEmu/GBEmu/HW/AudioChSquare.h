@@ -34,7 +34,7 @@ namespace GBEmu::HW
 		AudioFrequency m_freq{};
 
 		AudioLengthCounter m_lengthCounter{};
-		std::conditional_t<ch == ch_1, AudioFrequencySweep, void*> m_freqSweep{}; // チャンネル1はスイープレジスタを持つ
+		std::conditional_t<ch == ch_1, AudioFrequencySweep, void*> m_freqSweep{}; // チャンネル1のみスイープレジスタを持つ
 		AudioVolumeEnvelope m_volumeEnvelope{};
 
 		void trigger();
