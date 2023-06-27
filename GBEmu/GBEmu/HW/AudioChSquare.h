@@ -23,6 +23,7 @@ namespace GBEmu::HW
 
 		const AudioFrequency& Freq() const {return m_freq; }
 		int Amplitude() const;
+		bool ChannelEnabled() const { return m_channelEnabled; }
 	private:
 		static constexpr int lengthCounterMax_63 = 63;
 

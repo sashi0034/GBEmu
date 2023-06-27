@@ -11,6 +11,7 @@ namespace GBEmu::HW
 	public:
 		void StepFreqTimer();
 		int Amplitude() const;
+		bool ChannelEnabled() const { return m_channelEnabled; }
 
 		template <int x> void WriteNR4x(uint8 data);
 		template <int x> uint8 ReadNR4x() const;

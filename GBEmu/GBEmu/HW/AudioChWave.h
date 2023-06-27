@@ -11,6 +11,7 @@ namespace GBEmu::HW
 		void StepLengthCounter();
 
 		int Amplitude() const;
+		bool ChannelEnabled() const { return m_channelEnabled; }
 
 		template <int x> void WriteNR3x(uint8 data);
 		template <int x> uint8 ReadNR3x() const;
