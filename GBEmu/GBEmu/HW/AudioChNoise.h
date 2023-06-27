@@ -10,6 +10,7 @@ namespace GBEmu::HW
 	{
 	public:
 		void StepFreqTimer();
+		void StepVolumeEnvelope();
 		int Amplitude() const;
 		bool ChannelEnabled() const { return m_channelEnabled; }
 

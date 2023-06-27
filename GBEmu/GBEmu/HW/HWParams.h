@@ -20,5 +20,7 @@ namespace GBEmu::HW
 		constexpr int AudioChSquare_2 = 2;
 		constexpr int AudioChWave_3 = 3;
 		constexpr int AudioChNoise_4 = 4;
+
+		constexpr int ClockFrequencyDMG_4194304 = 4194304; // 0x400000
 	};
 }

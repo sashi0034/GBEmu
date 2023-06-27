@@ -217,6 +217,7 @@
     <ClCompile Include="GBEmu\HW\AudioChNoise.cpp" />
     <ClCompile Include="GBEmu\HW\AudioChSquare.cpp" />
     <ClCompile Include="GBEmu\HW\AudioChWave.cpp" />
+    <ClCompile Include="GBEmu\HW\AudioFrameSequencer.cpp" />
     <ClCompile Include="GBEmu\HW\AudioFrequency.cpp" />
     <ClCompile Include="GBEmu\HW\AudioFrequencySweep.cpp" />
     <ClCompile Include="GBEmu\HW\AudioLengthCounter.cpp" />
@@ -467,6 +468,7 @@
     <ClInclude Include="GBEmu\HW\AudioChNoise.h" />
     <ClInclude Include="GBEmu\HW\AudioChSquare.h" />
     <ClInclude Include="GBEmu\HW\AudioChWave.h" />
+    <ClInclude Include="GBEmu\HW\AudioFrameSequencer.h" />
     <ClInclude Include="GBEmu\HW\AudioFrequency.h" />
     <ClInclude Include="GBEmu\HW\AudioFrequencySweep.h" />
     <ClInclude Include="GBEmu\HW\AudioLengthCounter.h" />
