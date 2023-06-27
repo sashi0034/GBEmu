@@ -24,6 +24,8 @@ namespace GBEmu::HW
 		const AudioFrequency& Freq() const {return m_freq; }
 		int Amplitude() const;
 	private:
+		static constexpr int lengthCounterMax_63 = 63;
+
 		bool m_channelEnabled{};
 		bool m_dacEnabled{};
 		uint8 m_dutyIndex{};
@@ -83,13 +85,13 @@ namespace GBEmu::HW
 		else if constexpr (x == 1)
 		{
 			m_dutyIndex = data >> 6;
-			m_lengthCounter.SetCounter(64 - (data & 0b111111));
+			m_lengthCounter.SetCounter(lengthCounterMax_63 - (data & lengthCounterMax_63));
 		}
 		else if constexpr (x == 2)
 		{
 			m_volumeEnvelope.WriteNRx2(data);
 			m_dacEnabled = (data & 0xF8) != 0; // 上位5ビットが0かどうか
-			m_channelEnabled = m_dacEnabled;
+			if (m_dacEnabled == false) m_channelEnabled = false;
 		}
 		else if constexpr (x == 3)
 		{
@@ -115,7 +117,7 @@ namespace GBEmu::HW
 		}
 		else if constexpr (x == 1)
 		{
-			return (m_dutyIndex << 6) | (64 - m_lengthCounter.GetCounter());
+			return (m_dutyIndex << 6) | (lengthCounterMax_63 - m_lengthCounter.GetCounter());
 		}
 		else if constexpr (x == 2)
 		{
@@ -123,7 +125,7 @@ namespace GBEmu::HW
 		}
 		else if constexpr (x == 3)
 		{
-			return 0; // Write Only
+			return 0; // write only
 		}
 		else if constexpr (x == 4)
 		{
