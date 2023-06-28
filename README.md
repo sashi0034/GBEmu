@@ -10,7 +10,6 @@ A game Boy emulator written in C++
 
 ## Not implemented
 
-  * APU
   * GCB mode
   * Many MBCs except MBC1
 
