@@ -10,7 +10,7 @@ namespace GBEmu::HW
 		m_freqTimer--;
 		if (m_freqTimer <= 0)
 		{
-			m_freqTimer = (2048 - m_freqTimer) * 2;
+			m_freqTimer = (2048 - m_freq()) * 2;
 			m_waveRamOffset = (m_waveRamOffset + 1) % 32;
 		}
 	}

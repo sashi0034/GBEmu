@@ -12,6 +12,7 @@ namespace GBEmu::HW
 		ch1.StepLengthCounter();
 		ch2.StepLengthCounter();
 		ch3.StepLengthCounter();
+		ch4.StepLengthCounter();
 	}
 
 	void AudioFrameSequencer::StepCycle(AudioChSquare<1>& ch1, AudioChSquare<2>& ch2, AudioChWave& ch3, AudioChNoise& ch4)

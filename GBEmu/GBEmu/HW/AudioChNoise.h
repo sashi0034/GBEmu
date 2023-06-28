@@ -28,7 +28,7 @@ namespace GBEmu::HW
 		uint8 m_shift{};
 		bool m_w{};
 		uint8 m_divisor{};
-		uint8 m_lfsr{};
+		uint16 m_lfsr{};
 
 		AudioLengthCounter m_lengthCounter{};
 		AudioVolumeEnvelope m_volumeEnvelope{};
