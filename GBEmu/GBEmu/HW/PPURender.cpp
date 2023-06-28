@@ -13,12 +13,7 @@ namespace GBEmu::HW::PPURender
 
 	using namespace MemoryAddress;
 
-	static const std::array<ColorF, 4> displayColorPaletteF{
-		ColorF{ 221 / 255.0, 255 / 255.0, 212 / 255.0 },
-		ColorF{ 144 / 255.0, 238 / 255.0, 144 / 255.0 },
-		ColorF{ 29 / 255.0, 114 / 255.0, 61 / 255.0 },
-		ColorF{ 0 / 255.0, 51 / 255.0, 0 / 255.0 },
-	};
+	static const std::array<ColorF, 4> displayColorPaletteF = *(HWParam::ColorPalettesDMG.end() - 1);
 
 	struct TileBgAndWindowDmgCb
 	{

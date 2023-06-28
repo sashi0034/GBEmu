@@ -123,6 +123,7 @@
     <None Include="App\asset\font\DotGothic16\README.md" />
     <None Include="App\asset\font\RocknRoll\README-JP.md" />
     <None Include="App\asset\font\RocknRoll\README.md" />
+    <None Include="App\asset\shader\display_special.hlsl" />
     <None Include="App\asset\shader\tile_dump.hlsl">
       <FileType>Document</FileType>
     </None>

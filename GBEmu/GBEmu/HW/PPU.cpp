@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "PPU.h"
 
+#include "HWAsset.h"
 #include "HWEnv.h"
 #include "MemoryAddress.h"
 #include "PPURender.h"
@@ -97,9 +98,19 @@ namespace GBEmu::HW
 		}
 	}
 
+	struct DisplaySpecialCb
+	{
+		float PixelScale{};
+	};
+
 	Size PPU::DrawAt(const Point& pos, double scale) const
 	{
 		const ScopedRenderStates2D sampler{ SamplerState::ClampNearest };
+		const ScopedCustomShader2D shader{ HWAsset::Instance().PsDisplaySpecial };
+
+		ConstantBuffer<DisplaySpecialCb> cb{};
+		cb->PixelScale = static_cast<float>(scale);
+		Graphics2D::SetPSConstantBuffer(1, cb);
 
 		(void)m_renderBuffer.scaled(scale).drawAt(pos);
 
