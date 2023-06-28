@@ -3,6 +3,7 @@
 #include "AudioChNoise.h"
 #include "AudioChSquare.h"
 #include "AudioChWave.h"
+#include "AudioFrameSequencer.h"
 #include "MemoryAddress.h"
 
 namespace GBEmu::HW
@@ -15,14 +16,19 @@ namespace GBEmu::HW
 	public:
 		APU();
 
+		void UpdateFrame(HWEnv& env);
 		void StepCycle(HWEnv& env);
 
 		template <uint16 addr> uint8 ReadAddr() const;
 		template <uint16 addr> void WriteAddr(uint8 data);
+
+		uint8 ReadWaveRam(uint16 addr) const { return m_ch3.ReadWaveRam(addr); }
+		void WriteWaveRam(uint16 addr, uint8 data) { m_ch3.WriteWaveRam(addr, data); }
 	private:
 		std::shared_ptr<APUStream> m_stream{};
 		Audio m_audio{};
 
+		AudioFrameSequencer m_frameSequencer{};
 		AudioChSquare<1> m_ch1{};
 		AudioChSquare<2> m_ch2{};
 		AudioChWave m_ch3{};
@@ -30,7 +36,11 @@ namespace GBEmu::HW
 
 		uint8 m_channelControl{}; // NR50
 		uint8 m_selection{}; // NR51
+		bool m_powerControl{}; // NR52 (bit 7)
 
+		float m_outputTimer{};
+
+		void pushSample() const;
 		template <int... Args> void writeFor(uint8 data);
 	};
 
@@ -63,7 +73,8 @@ namespace GBEmu::HW
 		{
 			return
 				(m_ch1.ChannelEnabled() << 0) | (m_ch2.ChannelEnabled() << 1) |
-				(m_ch3.ChannelEnabled() << 2) | (m_ch3.ChannelEnabled() << 3);
+				(m_ch3.ChannelEnabled() << 2) | (m_ch3.ChannelEnabled() << 3) |
+				(m_powerControl << 7);
 		}
 	}
 
@@ -94,7 +105,8 @@ namespace GBEmu::HW
 		else if constexpr (addr==NR51_0xFF25) m_selection = data;
 		else if constexpr (addr==NR52_0xFF26)
 		{
-			if ((data & 0x80) != 0) return;
+			m_powerControl = data >> 7;
+			if (m_powerControl) return;
 			// 7ビット目に0が書き込まれたとき、レジスタすべてに0を書き込む
 			writeFor<
 				NR10_0xFF10, NR11_0xFF11, NR12_0xFF12, NR13_0xFF13, NR14_0xFF14,

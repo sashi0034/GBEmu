@@ -5,6 +5,8 @@ namespace GBEmu::HW::HWFrame
 {
 	void EmulateFrame(HWEnv& env)
 	{
+		env.GetAPU().UpdateFrame(env);
+
 		env.Debugger().UpdateFrame(env);
 		if (env.Debugger().IsDebugSuspend()) return;
 
@@ -20,6 +22,12 @@ namespace GBEmu::HW::HWFrame
 			{
 				// タイマ更新
 				env.GetTimer().StepCycle(env);
+			}
+
+			for (int i=0; i<cpuCycle.Count; ++i)
+			{
+				// APU更新
+				env.GetAPU().StepCycle(env);
 			}
 
 			auto&& lcd = env.GetPPU().GetLCD();

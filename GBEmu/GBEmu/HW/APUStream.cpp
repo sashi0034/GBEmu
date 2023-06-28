@@ -35,6 +35,14 @@ namespace GBEmu::HW
 		}
 	}
 
+	void APUStream::PushSample(float left, float right)
+	{
+		m_wave[m_tailIndex].left = left;
+		m_wave[m_tailIndex].right = right;
+
+		m_tailIndex = (m_tailIndex + 1) % m_wave.size();
+	}
+
 	int APUStream::BufferRemaining() const
 	{
 		return m_headIndex <= m_tailIndex ?

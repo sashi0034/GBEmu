@@ -5,17 +5,11 @@
 #include "Joypad.h"
 #include "Memory.h"
 #include "PPU.h"
+#include "APU.h"
 #include "Timer.h"
 
 namespace GBEmu::HW
 {
-	class CPU;
-	class Memory;
-	class PPU;
-	class IHWEnvMemory;
-	class Joypad;
-	class Timer;
-
 	class HWEnv
 	{
 	public:
@@ -30,6 +24,10 @@ namespace GBEmu::HW
 		PPU& GetPPU()
 		{
 			return m_ppu;
+		}
+		APU& GetAPU()
+		{
+			return m_apu;
 		}
 		Joypad& GetJoypad()
 		{
@@ -47,6 +45,7 @@ namespace GBEmu::HW
 		CPU m_cpu{};
 		Memory m_memory{};
 		PPU m_ppu{};
+		APU m_apu{};
 		Joypad m_joypad{};
 		Timer m_timer{};
 

@@ -14,7 +14,7 @@ namespace GBEmu::HW
 		static_assert(ch == ch_1 || ch == ch_2);
 	public:
 		void StepFreqTimer();
-		void StepFreqSweep();
+		template<int chan = ch, std::enable_if_t<chan == ch_1, int> = 0> void StepFreqSweep();
 		void StepLengthCounter();
 		void StepVolumeEnvelope();
 
@@ -53,6 +53,7 @@ namespace GBEmu::HW
 	}
 
 	template <int ch>
+	template<int chan = ch, std::enable_if_t<chan == ch_1, int> = 0>
 	void AudioChSquare<ch>::StepFreqSweep()
 	{
 		if constexpr (ch == ch_1)

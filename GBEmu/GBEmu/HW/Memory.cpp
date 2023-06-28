@@ -144,6 +144,57 @@ namespace GBEmu::HW
 		case TMA_0xFF06:
 			return env.GetTimer().ReadAddr<TMA_0xFF06>();
 
+		case NR10_0xFF10:
+			return env.GetAPU().ReadAddr<NR10_0xFF10>();
+		case NR11_0xFF11:
+			return env.GetAPU().ReadAddr<NR11_0xFF11>();
+		case NR12_0xFF12:
+			return env.GetAPU().ReadAddr<NR12_0xFF12>();
+		case NR13_0xFF13:
+			return env.GetAPU().ReadAddr<NR13_0xFF13>();
+		case NR14_0xFF14:
+			return env.GetAPU().ReadAddr<NR14_0xFF14>();
+		case NR21_0xFF16:
+			return env.GetAPU().ReadAddr<NR21_0xFF16>();
+		case NR22_0xFF17:
+			return env.GetAPU().ReadAddr<NR22_0xFF17>();
+		case NR23_0xFF18:
+			return env.GetAPU().ReadAddr<NR23_0xFF18>();
+		case NR24_0xFF19:
+			return env.GetAPU().ReadAddr<NR24_0xFF19>();
+		case NR30_0xFF1A:
+			return env.GetAPU().ReadAddr<NR30_0xFF1A>();
+		case NR31_0xFF1B:
+			return env.GetAPU().ReadAddr<NR31_0xFF1B>();
+		case NR32_0xFF1C:
+			return env.GetAPU().ReadAddr<NR32_0xFF1C>();
+		case NR33_0xFF1D:
+			return env.GetAPU().ReadAddr<NR33_0xFF1D>();
+		case NR34_0xFF1E:
+			return env.GetAPU().ReadAddr<NR34_0xFF1E>();
+		case NR41_0xFF20:
+			return env.GetAPU().ReadAddr<NR41_0xFF20>();
+		case NR42_0xFF21:
+			return env.GetAPU().ReadAddr<NR42_0xFF21>();
+		case NR43_0xFF22:
+			return env.GetAPU().ReadAddr<NR43_0xFF22>();
+		case NR44_0xFF23:
+			return env.GetAPU().ReadAddr<NR44_0xFF23>();
+		case NR50_0xFF24:
+			return env.GetAPU().ReadAddr<NR50_0xFF24>();
+		case NR51_0xFF25:
+			return env.GetAPU().ReadAddr<NR51_0xFF25>();
+		case NR52_0xFF26:
+			return env.GetAPU().ReadAddr<NR52_0xFF26>();
+
+		case WaveRamStart_0xFF30 + 0x0: case WaveRamStart_0xFF30 + 0x1: case WaveRamStart_0xFF30 + 0x2:
+		case WaveRamStart_0xFF30 + 0x3: case WaveRamStart_0xFF30 + 0x4: case WaveRamStart_0xFF30 + 0x5:
+		case WaveRamStart_0xFF30 + 0x6: case WaveRamStart_0xFF30 + 0x7: case WaveRamStart_0xFF30 + 0x8:
+		case WaveRamStart_0xFF30 + 0x9: case WaveRamStart_0xFF30 + 0xA: case WaveRamStart_0xFF30 + 0xB:
+		case WaveRamStart_0xFF30 + 0xC: case WaveRamStart_0xFF30 + 0xD: case WaveRamStart_0xFF30 + 0xE:
+		case WaveRamEnd_0xFF3F:
+			return env.GetAPU().ReadWaveRam(addr);
+
 		case LCDC_0xFF40:
 			return env.GetPPU().GetLCD().ReadAddr<LCDC_0xFF40>();
 		case STAT_0xFF41:
@@ -191,6 +242,57 @@ namespace GBEmu::HW
 			env.GetTimer().WriteAddr<TAC_0xFF07>(data); break;
 		case TMA_0xFF06:
 			env.GetTimer().WriteAddr<TMA_0xFF06>(data); break;
+
+		case NR10_0xFF10:
+			env.GetAPU().WriteAddr<NR10_0xFF10>(data); break;
+		case NR11_0xFF11:
+			env.GetAPU().WriteAddr<NR11_0xFF11>(data); break;
+		case NR12_0xFF12:
+			env.GetAPU().WriteAddr<NR12_0xFF12>(data); break;
+		case NR13_0xFF13:
+			env.GetAPU().WriteAddr<NR13_0xFF13>(data); break;
+		case NR14_0xFF14:
+			env.GetAPU().WriteAddr<NR14_0xFF14>(data); break;
+		case NR21_0xFF16:
+			env.GetAPU().WriteAddr<NR21_0xFF16>(data); break;
+		case NR22_0xFF17:
+			env.GetAPU().WriteAddr<NR22_0xFF17>(data); break;
+		case NR23_0xFF18:
+			env.GetAPU().WriteAddr<NR23_0xFF18>(data); break;
+		case NR24_0xFF19:
+			env.GetAPU().WriteAddr<NR24_0xFF19>(data); break;
+		case NR30_0xFF1A:
+			env.GetAPU().WriteAddr<NR30_0xFF1A>(data); break;
+		case NR31_0xFF1B:
+			env.GetAPU().WriteAddr<NR31_0xFF1B>(data); break;
+		case NR32_0xFF1C:
+			env.GetAPU().WriteAddr<NR32_0xFF1C>(data); break;
+		case NR33_0xFF1D:
+			env.GetAPU().WriteAddr<NR33_0xFF1D>(data); break;
+		case NR34_0xFF1E:
+			env.GetAPU().WriteAddr<NR34_0xFF1E>(data); break;
+		case NR41_0xFF20:
+			env.GetAPU().WriteAddr<NR41_0xFF20>(data); break;
+		case NR42_0xFF21:
+			env.GetAPU().WriteAddr<NR42_0xFF21>(data); break;
+		case NR43_0xFF22:
+			env.GetAPU().WriteAddr<NR43_0xFF22>(data); break;
+		case NR44_0xFF23:
+			env.GetAPU().WriteAddr<NR44_0xFF23>(data); break;
+		case NR50_0xFF24:
+			env.GetAPU().WriteAddr<NR50_0xFF24>(data); break;
+		case NR51_0xFF25:
+			env.GetAPU().WriteAddr<NR51_0xFF25>(data); break;
+		case NR52_0xFF26:
+			env.GetAPU().WriteAddr<NR52_0xFF26>(data); break;
+
+		case WaveRamStart_0xFF30 + 0x0: case WaveRamStart_0xFF30 + 0x1: case WaveRamStart_0xFF30 + 0x2:
+		case WaveRamStart_0xFF30 + 0x3: case WaveRamStart_0xFF30 + 0x4: case WaveRamStart_0xFF30 + 0x5:
+		case WaveRamStart_0xFF30 + 0x6: case WaveRamStart_0xFF30 + 0x7: case WaveRamStart_0xFF30 + 0x8:
+		case WaveRamStart_0xFF30 + 0x9: case WaveRamStart_0xFF30 + 0xA: case WaveRamStart_0xFF30 + 0xB:
+		case WaveRamStart_0xFF30 + 0xC: case WaveRamStart_0xFF30 + 0xD: case WaveRamStart_0xFF30 + 0xE:
+		case WaveRamEnd_0xFF3F:
+			env.GetAPU().WriteWaveRam(addr, data); break;
 
 		case LCDC_0xFF40:
 			env.GetPPU().GetLCD().WriteAddr<LCDC_0xFF40>(data); break;

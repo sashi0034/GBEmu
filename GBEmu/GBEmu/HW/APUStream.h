@@ -11,6 +11,8 @@ namespace GBEmu::HW
 		bool hasEnded() override { return false; };
 		void rewind() override {};
 
+		void PushSample(float left, float right);
+
 		int BufferRemaining() const;
 		int BufferSize() const;
 	private:
