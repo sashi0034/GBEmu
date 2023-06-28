@@ -12,6 +12,7 @@ A game Boy emulator written in C++
 
   * GCB mode
   * Many MBCs except MBC1
+  * Support for Mac / Linus (Only HLSL shaders have been written yet, GLSL shaders and other areas are not yet complete.)
 
 ## References
   
