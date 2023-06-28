@@ -5,6 +5,8 @@ namespace GBEmu::HW
 {
 	bool AudioLengthCounter::Step()
 	{
+		if (m_enabled == false) return true;
+
 		if (m_counter == 0) return true;
 		m_counter--;
 

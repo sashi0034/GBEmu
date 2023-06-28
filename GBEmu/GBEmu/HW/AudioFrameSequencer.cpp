@@ -7,7 +7,7 @@ namespace GBEmu::HW
 {
 	constexpr int timerFrequency_512 = 512;
 
-	void stepLengthCounter(AudioChSquare<1>& ch1, AudioChSquare<2>& ch2, AudioChWave& ch3)
+	void stepLengthCounter(AudioChSquare<1>& ch1, AudioChSquare<2>& ch2, AudioChWave& ch3, AudioChNoise& ch4)
 	{
 		ch1.StepLengthCounter();
 		ch2.StepLengthCounter();
@@ -29,23 +29,23 @@ namespace GBEmu::HW
 		switch (m_clock)
 		{
 		case 0:
-			stepLengthCounter(ch1, ch2, ch3);
+			stepLengthCounter(ch1, ch2, ch3, ch4);
 			break;
 		case 1:
 			break;
 		case 2:
-			stepLengthCounter(ch1, ch2, ch3);
+			stepLengthCounter(ch1, ch2, ch3, ch4);
 			ch1.StepFreqSweep();
 			break;
 		case 3:
 			break;
 		case 4:
-			stepLengthCounter(ch1, ch2, ch3);
+			stepLengthCounter(ch1, ch2, ch3, ch4);
 			break;
 		case 5:
 			break;
 		case 6:
-			stepLengthCounter(ch1, ch2, ch3);
+			stepLengthCounter(ch1, ch2, ch3, ch4);
 			ch1.StepFreqSweep();
 			break;
 		case 7:

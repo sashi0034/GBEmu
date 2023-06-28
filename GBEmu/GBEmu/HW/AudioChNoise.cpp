@@ -24,6 +24,11 @@ namespace GBEmu::HW
 		m_volumeEnvelope.Step();
 	}
 
+	void AudioChNoise::StepLengthCounter()
+	{
+		m_channelEnabled &= m_lengthCounter.Step();
+	}
+
 	int AudioChNoise::Amplitude() const
 	{
 		const int a = m_volumeEnvelope.InitialVolume() == 0
