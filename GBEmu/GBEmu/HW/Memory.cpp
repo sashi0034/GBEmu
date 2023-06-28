@@ -360,7 +360,7 @@ namespace GBEmu::HW
 		Write(env, 0xFF23, 0xBF); // NR30
 		Write(env, 0xFF24, 0x77); // NR50
 		Write(env, 0xFF25, 0xF3); // NR51
-		Write(env, 0xFF26, 0xF0); // NR52
+		Write(env, 0xFF26, 0xF1); // NR52
 		Write(env, 0xFF40, 0x91); // LCDC
 		Write(env, 0xFF42, 0x00); // SCY
 		Write(env, 0xFF43, 0x00); // SCX

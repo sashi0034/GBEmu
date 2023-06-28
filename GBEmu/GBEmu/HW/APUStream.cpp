@@ -7,7 +7,7 @@ namespace GBEmu::HW
 {
 	APUStream::APUStream()
 	{
-		m_wave.resize(HWParam::AudioSampleRate);
+		m_wave.resize(HWParam::AudioSampleRate, WaveSample{0, 0});
 	}
 
 	void APUStream::getAudio(float* left, float* right, size_t samplesToWrite)
