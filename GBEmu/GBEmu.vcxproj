@@ -246,7 +246,6 @@
     <ClCompile Include="GBEmu\HW\PPURender.cpp" />
     <ClCompile Include="GBEmu\HW\VRAM.cpp" />
     <ClCompile Include="GBEmu\HW\Timer.cpp" />
-    <ClCompile Include="GBEmu\UI\GuiButton.cpp" />
     <ClCompile Include="GBEmu\UI\UIAsset.cpp" />
     <ClCompile Include="GBEmu\UI\UIBack.cpp" />
     <ClCompile Include="GBEmu\UI\UIHud.cpp" />
@@ -499,7 +498,6 @@
     <ClInclude Include="GBEmu\HW\PPURender.h" />
     <ClInclude Include="GBEmu\HW\VRAM.h" />
     <ClInclude Include="GBEmu\HW\Timer.h" />
-    <ClInclude Include="GBEmu\UI\GuiButton.h" />
     <ClInclude Include="GBEmu\UI\UIAsset.h" />
     <ClInclude Include="GBEmu\UI\UIBack.h" />
     <ClInclude Include="GBEmu\UI\UIHud.h" />

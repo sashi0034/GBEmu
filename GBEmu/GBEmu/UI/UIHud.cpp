@@ -1,7 +1,6 @@
 ﻿#include "stdafx.h"
 #include "UIHud.h"
 
-#include "GuiButton.h"
 #include "UIAsset.h"
 #include "GBEmu/ConstParam.h"
 #include "GBEmu/EmuGamepad.h"
@@ -124,8 +123,6 @@ namespace GBEmu::UI
 		// (void)Rect{Point(0, bottom.y), Point(Scene::Width(), borderThickness) }
 		// 	.draw(ColorF(ConstParam::ColorGamingGreen));
 
-		m_buttonPlay(bottom.movedBy(-sizeSS.x / 2, -sizeSS.y), sizeSS);
-
-
+		// TODO: 現状のSiv3DのGUI部分はカスタマイズ性が乏しく貧弱なので、将来的に追加される予定の機能が登場したらボタン関連を作成していく
 	}
 }
