@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "UIHud.h"
 
+#include "GuiButton.h"
 #include "UIAsset.h"
 #include "GBEmu/ConstParam.h"
 #include "GBEmu/EmuGamepad.h"
@@ -13,17 +14,6 @@ namespace GBEmu::UI
 	constexpr int paddingY = 4;
 	constexpr int paddingX = 12;
 	constexpr ColorF hudGray = ColorF(0.3f, 0.3f, 0.3f);
-
-	void drawBorder(const Rect& rect)
-	{
-		constexpr double thickness = 4.0;
-		const double offset = Scene::Time() * 10;
-
-		(void)rect.top().draw(LineStyle::SquareDot(offset), thickness);
-		(void)rect.right().draw(LineStyle::SquareDot(offset), thickness);
-		(void)rect.bottom().draw(LineStyle::SquareDot(offset), thickness);
-		(void)rect.left().draw(LineStyle::SquareDot(offset), thickness);
-	}
 
 	void drawGreenBorder(int width, int height, int startY)
 	{
@@ -119,6 +109,22 @@ namespace GBEmu::UI
 				(void)font(std::get<2>(button)).drawAt(std::get<0>(button).rect.center(), hudGray);
 			}
 		}
+	}
+
+	void UIHud::DrawUp(UIEnv& ui, HW::HWEnv& hw, const Point& bottom)
+	{
+		constexpr Size sizeSS{56, 28};
+		constexpr Size sizeS{80, 32};
+
+		// 背景
+		(void)Rect{Point(0, 0), Point(Scene::Width(), bottom.y) }.draw(
+			Arg::top = Color{ 16, 16, 16 },
+			Arg::bottom = Color{ 16, 16, 16, 0 }
+			);
+		// (void)Rect{Point(0, bottom.y), Point(Scene::Width(), borderThickness) }
+		// 	.draw(ColorF(ConstParam::ColorGamingGreen));
+
+		m_buttonPlay(bottom.movedBy(-sizeSS.x / 2, -sizeSS.y), sizeSS);
 
 
 	}

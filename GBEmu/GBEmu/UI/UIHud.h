@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "GuiButton.h"
 
 namespace GBEmu::HW
 {
@@ -14,7 +15,8 @@ namespace GBEmu::UI
 	public:
 		void DrawLeft(UIEnv& ui, HW::HWEnv& hw, const Point& start, int width, int height);
 		void DrawRight(UIEnv& ui, HW::HWEnv& hw, const Point& start, int width, int height);
+		void DrawUp(UIEnv& ui, HW::HWEnv& hw, const Point& bottom);
 	private:
-
+		GuiButton m_buttonPlay{};
 	};
 }
