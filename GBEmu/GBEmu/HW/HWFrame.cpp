@@ -1,9 +1,9 @@
 ﻿#include "stdafx.h"
 #include "HWFrame.h"
 
-namespace GBEmu::HW::HWFrame
+namespace GBEmu::HW
 {
-	void EmulateFrame(HWEnv& env)
+	static void emulateFrame(HWEnv& env)
 	{
 		env.GetAPU().UpdateFrame(env);
 
@@ -46,6 +46,21 @@ namespace GBEmu::HW::HWFrame
 
 			passedCycle += cpuCycle.Count;
 			if (passedCycle > HWParam::PPUCyclePeriod_70224) return;
+		}
+	}
+
+	void HWFrame::StepFrame(HWEnv& env)
+	{
+		const double actualDeltaTime = Scene::DeltaTime();
+		constexpr double virtualDeltaTime = 1.0 / HWParam::FPS;
+
+		m_fragmentTime += actualDeltaTime;
+
+		// 60FPS制御
+		while (m_fragmentTime >= virtualDeltaTime)
+		{
+			m_fragmentTime -= virtualDeltaTime;
+			emulateFrame(env);
 		}
 	}
 }

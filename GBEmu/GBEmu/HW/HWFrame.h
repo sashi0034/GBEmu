@@ -3,9 +3,11 @@
 
 namespace GBEmu::HW
 {
-	namespace HWFrame
+	class HWFrame
 	{
-		// ハードウェアの1フレームをエミュレート
-		void EmulateFrame(HWEnv& env);
+	public:
+		void StepFrame(HWEnv& env);
+	private:
+		double m_fragmentTime{};
 	};
 }

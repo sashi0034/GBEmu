@@ -4,6 +4,8 @@ namespace GBEmu::HW
 {
 	namespace HWParam
 	{
+		constexpr int FPS = 60;
+
 		constexpr int MachineCycle = 4;
 
 		constexpr Size DisplayResolution{160, 144};

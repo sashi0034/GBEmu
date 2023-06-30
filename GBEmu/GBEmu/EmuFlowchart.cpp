@@ -53,13 +53,14 @@ namespace GBEmu::EmuFlowchart
 		HW::HWEnv hwEnv{};
 		UI::UIEnv uiEnv{};
 
+		HW::HWFrame hwFrame{};
+
 		hwEnv.GetMemory().LoadCartridge(config.CartridgePath);
 		hwEnv.GetMemory().Initialize(hwEnv);
 
-		// TODO: 60FPS control
 		while (System::Update())
 		{
-			HW::HWFrame::EmulateFrame(hwEnv);
+			hwFrame.StepFrame(hwEnv);
 			constexpr double pixelScale = 5;
 
 			// 背景描画
