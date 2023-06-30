@@ -60,7 +60,7 @@ namespace GBEmu::EmuFlowchart
 
 		while (System::Update())
 		{
-			hwFrame.StepFrame(hwEnv);
+			hwFrame.ControlFrame(hwEnv);
 			constexpr double pixelScale = 5;
 
 			// 背景描画

@@ -6,7 +6,7 @@ namespace GBEmu::HW
 	class HWFrame
 	{
 	public:
-		void StepFrame(HWEnv& env);
+		void ControlFrame(HWEnv& env);
 	private:
 		double m_fragmentTime{};
 	};

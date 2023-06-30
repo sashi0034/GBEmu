@@ -49,7 +49,7 @@ namespace GBEmu::HW
 		}
 	}
 
-	void HWFrame::StepFrame(HWEnv& env)
+	void HWFrame::ControlFrame(HWEnv& env)
 	{
 		const double actualDeltaTime = Scene::DeltaTime();
 		constexpr double virtualDeltaTime = 1.0 / HWParam::FPS;
