@@ -32,6 +32,7 @@ namespace GBEmu::EmuFlowchart
 		EmuSingleton emuSingleton{};
 
 		// シーン設定など
+		Window::SetTitle(U"GBEmu");
 		Window::SetStyle(WindowStyle::Sizable);
 		Scene::SetResizeMode(ResizeMode::Keep);
 		constexpr Size sceneSize = {1920, 1080};

@@ -51,26 +51,31 @@ namespace GBEmu::UI
 		const Transformer2D transformer{ Mat3x2::Scale(1).translated(start) };
 		auto&& font = UIAsset::Instance().FontDotGothic18;
 
+		const int audioHeight = height / 6 - paddingY * 2;
+		const int audioStart = height - audioHeight - paddingY * 1;
+
+		const int playHeight = height / 3 - paddingY * 2;
+		const int playStart = audioStart - playHeight - paddingY * 2;
+
 		// 緑帯描画
-		const int borderHeight = height / 3 - paddingY * 2;
-		drawGreenBorder(width, borderHeight, 0);
-		drawGreenBorder(width, borderHeight, height / 3 + paddingY);
+		drawGreenBorder(width, audioHeight, audioStart);
+		drawGreenBorder(width, playHeight, playStart);
 
 		// CPU稼働率を表示
 		constexpr Size monitorSize{320, 24};
 		const float cpuWorkedRate = hw.Debugger().CPUWorkedRate();
 		auto monitorColor = Color(40, 40, 24);
-		constexpr Point monitorStart = Point(paddingX, paddingY + 16);
+		const Point monitorStart = Point(paddingX, playStart + paddingY + 16);
 		(void)Rect(monitorStart, Size(static_cast<int>(monitorSize.x * cpuWorkedRate), monitorSize.y))
 			.draw(monitorColor.setR(monitorColor.r * (0.5 + cpuWorkedRate)));
-		constexpr Rect monitorRect = Rect(monitorStart, monitorSize);
+		const Rect monitorRect = Rect(monitorStart, monitorSize);
 		(void)monitorRect.drawFrame(1.0, hudGray);
 		(void)font(U"CPU {:8.4f} %"_fmt(cpuWorkedRate * 100))
 			.drawAt(monitorRect.center(), hudGray); // fmtの{:N.Mf}のNは「全体で」N文字になるみたい
 
 		// ボタン描画
 		constexpr Size buttonSize{40, 40};
-		constexpr Point buttonPad = Point(paddingX, 80 + paddingY);
+		const Point buttonPad = Point(paddingX, playStart + 80 + paddingY);
 		constexpr int buttonRound = 8;
 		static const auto buttonLeft = Rect(buttonPad + Point(0, buttonSize.y), buttonSize).rounded(buttonRound);
 		static const auto buttonRight = Rect(buttonPad + Point(buttonSize.x * 2, buttonSize.y), buttonSize).rounded(buttonRound);
@@ -112,9 +117,10 @@ namespace GBEmu::UI
 		}
 
 		// 音声波形描画
+		constexpr Size audioMargin{paddingX, paddingY};
 		(void)hw.Debugger().AudioGraph()
-			.resized(width, borderHeight)
-			.draw(0, static_cast<float>(height) / 3 + paddingY, Color(U"#88ac80"));
+			.resized(Size(width, audioHeight) - audioMargin * 2)
+			.draw(Point(0, audioStart) + audioMargin.xy(), Color(U"#689c60"));
 	}
 
 	void UIHud::DrawUp(UIEnv& ui, HW::HWEnv& hw, const Point& bottom)
