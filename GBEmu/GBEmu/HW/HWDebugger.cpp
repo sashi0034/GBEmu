@@ -239,7 +239,12 @@ namespace GBEmu::HW
 
 	HWDebugger::HWDebugger() :
 		m_impl {std::make_unique<Impl>()}
-	{}
+	{
+		for (int i=1; i<=4; ++i)
+		{
+			m_audioSampleBuffer[i].reserve(HWParam::AudioSampleRate / HWParam::FPS);
+		}
+	}
 
 	HWDebugger::~HWDebugger() = default;
 
@@ -252,6 +257,57 @@ namespace GBEmu::HW
 		if (KeyC.down() && KeyControl.pressed())
 		{
 			m_isDebugSuspend = !m_isDebugSuspend;
+		}
+
+		// オーディオを可視化
+		refreshAudioGraph(m_audioGraph, m_audioSampleBuffer);
+	}
+
+	void HWDebugger::refreshAudioGraph(
+		RenderTexture& graph, std::array<std::vector<float>, audioChannelCapacity>& samples)
+	{
+		// 描画設定
+		graph.clear(ColorF{ 1.0, 0.0 });
+		const ScopedRenderTarget2D target{ graph };
+		const ScopedRenderStates2D blend{ BlendState::Opaque };
+
+		constexpr std::array palette{
+			Color(U"#FFFFFF"), Color(U"#FF00FF"), Color(U"#FFFF00"), Color(U"#00FFFF")};
+
+		// すべてのサンプルごとに線を描画すると、処理が重いのである程度標本化してから描画する
+		constexpr int fragSize = 32;
+		const float fragW = graph.size().x / fragSize;
+
+		// 波形を4チャンネルごとに描画
+		for (int ch=1; ch<=4; ++ch)
+		{
+			auto&& waves = samples[ch];
+			const float density = waves.size() / static_cast<float>(fragSize); // 1点に標本化する波形の個数
+			float count = 0; // 現在集計中の標本数
+			float sum = 0; // 現在集計中の標本合計和
+			float cursorX = 0;
+			float oldPlotY = 0;
+			// そのチャンネルのサンプルを探索
+			for (int i=0; i<waves.size(); ++i)
+			{
+				count++;
+				sum += waves[i];
+				if (count < density) continue;
+
+				// 集計終わり
+				const float newPlotY = graph.size().y * (0.5f + 0.5f * sum / count);
+				sum = 0;
+				count -= density;
+
+				if (cursorX > 0)
+					(void)Line(cursorX, oldPlotY, cursorX + fragW, newPlotY).draw(1.5, palette[ch - 1]);
+
+				oldPlotY = newPlotY;
+				cursorX += fragW;
+			}
+
+			// サンプルデータをクリア
+			samples[ch].clear();
 		}
 	}
 
@@ -272,6 +328,11 @@ namespace GBEmu::HW
 	void HWDebugger::OnMemoryWrite(uint16 address, uint8 data)
 	{
 		m_impl->OnMemoryWrite(address, data);
+	}
+
+	void HWDebugger::OnAudioSample(int channel, float wave)
+	{
+		m_audioSampleBuffer[channel].push_back(wave);
 	}
 
 	// データ列を受け取って、そのメモリ列が存在するならアドレスを返す

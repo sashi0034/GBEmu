@@ -8,6 +8,7 @@
 
 namespace GBEmu::HW
 {
+	class HWDebugger;
 	class HWEnv;
 
 	// 参考: https://github.com/voidproc/dmge/tree/main/dmge/APU
@@ -40,7 +41,7 @@ namespace GBEmu::HW
 
 		float m_outputTimer{};
 
-		void pushSample() const;
+		void pushSample(HWDebugger& debugger) const;
 		template <int... Args> void writeFor(uint8 data);
 	};
 

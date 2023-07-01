@@ -16,7 +16,7 @@ namespace GBEmu::UI
 
 	void drawGreenBorder(int width, int height, int startY)
 	{
-		(void)Rect{Point(-borderThickness, 0), Point(borderThickness, height) }.draw(ConstParam::ColorGamingGreen);
+		(void)Rect{Point(-borderThickness, startY), Point(borderThickness, height) }.draw(ConstParam::ColorGamingGreen);
 
 		(void)Rect{Point(0, startY), Point(width, height) }.draw(
 			Arg::left = Color{ 16, 16, 16 },
@@ -52,7 +52,9 @@ namespace GBEmu::UI
 		auto&& font = UIAsset::Instance().FontDotGothic18;
 
 		// 緑帯描画
-		drawGreenBorder(width, height / 3 - paddingY, 0);
+		const int borderHeight = height / 3 - paddingY * 2;
+		drawGreenBorder(width, borderHeight, 0);
+		drawGreenBorder(width, borderHeight, height / 3 + paddingY);
 
 		// CPU稼働率を表示
 		constexpr Size monitorSize{320, 24};
@@ -108,6 +110,11 @@ namespace GBEmu::UI
 				(void)font(std::get<2>(button)).drawAt(std::get<0>(button).rect.center(), hudGray);
 			}
 		}
+
+		// 音声波形描画
+		(void)hw.Debugger().AudioGraph()
+			.resized(width, borderHeight)
+			.draw(0, static_cast<float>(height) / 3 + paddingY, Color(U"#88ac80"));
 	}
 
 	void UIHud::DrawUp(UIEnv& ui, HW::HWEnv& hw, const Point& bottom)

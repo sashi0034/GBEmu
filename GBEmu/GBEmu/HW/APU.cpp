@@ -1,10 +1,13 @@
 ﻿#include "stdafx.h"
 #include "APU.h"
 
+#include "HWEnv.h"
 #include "HWParams.h"
 
 namespace GBEmu::HW
 {
+	class HWDebugger;
+
 	APU::APU() :
 		m_stream(std::make_shared<APUStream>()),
 		m_audio(Audio(m_stream))
@@ -41,11 +44,11 @@ namespace GBEmu::HW
 		{
 			m_outputTimer -= outputPeriod;
 
-			pushSample();
+			pushSample(env.Debugger());
 		}
 	}
 
-	void APU::pushSample() const
+	void APU::pushSample(HWDebugger& debugger) const
 	{
 		// バッファが十分あるなら追加しない
 		constexpr int sufficientBuffer = HWParam::AudioSampleRate / 2;
@@ -57,22 +60,25 @@ namespace GBEmu::HW
 			m_ch3.Amplitude() * m_ch3.ChannelEnabled(),
 			m_ch4.Amplitude() * m_ch4.ChannelEnabled() };
 
+		// マスターボリューム
+		const float leftVol = ((m_channelControl >> 4) & 0b111) + 1;
+		const float rightVol = ((m_channelControl >> 0) & 0b111) + 1;
+		constexpr float maxVol = 8.0f;
+
 		// DAC (digital-to-analog convertor)
 		float leftAmp = 0;
 		float rightAmp = 0;
 		for (int i=0; i<4; i++)
 		{
 			// 0の入力は-1.0を生成し、15の入力は+1.0を生成といった比例した出力にする
-			if ((m_selection >> (i + 4)) & 0b1) leftAmp += (amplitudes[i] / 7.5f) - 1.0f;
-			if ((m_selection >> i) & 0b1) rightAmp += (amplitudes[i] / 7.5f) - 1.0f;
+			const float amp = (amplitudes[i] / 7.5f) - 1.0f;
+			if ((m_selection >> (i + 4)) & 0b1) leftAmp += amp;
+			if ((m_selection >> i) & 0b1) rightAmp += amp;
+
+			debugger.OnAudioSample(i + 1, amp * ((leftVol + rightVol) / (maxVol * 2)));
 		}
 		// 各チャンネルのAmplitudeは多分[-1, 1]に収まっているので4が最大
 		constexpr float maxAmp = 4.0f;
-
-		// マスターボリューム
-		const float leftVol = ((m_channelControl >> 4) & 0b111) + 1;
-		const float rightVol = ((m_channelControl >> 0) & 0b111) + 1;
-		constexpr float maxVol = 8.0f;
 
 		m_stream->PushSample((leftAmp / maxAmp) * (leftVol / maxVol), (rightAmp / maxAmp) * (rightVol / maxVol));
 	}
