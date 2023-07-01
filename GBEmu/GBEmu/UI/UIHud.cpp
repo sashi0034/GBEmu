@@ -55,7 +55,7 @@ namespace GBEmu::UI
 		const int audioStart = height - audioHeight - paddingY * 1;
 
 		const int playHeight = height / 3 - paddingY * 2;
-		const int playStart = audioStart - playHeight - paddingY * 2;
+		constexpr int playStart = paddingY; // audioStart - playHeight - paddingY * 2;
 
 		// 緑帯描画
 		drawGreenBorder(width, audioHeight, audioStart);
