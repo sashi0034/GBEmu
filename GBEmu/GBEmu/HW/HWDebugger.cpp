@@ -5,7 +5,7 @@
 #include "MemoryAddress.h"
 #include "GBEmu/Util/Utils.h"
 
-// あるデバッグしたいときは、以下をどれかをコメントイン
+// あるデバッグしたいときは、以下のどれかをコメントイン
 // #define IMPL_FOUNDINSTRUCTIONDISTRIBUTION
 // #define IMPL_EXECUTEDINSTRUCTIONLOG
 // #define IMPL_WROTEMEMORYLOG
@@ -272,7 +272,7 @@ namespace GBEmu::HW
 		const ScopedRenderStates2D blend{ BlendState::Opaque };
 
 		constexpr std::array palette{
-			Color(U"#FFFFFF"), Color(U"#FF00FF"), Color(U"#FFFF00"), Color(U"#00FFFF")};
+			Color(U"#FFFFFF"), Color(U"#FF40FF"), Color(U"#FFFF00"), Color(U"#00FFFF")};
 
 		// すべてのサンプルごとに線を描画すると、処理が重いのである程度標本化してから描画する
 		constexpr int fragSize = 32;

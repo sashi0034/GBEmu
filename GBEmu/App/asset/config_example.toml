@@ -1,0 +1,33 @@
+
+[cartridge]
+# Enter the path where the ROM file is located
+path = ""
+
+[dmg]
+# The following site are useful for color palettes
+# https://lospec.com/palette-list/tag/gameboy/
+
+# MINTY FRESH Created by archer
+palette = [
+    "#fbffe0", 
+    "#95c798", 
+    "#856d52", 
+    "#40332f"]
+# KIROKAZE GAMEBOY Created by Kirokaze
+#palette = [
+#    "#e2f3e4",
+#    "#94e344",
+#    "#46878f",
+#    "#332c50",
+#    ]
+# COLDFIRE GB Created by Kerrie Lake
+#palette = [
+#    "#f6c6a8",
+#    "#d17c7c",
+#    "#5b768d",
+#    "#46425e"
+#]
+
+# [keymap]
+
+

@@ -120,7 +120,7 @@ namespace GBEmu::UI
 		constexpr Size audioMargin{paddingX, paddingY};
 		(void)hw.Debugger().AudioGraph()
 			.resized(Size(width, audioHeight) - audioMargin * 2)
-			.draw(Point(0, audioStart) + audioMargin.xy(), Color(U"#689c60"));
+			.draw(Point(0, audioStart) + audioMargin.xy(), Color(U"#789c70"));
 	}
 
 	void UIHud::DrawUp(UIEnv& ui, HW::HWEnv& hw, const Point& bottom)

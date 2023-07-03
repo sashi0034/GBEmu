@@ -2,6 +2,7 @@
 #include "EmuFlowchart.h"
 
 #include "EmuConfig.h"
+#include "EmuLogger.h"
 #include "EmuSingleton.h"
 #include "HW/HWEnv.h"
 #include "HW/HWFrame.h"
@@ -10,7 +11,7 @@
 
 namespace GBEmu::EmuFlowchart
 {
-	bool selectFileFromExplorer(EmuConfig& config)
+	String selectFileFromExplorer()
 	{
 		const auto cartridgeDir = FileSystem::PathAppend(FileSystem::InitialDirectory(), U"asset/rom");
 		const auto selectedPath = Dialog::OpenFile(
@@ -20,11 +21,10 @@ namespace GBEmu::EmuFlowchart
 		if (selectedPath.has_value() == false)
 		{
 			Console.writeln(U"cartridge is not found: {}"_fmt(selectedPath));
-			return false;
+			return U"";
 		}
 
-		config.CartridgePath = selectedPath.value();
-		return true;
+		return selectedPath.value();
 	}
 
 	void RunEmu()
@@ -42,11 +42,20 @@ namespace GBEmu::EmuFlowchart
 		System::SetTerminationTriggers(UserAction::CloseButtonClicked);
 
 		// エミュレータ設定
-		EmuConfig config = DefaultEmuConfig;
-		if (FileSystem::Exists(config.CartridgePath) == false)
+		try
 		{
-			if (selectFileFromExplorer(config) == false) return;
+			auto config = EmuConfig::LoadToml(U"config.toml", U"asset/config_example.toml");
+			emuSingleton.RegisterConfig(config);
 		}
+		catch (...)
+		{
+			EmuLogger::Error(U"failed to load config.toml");
+		}
+
+		const auto cartridgePath = FileSystem::Exists(EmuConfig::Instance().Cartridge.Path)
+			? EmuConfig::Instance().Cartridge.Path
+			: selectFileFromExplorer();
+		if (cartridgePath.empty()) return;
 
 		Console.open();
 		Console.writeln(U"setup ...");
@@ -56,7 +65,7 @@ namespace GBEmu::EmuFlowchart
 
 		HW::HWFrame hwFrame{};
 
-		hwEnv.GetMemory().LoadCartridge(config.CartridgePath);
+		hwEnv.GetMemory().LoadCartridge(cartridgePath);
 		hwEnv.GetMemory().Initialize(hwEnv);
 
 		while (System::Update())

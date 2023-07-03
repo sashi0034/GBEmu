@@ -1,14 +1,26 @@
 ﻿#pragma once
-#include "DebugParam.h"
 
 namespace GBEmu
 {
 	struct EmuConfig
 	{
-		String CartridgePath;
+		struct
+		{
+			String Path{};
+		} Cartridge;
+
+		struct
+		{
+			std::array<ColorF, 4> Palette{};
+		} DMG;
+
+		struct
+		{
+
+		} KeyMap;
+
+		static EmuConfig LoadToml(const FilePath& path, const FilePath& alternativePath);
+		static const EmuConfig& Instance();
 	};
 
-	static const EmuConfig DefaultEmuConfig = EmuConfig{
-		DebugParam::RomPathPuyoPuyo2
-	};
 }

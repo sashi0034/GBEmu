@@ -5,6 +5,7 @@
 #include "Memory.h"
 #include "MemoryAddress.h"
 #include "PPU.h"
+#include "GBEmu/EmuConfig.h"
 
 namespace GBEmu::HW::PPURender
 {
@@ -13,7 +14,10 @@ namespace GBEmu::HW::PPURender
 
 	using namespace MemoryAddress;
 
-	static const std::array<ColorF, 4> displayColorPaletteF = *(HWParam::ColorPalettesDMG.end() - 1);
+	inline const std::array<ColorF, 4>& colorPaletteDMG()
+	{
+		return EmuConfig::Instance().DMG.Palette;
+	}
 
 	struct TileBgAndWindowDmgCb
 	{
@@ -33,7 +37,7 @@ namespace GBEmu::HW::PPURender
 		ConstantBuffer<TileBgAndWindowDmgCb> tileCb{};
 
 		// BG兼 ウィンドウパレットを設定
-		for (int i=0; i<4; ++i) tileCb->palette[i] = displayColorPaletteF[arg.LCD.BGPaletteData(i)].toFloat4();
+		for (int i=0; i<4; ++i) tileCb->palette[i] = colorPaletteDMG()[arg.LCD.BGPaletteData(i)].toFloat4();
 
 		// WindowEnable情報を設定
 		for (int i=0; i<arg.WindowEnableBuffer.size(); ++i)
@@ -219,7 +223,7 @@ namespace GBEmu::HW::PPURender
 			// パレット設定
 			for (int color = 1; color < 4; ++color)
 				tileCb->palette[color] =
-					displayColorPaletteF[arg.LCD.ObjectPaletteData(oam.Palette(), color)].toFloat4();
+					colorPaletteDMG()[arg.LCD.ObjectPaletteData(oam.Palette(), color)].toFloat4();
 
 			Graphics2D::SetPSConstantBuffer(1, tileCb);
 

@@ -592,6 +592,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App\asset\config_example.toml" />
     <Content Include="App\asset\rom\.gitignore" />
     <Content Include="App\asset\rom\01-special.gb" />
     <Content Include="App\asset\rom\02-interrupts.gb" />
@@ -640,6 +641,7 @@
     <Content Include="App\asset\rom\Pocket Puyo Puyo 2 Tsuu.GB" />
     <Content Include="App\asset\rom\Puyo Puyo.GB" />
     <Content Include="App\asset\rom\Zelda no Densetsu - Yume o Miru Shima.GB" />
+    <Content Include="App\config.toml" />
     <Content Include="Include\magic_enum\LICENSE" />
     <Content Include="Include\nameof\LICENSE" />
   </ItemGroup>
