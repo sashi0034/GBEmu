@@ -16,7 +16,7 @@ namespace GBEmu
 
 		struct
 		{
-
+			std::function<bool()> StopAndPlay{};
 		} KeyMap;
 
 		static EmuConfig LoadToml(const FilePath& path, const FilePath& alternativePath);

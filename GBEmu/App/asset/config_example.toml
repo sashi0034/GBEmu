@@ -6,7 +6,6 @@ path = ""
 [dmg]
 # The following site are useful for color palettes
 # https://lospec.com/palette-list/tag/gameboy/
-
 # MINTY FRESH Created by archer
 palette = [
     "#fbffe0", 
@@ -28,6 +27,6 @@ palette = [
 #    "#46425e"
 #]
 
-# [keymap]
-
+[keymap]
+atop_and_play = ["Control", "C"]
 
