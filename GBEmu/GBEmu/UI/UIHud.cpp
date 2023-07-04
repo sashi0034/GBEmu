@@ -5,6 +5,7 @@
 #include "GBEmu/ConstParam.h"
 #include "GBEmu/EmuGamepad.h"
 #include "GBEmu/HW/HWEnv.h"
+#include "GBEmu/HW/HWFrame.h"
 
 namespace GBEmu::UI
 {
@@ -123,10 +124,9 @@ namespace GBEmu::UI
 			.draw(Point(0, audioStart) + audioMargin.xy(), Color(U"#789c70"));
 	}
 
-	void UIHud::DrawUp(UIEnv& ui, HW::HWEnv& hw, const Point& bottom)
+	void UIHud::DrawUp(UIEnv& ui, HW::HWEnv& hw, const HW::HWFrame& hwFrame, const Point& bottom, const Point& displayTop)
 	{
-		constexpr Size sizeSS{56, 28};
-		constexpr Size sizeS{80, 32};
+		auto&& font = UIAsset::Instance().FontDotGothic18;
 
 		// 背景
 		(void)Rect{Point(0, 0), Point(Scene::Width(), bottom.y) }.draw(
@@ -135,6 +135,14 @@ namespace GBEmu::UI
 			);
 		// (void)Rect{Point(0, bottom.y), Point(Scene::Width(), borderThickness) }
 		// 	.draw(ColorF(ConstParam::ColorGamingGreen));
+
+		// Suspendedの表示
+		if (hwFrame.IsSuspended())
+		{
+			constexpr Size border{196, 24};
+			(void)Rect(displayTop.movedBy(-border.x/2, -border.y), border).rounded(4).draw(ConstParam::ColorGamingGreen);
+			(void)font(U"Suspended").drawAt(displayTop.movedBy(0, -border.y / 2),hudGray);
+		}
 
 		// TODO: 現状のSiv3DのGUI部分はカスタマイズ性が乏しく貧弱なので、将来的に追加される予定の機能が登場したらボタン関連を作成していく
 	}

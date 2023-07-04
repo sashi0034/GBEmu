@@ -21,7 +21,6 @@ namespace GBEmu::HW
 		void OnExecuteInstruction(const CPU& cpu, const CPUInstructionProperty& fetchedInstruction);
 		void OnMemoryWrite(uint16 address, uint8 data);
 		void OnAudioSample(int channel, float wave);
-		bool IsDebugSuspend() const { return m_isDebugSuspend; };
 		const CPUInstructionProperty& LastExecutedInstruction() const { return m_lastExecutedInstruction; };
 		double CPUWorkedRate() const {return m_cpuWorkedCycleInFrame / static_cast<double>(HWParam::PPUCyclePeriod_70224); }
 		const RenderTexture& AudioGraph() const { return m_audioGraph; }
@@ -33,7 +32,6 @@ namespace GBEmu::HW
 		struct ImplPtr : std::unique_ptr<Impl> { ~ImplPtr(); } m_impl;
 
 		CPUInstructionProperty m_lastExecutedInstruction;
-		bool m_isDebugSuspend = false;
 		int m_cpuWorkedCycleInFrame{};
 
 		static constexpr Size audioGraphSize = Size(256, 256);

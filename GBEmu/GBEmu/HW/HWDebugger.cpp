@@ -3,7 +3,6 @@
 
 #include "HWEnv.h"
 #include "MemoryAddress.h"
-#include "GBEmu/EmuConfig.h"
 
 // あるデバッグしたいときは、以下のどれかをコメントイン
 // #define IMPL_FOUNDINSTRUCTIONDISTRIBUTION
@@ -250,13 +249,6 @@ namespace GBEmu::HW
 
 	void HWDebugger::UpdateFrame(HWEnv& env)
 	{
-		// デバッグ用休止状態に
-		if (EmuConfig::Instance().KeyMap.StopAndPlay())
-		{
-			m_isDebugSuspend = !m_isDebugSuspend;
-		}
-		if (m_isDebugSuspend) return;
-
 		// フレーム間CPU稼働率のリセット
 		m_cpuWorkedCycleInFrame = 0;
 

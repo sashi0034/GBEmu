@@ -148,6 +148,26 @@ namespace GBEmu
 		{ U"Underscore_JIS", KeyUnderscore_JIS },
 	};
 
+	inline std::function<bool()> registerKeymap(const TOMLReader& toml, const String& key)
+	{
+		Array<std::pair<bool, Input>> keys{};
+		for (const auto&& value : toml[key].arrayView())
+		{
+			bool isModifier = keyModifier.contains(value.getString());
+			keys.push_back(std::pair{isModifier, keyInputTable.at(value.getString())});
+		}
+
+		return std::function{[keys]()
+		{
+			for (const auto& [isModifier, input] : keys)
+			{
+				if (isModifier && input.pressed() == false) return false;
+				if (isModifier == false && input.down() == false) return false;
+			}
+			return true;
+		}};
+	}
+
 	EmuConfig EmuConfig::LoadToml(const FilePath& path, const FilePath& alternativePath)
 	{
 		TOMLReader toml{ path };
@@ -163,22 +183,8 @@ namespace GBEmu
 		for (int i=0; i<4; ++i)
 			config.DMG.Palette[i] = toml[U"dmg.palette"].arrayView()[i].get<Color>();
 
-		Array<std::pair<bool, Input>> keys{};
-		for (const auto&& key : toml[U"keymap.stop_and_play"].arrayView())
-		{
-			bool isModifier = keyModifier.contains(key.getString());
-			keys.push_back(std::pair{isModifier, keyInputTable.at(key.getString())});
-		}
-		config.KeyMap.StopAndPlay = [keys]()
-		{
-			for (auto&& key : keys)
-			{
-				const bool isModifier = key.first;
-				if (isModifier && key.second.pressed() == false) return false;
-				if (isModifier == false && key.second.down() == false) return false;
-			}
-			return true;
-		};
+		config.Keymap.SuspendAndPlay = registerKeymap(toml, U"keymap.suspend_and_play");
+		config.Keymap.StepFrame = registerKeymap(toml, U"keymap.step_frame");
 
 		return config;
 	}

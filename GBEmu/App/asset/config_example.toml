@@ -28,5 +28,8 @@ palette = [
 #]
 
 [keymap]
-stop_and_play = ["Control", "C"]
+# This allows you to pause/resume the emulator
+suspend_and_play = ["Control", "C"]
 
+# This will advance the emulator one frame during the suspension.
+step_frame = ["F10"]

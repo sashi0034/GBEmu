@@ -1,14 +1,14 @@
 ﻿#include "stdafx.h"
 #include "HWFrame.h"
 
+#include "GBEmu/EmuConfig.h"
+
 namespace GBEmu::HW
 {
 	static void emulateFrame(HWEnv& env)
 	{
 		env.GetAPU().UpdateFrame(env);
-
 		env.Debugger().UpdateFrame(env);
-		if (env.Debugger().IsDebugSuspend()) return;
 
 		int passedCycle = 0;
 
@@ -56,11 +56,23 @@ namespace GBEmu::HW
 
 		m_fragmentTime += actualDeltaTime;
 
+		// 一時停止チェック
+		if (EmuConfig::Instance().Keymap.SuspendAndPlay())
+		{
+			m_isSuspended = !m_isSuspended;
+		}
+
 		// 60FPS制御
 		while (m_fragmentTime >= virtualDeltaTime)
 		{
 			m_fragmentTime -= virtualDeltaTime;
-			emulateFrame(env);
+			if (m_isSuspended == false) emulateFrame(env);
+		}
+
+		// 一時停止中のとき、ステップ実行可能
+		if (m_isSuspended)
+		{
+			if (EmuConfig::Instance().Keymap.StepFrame()) emulateFrame(env);
 		}
 	}
 }
