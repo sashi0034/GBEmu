@@ -26,7 +26,6 @@ namespace GBEmu::HW
 
 		std::array<uint8, HWParam::VRamSize_0x2000> m_vram{};
 
-		// TODO: フォーマットをR16G16_Float
 		static constexpr int tileAmount_384 = 384; // (0x97FF - 0x8000) / 16
 		static constexpr int tileEdge_8 = 8;
 		std::bitset<tileAmount_384> m_tileDataOutdatedFlag{};

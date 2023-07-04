@@ -139,8 +139,6 @@ namespace GBEmu::HW
 
 	void PPU::renderAtVBlank(HWEnv& env, Memory& memory, const LCD& lcd) const
 	{
-		// TODO: バッファにLCD経歴を格納して、IsWindowDisplayEnableが付いてる行だけ描画したい
-
 		memory.GetVRAM().CheckRefreshAtlas();
 
 		const ScopedRenderTarget2D target{ m_renderBuffer };
