@@ -28,5 +28,5 @@ palette = [
 #]
 
 [keymap]
-atop_and_play = ["Control", "C"]
+stop_and_play = ["Control", "C"]
 

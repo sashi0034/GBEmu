@@ -164,7 +164,7 @@ namespace GBEmu
 			config.DMG.Palette[i] = toml[U"dmg.palette"].arrayView()[i].get<Color>();
 
 		Array<std::pair<bool, Input>> keys{};
-		for (const auto&& key : toml[U"keymap.atop_and_play"].arrayView())
+		for (const auto&& key : toml[U"keymap.stop_and_play"].arrayView())
 		{
 			bool isModifier = keyModifier.contains(key.getString());
 			keys.push_back(std::pair{isModifier, keyInputTable.at(key.getString())});
