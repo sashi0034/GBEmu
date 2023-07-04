@@ -31,7 +31,7 @@ namespace GBEmu::HW
 			}
 
 			auto&& lcd = env.GetPPU().GetLCD();
-			for (int i=0; i<(lcd.IsLCDDisplayEnable() ? cpuCycle.Count : 0); ++i)
+			for (int i=0; i<cpuCycle.Count; ++i)
 			{
 				// PPU更新
 				const auto ppuResult = env.GetPPU().StepCycle(env);

@@ -21,7 +21,7 @@ namespace GBEmu::HW
 	void MBCNone::Write(Cartridge& cartridge, uint16 addr, uint8 data)
 	{
 		// RomOnlyのときは書き込み不可
-		HWLogger::Error(U"invalid write address in MBC0");
+		HWLogger::Error(U"invalid write at {:04X} in MBC0"_fmt(addr));
 	}
 
 	uint8 MBC1::Read(Cartridge& cartridge, uint16 addr)

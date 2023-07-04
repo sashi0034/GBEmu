@@ -606,7 +606,9 @@
     <Content Include="App\asset\rom\10-bit ops.gb" />
     <Content Include="App\asset\rom\11-op a,(hl).gb" />
     <Content Include="App\asset\rom\cpu_instrs.gb" />
+    <Content Include="App\asset\rom\Dr. Mario.GB" />
     <Content Include="App\asset\rom\instr_timing.gb" />
+    <Content Include="App\asset\rom\Kirby no Pinball.GB" />
     <Content Include="App\asset\rom\mealybug-tearoom-tests\m2_win_en_toggle.gb" />
     <Content Include="App\asset\rom\mealybug-tearoom-tests\m3_bgp_change.gb" />
     <Content Include="App\asset\rom\mealybug-tearoom-tests\m3_bgp_change_sprites.gb" />
@@ -639,7 +641,12 @@
     <Content Include="App\asset\rom\mealybug-tearoom-tests\m3_wx_5_change.gb" />
     <Content Include="App\asset\rom\mealybug-tearoom-tests\m3_wx_6_change.gb" />
     <Content Include="App\asset\rom\Pocket Puyo Puyo 2 Tsuu.GB" />
+    <Content Include="App\asset\rom\Pocket Puyo Sun.GB" />
     <Content Include="App\asset\rom\Puyo Puyo.GB" />
+    <Content Include="App\asset\rom\Super Mario Land 2 - 6tsu no Kinka.GB" />
+    <Content Include="App\asset\rom\Tetris DX.GB" />
+    <Content Include="App\asset\rom\Wario Land - Super Mario Land 3.GB" />
+    <Content Include="App\asset\rom\Yoshi no Tamago.GB" />
     <Content Include="App\asset\rom\Zelda no Densetsu - Yume o Miru Shima.GB" />
     <Content Include="App\config.toml" />
     <Content Include="Include\magic_enum\LICENSE" />

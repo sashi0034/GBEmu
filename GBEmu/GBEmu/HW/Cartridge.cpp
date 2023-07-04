@@ -3,6 +3,7 @@
 
 #include "HWLogger.h"
 #include "GBEmu/ConstParam.h"
+#include "GBEmu/Util/Utils.h"
 
 
 namespace GBEmu::HW
@@ -23,7 +24,7 @@ namespace GBEmu::HW
 			return std::make_unique<MBC1>();
 		}
 
-		HWLogger::Error(U"adaptable MBC not implemented");
+		HWLogger::Error(U"adaptable MBC not implemented: " + Util::StringifyEnum(type));
 		return std::make_unique<MBCNone>();
 	}
 

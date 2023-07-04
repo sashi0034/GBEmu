@@ -149,6 +149,8 @@ namespace GBEmu::HW
 
 		(void)m_renderBuffer.clear(Palette::Black);
 
+		if (lcd.IsLCDDisplayEnable() == false) return;
+
 		const auto renderBGAndWindowArgs = PPURenderBGAndWindowArgs{
 			env, memory, lcd, vram,
 			m_bgAndWindowFlagBuffer,
