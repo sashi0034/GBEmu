@@ -156,6 +156,6 @@ namespace GBEmu::HW
 
 		if constexpr (ch == ch_1) m_channelEnabled &= m_freqSweep.Trigger(m_freq);
 		m_volumeEnvelope.Trigger();
-		m_lengthCounter.Trigger(64);
+		m_lengthCounter.Trigger(lengthCounterMax_63);
 	}
 }

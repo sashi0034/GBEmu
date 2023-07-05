@@ -57,8 +57,8 @@ namespace GBEmu::HW
 		}
 		else if constexpr (x==4)
 		{
-			m_lengthCounter.SetEnabled((data & 0x40) != 0x40);
 			if (data & 0x80) trigger(); // write only
+			m_lengthCounter.SetEnabled((data & 0x40) != 0);
 		}
 	}
 
