@@ -43,18 +43,21 @@ namespace GBEmu::HW
 		{
 			return readIO(env, addr);
 		}
-		if (addr == IE_0xFFFF)
-		{
-			return m_interrupt.IE();
-		}
 		if (RangeUint16(EchoWorkRamStart_0xE000, EchoWorkRamEnd_0xFDFF).IsBetween(addr))
 		{
 			const uint16 offset = addr - EchoWorkRamStart_0xE000;
 			return m_memory[WorkRamBank0Start_0xC000 + offset];
 		}
+		if (addr == IE_0xFFFF)
+		{
+			return m_interrupt.IE();
+		}
+		else
+		{
+			return m_memory[addr];
+		}
 
-
-		return m_memory[addr];
+		assert(false);
 	}
 
 	uint16 Memory::Read16(HWEnv& env, uint16 addr)
@@ -340,7 +343,7 @@ namespace GBEmu::HW
 		{
 			m_memory[OAMStart_0xFE00 + offset] = Read(env, src + offset);
 		}
-		m_memory[DMA_0xFF46] = 0xFF;
+		m_memory[DMA_0xFF46] = data;
 	}
 
 	void Memory::Initialize(HWEnv& env)
