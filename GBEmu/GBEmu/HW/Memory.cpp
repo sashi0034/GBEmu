@@ -343,7 +343,7 @@ namespace GBEmu::HW
 		{
 			m_memory[OAMStart_0xFE00 + offset] = Read(env, src + offset);
 		}
-		m_memory[DMA_0xFF46] = data;
+		m_memory[DMA_0xFF46] = 0xFF;
 	}
 
 	void Memory::Initialize(HWEnv& env)
