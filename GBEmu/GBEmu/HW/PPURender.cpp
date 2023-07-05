@@ -87,8 +87,8 @@ namespace GBEmu::HW::PPURender
 		const uint8 scy = arg.LCD.SCY();
 		const uint8 scx = arg.LCD.SCX();
 
-		const int scxModulo = scx % 8;
-		const int scyModulo = scy % 8;
+		const int scxModulo = 8 - (scx % 8);
+		const int scyModulo = 8 - (scy % 8);
 
 		int tileDataBaseIndex = 0;
 		int bgBaseIndex = 0;
