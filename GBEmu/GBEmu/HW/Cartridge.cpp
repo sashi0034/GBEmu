@@ -42,7 +42,7 @@ namespace GBEmu::HW
 		return m_mbc->Read(*this, addr);
 	}
 
-	void Cartridge::Write(uint16 addr, uint16 data)
+	void Cartridge::Write(uint16 addr, uint8 data)
 	{
 		m_mbc->Write(*this, addr, data);
 	}
