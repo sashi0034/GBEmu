@@ -11,7 +11,6 @@ namespace GBEmu::HW
 		void WriteJOYP(uint8 joyp);
 	private:
 		uint8 m_joyp{};
-
-		static uint8 fetchInput(uint8 joyp);
+		uint8 (*m_getter)() = [](){return static_cast<uint8>(0); };
 	};
 }
