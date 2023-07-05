@@ -215,10 +215,9 @@ namespace GBEmu::HW::PPURender
 
 			tileCb->isMasking = oam.FlagPriorityBGAndWindow();
 
-			auto texture =
-				oam.FlagXFlip() ? arg.VRAM.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).mirrored() :
-					oam.FlagYFlip() ? arg.VRAM.GetTileData(TileDataTableStart_0x8000, oam.TileIndex).flipped() :
-					arg.VRAM.GetTileData(TileDataTableStart_0x8000, oam.TileIndex);
+			auto texture = arg.VRAM.GetTileData(TileDataTableStart_0x8000, oam.TileIndex);
+			if (oam.FlagXFlip()) texture = texture.mirrored();
+			if (oam.FlagYFlip()) texture = texture.flipped();
 
 			// パレット設定
 			for (int color = 1; color < 4; ++color)

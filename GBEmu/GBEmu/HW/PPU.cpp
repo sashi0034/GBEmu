@@ -128,9 +128,9 @@ namespace GBEmu::HW
 		// STAT割り込みチェック
 		const bool canSTATInterrupt =
 			(lcd.IsLYCoincidenceInterruptEnable() && lcd.LYCoincidenceFlag()) ||
-			(isModeChanged && lcd.IsOAMInterruptEnable()) ||
-			(isModeChanged && lcd.IsHBlankInterruptEnable()) ||
-			(isModeChanged && lcd.IsVBlankInterruptEnable());
+			(isModeChanged && m_mode == PPUMode::OAMSearch && lcd.IsOAMInterruptEnable()) ||
+			(isModeChanged && m_mode == PPUMode::HBlank && lcd.IsHBlankInterruptEnable()) ||
+			(isModeChanged && m_mode == PPUMode::VBlank && lcd.IsVBlankInterruptEnable());
 
 		if (canSTATInterrupt && m_canSTATInterruptBefore == false) { interrupt.SetFlag(InterruptFlags::STAT); }
 
