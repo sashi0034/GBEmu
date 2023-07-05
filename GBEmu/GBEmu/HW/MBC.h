@@ -32,7 +32,7 @@ namespace GBEmu::HW
 		uint16 m_romBankIndex = 1;
 		uint16 m_secondBankIndex{};
 		uint8 m_bankMode{};
-		bool m_ramEnableFrag{};
+		bool m_ramEnableFlag{};
 
 		uint16 romBankIndexExtended(Cartridge& cartridge) const;
 	};

@@ -61,7 +61,7 @@ namespace GBEmu::HW
 		Cartridge(const CartridgeHeader& header, const Array<uint8>& data);
 
 		CartridgeHeader& Header(){return m_header;}
-		Array<uint8>& ROM(){return m_rom;}
+		const Array<uint8>& ROM(){return m_rom;}
 		Array<uint8>& RAM(){return m_ram;}
 		uint8 Read(uint16 addr);
 		void Write(uint16 addr, uint16 data);

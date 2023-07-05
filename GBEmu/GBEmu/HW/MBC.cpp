@@ -52,7 +52,7 @@ namespace GBEmu::HW
 	{
 		if (RangeUint16(0x0000, 0x1fff).IsBetween(addr))
 		{
-			m_ramEnableFrag = (data & 0xF) == 0x0a;
+			m_ramEnableFlag = (data & 0xF) == 0x0a;
 		}
 		else if (RangeUint16(0x2000, 0x3fff).IsBetween(addr))
 		{
@@ -82,7 +82,7 @@ namespace GBEmu::HW
 		}
 		else if (RangeUint16(ExternalRamStart_0xA000, ExternalRamEnd_0xBFFF).IsBetween(addr))
 		{
-			if (m_ramEnableFrag == false) return;
+			if (m_ramEnableFlag == false) return;
 
 			cartridge.RAM()[externalRamAddress(addr)] = data;
 		}
