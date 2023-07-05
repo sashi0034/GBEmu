@@ -47,6 +47,12 @@ namespace GBEmu::HW
 		{
 			return m_interrupt.IE();
 		}
+		if (RangeUint16(EchoWorkRamStart_0xE000, EchoWorkRamEnd_0xFDFF).IsBetween(addr))
+		{
+			const uint16 offset = addr - EchoWorkRamStart_0xE000;
+			return m_memory[WorkRamBank0Start_0xC000 + offset];
+		}
+
 
 		return m_memory[addr];
 	}
@@ -72,12 +78,11 @@ namespace GBEmu::HW
 		else if (RangeUint16(WorkRamBank0Start_0xC000, WorkRamBank1End_0xDFFF).IsBetween(addr))
 		{
 			m_memory[addr] = data;
-			// m_memory[EchoWorkRamStart_0xE000 + (addr - WorkRamBank0Start_0xC000)] = data; // ミラー書き込み (これだと駄目)
 		}
 		else if (RangeUint16(EchoWorkRamStart_0xE000, EchoWorkRamEnd_0xFDFF).IsBetween(addr))
 		{
-			HWLogger::Warn(U"accessed mirrored work ram: {:04X}"_fmt(addr));
-			m_memory[addr] = data;
+			const uint16 offset = addr - EchoWorkRamStart_0xE000;
+			m_memory[WorkRamBank0Start_0xC000 + offset] = data;
 		}
 		else if (RangeUint16(IOPortsStart_0xFF00, IOPortsEnd_0xFF7F).IsBetween(addr))
 		{
