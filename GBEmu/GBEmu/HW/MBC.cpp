@@ -10,8 +10,16 @@ namespace GBEmu::HW
 {
 	using namespace MemoryAddress;
 
-	constexpr int romBankSize0x4000 = 0x4000; // 16 * 1024
-	constexpr int ramBankSize0x2000 = 0x2000;
+	constexpr int romBankSizeKiB_16 = 16;
+	constexpr int ramBankSizeKiB_8 = 8;
+	constexpr int romBankSize_0x4000 = 0x4000; // 16 * 1024
+	constexpr int ramBankSize_0x2000 = 0x2000;
+
+	String MBC::DebugProfile(const CartridgeHeader& cartridge)
+	{
+		return U"ROM BANK: {:02X}\nRAM BANK: {:02X}"_fmt(
+			cartridge.RomSizeKB / romBankSizeKiB_16, cartridge.RamSizeKB / ramBankSizeKiB_8);
+	}
 
 	uint8 MBCNone::Read(Cartridge& cartridge, uint16 addr)
 	{
@@ -30,18 +38,17 @@ namespace GBEmu::HW
 		{
 			const uint16 offset = addr - RomBank00Start_0x0000;
 			return m_bankMode == 1
-				? cartridge.ROM()[romBankIndexExtended(cartridge) * romBankSize0x4000 + offset]
+				? cartridge.ROM()[romBankIndexExtended(cartridge) * romBankSize_0x4000 + offset]
 				: cartridge.ROM()[offset];
 		}
 		else if (RangeUint16(RomBankNNStart_0x4000, RomBankNNEnd_0x7FFF).IsBetween(addr))
 		{
 			const uint16 offset = addr - RomBankNNStart_0x4000;
-			return cartridge.ROM()[romBankIndexExtended(cartridge) * romBankSize0x4000 + offset];
+			return cartridge.ROM()[romBankIndexExtended(cartridge) * romBankSize_0x4000 + offset];
 		}
 		else if (RangeUint16(ExternalRamStart_0xA000, ExternalRamEnd_0xBFFF).IsBetween(addr))
 		{
-			// TODO: 警告を入れたほうがいいかも
-			return externalRamAddress(addr) < cartridge.RAM().size() ? cartridge.RAM()[externalRamAddress(addr)] : 0x0000;
+			return cartridge.RAM()[externalRamAddress(addr)];
 		}
 
 		HWLogger::Error(U"invalid read address in MBC1: {}"_fmt(addr));
@@ -92,12 +99,19 @@ namespace GBEmu::HW
 		}
 	}
 
+	String MBC1::DebugProfile(const CartridgeHeader& cartridge)
+	{
+		return U"ROM BANK: {:02X} / {:02X}\nRAM BANK: {:02X} / {:02X}"_fmt(
+			m_romBankIndex, cartridge.RomSizeKB / romBankSizeKiB_16,
+			m_secondBankIndex, cartridge.RamSizeKB / ramBankSizeKiB_8);
+	}
+
 	int MBC1::externalRamAddress(uint16 addr) const
 	{
 		const uint16 offset = addr - ExternalRamStart_0xA000;
 		return m_bankMode == 0
 				   ? offset
-				   : m_secondBankIndex * ramBankSize0x2000 + offset;
+				   : m_secondBankIndex * ramBankSize_0x2000 + offset;
 	}
 
 	uint16 MBC1::romBankIndexExtended(Cartridge& cartridge) const

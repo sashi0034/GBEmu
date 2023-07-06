@@ -14,6 +14,7 @@ namespace GBEmu::HW
 		VRAM& GetVRAM() {return m_vram; }
 
 		Interruption& Interrupt() {return m_interrupt; }
+		const Cartridge& GetCartridge() {return m_cartridge; }
 
 		uint8 Read(HWEnv& env, uint16 addr);
 		uint16 Read16(HWEnv& env, uint16 addr);
@@ -24,7 +25,7 @@ namespace GBEmu::HW
 		void LoadCartridge(const FilePath& cartridgePath);
 		void Initialize(HWEnv& env);
 
-		void DumpIOPort(HWEnv& env, String& dest);
+		void DumpIOPort(HWEnv& env, String& dest, int padding);
 
 		static constexpr int MemorySize_0x10000 = 0x10000;
 	private:

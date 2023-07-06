@@ -39,7 +39,14 @@ namespace GBEmu::UI
 		text += U"LCDC={:04X}  STAT={:04X}\n"_fmt(lcd.LCDC(), lcd.STAT());
 		text += U"SCX =  {:02X}  SCY =  {:02X}\n"_fmt(lcd.SCX(), lcd.SCY());
 		text += U"WX  =  {:02X}  WY  =  {:02X}\n\n"_fmt(lcd.WX(), lcd.WY());
-		hw.GetMemory().DumpIOPort(hw, text);
+
+		// カートリッジ状態 (IOポートの後ろにつける)
+		const auto cartridge = hw.GetMemory().GetCartridge().DebugProfile();
+		const int cartridgeLines = static_cast<int>(cartridge.count(U"\n")) + 1;
+
+		hw.GetMemory().DumpIOPort(hw, text, cartridgeLines + 1);
+
+		text += U"\n" + cartridge;
 
 		// 緑帯描画
 		drawGreenBorder(width, height, 0);

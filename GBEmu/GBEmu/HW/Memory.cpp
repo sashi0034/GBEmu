@@ -122,9 +122,9 @@ namespace GBEmu::HW
 		m_cartridge = Cartridge(cartridgeHeader, cartridgeData);
 	}
 
-	void Memory::DumpIOPort(HWEnv& env, String& dest)
+	void Memory::DumpIOPort(HWEnv& env, String& dest, int padding)
 	{
-		for (uint16 addr = IOPortsStart_0xFF00; addr <= IOPortsEnd_0xFF7F; addr += 0x08)
+		for (uint16 addr = IOPortsStart_0xFF00; addr <= IOPortsEnd_0xFF7F - padding * 0x08; addr += 0x08)
 		{
 			dest += U"{:04X}:"_fmt(addr);
 			for (uint16 i=0; i<0x08; ++i)

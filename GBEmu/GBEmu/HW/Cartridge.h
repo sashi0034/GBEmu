@@ -65,8 +65,10 @@ namespace GBEmu::HW
 		Array<uint8>& RAM(){return m_ram;}
 		uint8 Read(uint16 addr);
 		void Write(uint16 addr, uint8 data);
+		String DebugProfile() const;
 	private:
 		CartridgeHeader m_header{};
+		String m_headerSummary{};
 		Array<uint8> m_rom{};
 		Array<uint8> m_ram{};
 		std::unique_ptr<MBC> m_mbc{};
