@@ -25,7 +25,7 @@ namespace GBEmu::HW
 		void LoadCartridge(const FilePath& cartridgePath);
 		void Initialize(HWEnv& env);
 
-		void DumpIOPort(HWEnv& env, String& dest, int padding);
+		void DumpIOPort(HWEnv& env, String& dest);
 
 		static constexpr int MemorySize_0x10000 = 0x10000;
 	private:

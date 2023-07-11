@@ -40,13 +40,7 @@ namespace GBEmu::UI
 		text += U"SCX =  {:02X}  SCY =  {:02X}\n"_fmt(lcd.SCX(), lcd.SCY());
 		text += U"WX  =  {:02X}  WY  =  {:02X}\n\n"_fmt(lcd.WX(), lcd.WY());
 
-		// カートリッジ状態 (IOポートの後ろにつける)
-		const auto cartridge = hw.GetMemory().GetCartridge().DebugProfile();
-		const int cartridgeLines = static_cast<int>(cartridge.count(U"\n")) + 1;
-
-		hw.GetMemory().DumpIOPort(hw, text, cartridgeLines + 1);
-
-		text += U"\n" + cartridge;
+		hw.GetMemory().DumpIOPort(hw, text);
 
 		// 緑帯描画
 		drawGreenBorder(width, height, 0);
@@ -62,11 +56,15 @@ namespace GBEmu::UI
 		const int audioHeight = height / 6 - paddingY * 2;
 		const int audioStart = height - audioHeight - paddingY * 1;
 
+		const int cartridgeHeight = height / 6 - paddingY * 2;
+		constexpr int cartridgeStart = paddingY;
+
 		const int playHeight = height / 3 - paddingY * 2;
-		constexpr int playStart = paddingY; // audioStart - playHeight - paddingY * 2;
+		const int playStart = cartridgeStart + cartridgeHeight + paddingY;
 
 		// 緑帯描画
 		drawGreenBorder(width, audioHeight, audioStart);
+		drawGreenBorder(width, cartridgeHeight, cartridgeStart);
 		drawGreenBorder(width, playHeight, playStart);
 
 		// CPU稼働率を表示
@@ -123,6 +121,10 @@ namespace GBEmu::UI
 				(void)font(std::get<2>(button)).drawAt(std::get<0>(button).rect.center(), hudGray);
 			}
 		}
+
+		// カートリッジ状態
+		const auto cartridge = hw.GetMemory().GetCartridge().DebugProfile();
+		(void)font(cartridge).draw(Vec2(paddingX, cartridgeStart + paddingY), hudGray);
 
 		// 音声波形描画
 		constexpr Size audioMargin{paddingX, paddingY};
