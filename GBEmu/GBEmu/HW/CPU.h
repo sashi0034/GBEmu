@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "CPUInstruction.h"
 #include "CPUInstructionCB.h"
+#include "HWLogger.h"
 #include "Memory.h"
 
 namespace GBEmu::HW
@@ -75,8 +76,8 @@ namespace GBEmu::HW
 		void SetH(uint8 value) { m_regH = value; }
 		void SetL(uint8 value) { m_regL = value; }
 
-		uint8 GetReg8(CPUReg8 kind) const;
-		void SetReg8(CPUReg8 kind, uint8 value);
+		inline uint8 GetReg8(CPUReg8 kind) const;
+		inline void SetReg8(CPUReg8 kind, uint8 value);
 
 		uint16 RegAF() const {return (m_regA << 8) | m_regF;}
 		uint16 RegBC() const {return (m_regB << 8) | m_regC;}
@@ -132,4 +133,34 @@ namespace GBEmu::HW
 		Optional<CPUCycle> handleInterrupt(HWEnv& env, Memory& memory, uint8 interruptEnable, uint8 interruptFlag, uint16 interruptAddr, int interruptBit);
 
 	};
+
+	uint8 CPU::GetReg8(CPUReg8 kind) const
+	{
+		switch (kind) {
+		case CPUReg8::A: return RegA();
+		case CPUReg8::F: return RegF();
+		case CPUReg8::B: return RegB();
+		case CPUReg8::C: return RegC();
+		case CPUReg8::D: return RegD();
+		case CPUReg8::E: return RegE();
+		case CPUReg8::H: return RegH();
+		case CPUReg8::L: return RegL();
+		default: HWLogger::Error(U"attempt to get invalid register"); return 0;
+		}
+	}
+
+	void CPU::SetReg8(CPUReg8 kind, uint8 value)
+	{
+		switch (kind) {
+		case CPUReg8::A: SetA(value); return;
+		case CPUReg8::F: SetF(value); return;
+		case CPUReg8::B: SetB(value); return;
+		case CPUReg8::C: SetC(value); return;
+		case CPUReg8::D: SetD(value); return;
+		case CPUReg8::E: SetE(value); return;
+		case CPUReg8::H: SetH(value); return;
+		case CPUReg8::L: SetL(value); return;
+		default: HWLogger::Error(U"attempt to set invalid register"); return;
+		}
+	}
 }
