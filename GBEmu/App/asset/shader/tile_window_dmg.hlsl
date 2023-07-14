@@ -28,18 +28,18 @@ cbuffer PSConstants2D : register(b0)
 	float4 g_internal;
 }
 
-struct BGAndWindowFlag128
+struct LCDCFlag128
 {
-	uint windowPriority; // 0x00
-	uint enable; // 0x20
-	uint padding_0x40; // 0x40
+	uint windowDisplayEnable; // 0x00
+	uint bgAndWindowEnable; // 0x20
+	uint objDisplayEnable; // 0x40
 	uint padding_0x60; // 0x60
 };
 
 cbuffer TileBgAndWindowqDmgCb : register(b1)
 {
 	float4 g_palette[4];
-	BGAndWindowFlag128 g_windowPriorityBuffer[5]; // 32 bit * 5 > displayHeight_144 bit
+	LCDCFlag128 g_lcdcFlagBuffer[5]; // 32 bit * 5 > displayHeight_144 bit
 }
 
 float4 PS(s3d::PSInput input) : SV_TARGET
@@ -48,9 +48,9 @@ float4 PS(s3d::PSInput input) : SV_TARGET
 
 	const float y = input.position.y;
 	const uint y32 = uint(y) & 0x1F; // y mod 32 
-	const BGAndWindowFlag128 flag = g_windowPriorityBuffer[uint(y / 32)]; 
-	const bool windowPriority = flag.windowPriority & (1 << y32);
-	const bool enable = flag.enable & (1 << y32);
+	const LCDCFlag128 flag = g_lcdcFlagBuffer[uint(y / 32)]; 
+	const bool windowPriority = flag.windowDisplayEnable & (1 << y32);
+	const bool enable = flag.bgAndWindowEnable & (1 << y32);
 	
 	const int paletteIndex = (uint)(color0.x) * 2 + (uint)(color0.y);
 	color0 = g_palette[(uint)(enable) * paletteIndex];

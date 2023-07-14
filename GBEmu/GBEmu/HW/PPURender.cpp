@@ -22,7 +22,12 @@ namespace GBEmu::HW::PPURender
 	struct TileBgAndWindowDmgCb
 	{
 		Float4 palette[4];
-		BGAndWindowFlag128 windowPriorityBuffer[BGAndWindowFlagBufferSize_5];
+		LCDCFlag128 windowPriorityBuffer[LCDCFlagBufferSize_5];
+	};
+
+	struct LCDCFlagsCb
+	{
+		LCDCFlag128 windowPriorityBuffer[LCDCFlagBufferSize_5];
 	};
 
 	struct TileObjDmgCb
@@ -40,8 +45,8 @@ namespace GBEmu::HW::PPURender
 		for (int i=0; i<4; ++i) tileCb->palette[i] = colorPaletteDMG()[arg.LCD.BGPaletteData(i)].toFloat4();
 
 		// WindowEnable情報を設定
-		for (int i=0; i<arg.WindowEnableBuffer.size(); ++i)
-			tileCb->windowPriorityBuffer[i] = arg.WindowEnableBuffer[i];
+		for (int i=0; i<arg.LCDCFlagBuffer.size(); ++i)
+			tileCb->windowPriorityBuffer[i] = arg.LCDCFlagBuffer[i];
 
 		// 転送
 		Graphics2D::SetPSConstantBuffer(1, tileCb);
@@ -68,7 +73,7 @@ namespace GBEmu::HW::PPURender
 		tileCb->palette[3] = Float4(0, 0, 0, 0);
 
 		// WindowEnable情報を設定
-		for (int i=0; i<arg.WindowEnableBuffer.size(); ++i) tileCb->windowPriorityBuffer[i] = arg.WindowEnableBuffer[i];
+		for (int i=0; i<arg.LCDCFlagBuffer.size(); ++i) tileCb->windowPriorityBuffer[i] = arg.LCDCFlagBuffer[i];
 
 		// 転送
 		Graphics2D::SetPSConstantBuffer(1, tileCb);
@@ -207,6 +212,12 @@ namespace GBEmu::HW::PPURender
 		tileCb->palette[0] = Float4(0, 0, 0, 0);
 
 		const Array<OAMData> oamList = correctOAM(arg.Env, arg.Memory, arg.LCD);
+
+		// LCDCフラグ情報転送
+		ConstantBuffer<LCDCFlagsCb> lcdcFlagsCb{};
+		for (int i=0; i<arg.LCDCFlagBuffer.size(); ++i)
+			lcdcFlagsCb->windowPriorityBuffer[i] = arg.LCDCFlagBuffer[i];
+		Graphics2D::SetPSConstantBuffer(2, lcdcFlagsCb);
 
 		// 末尾から描画していく
 		for (int i=oamList.size()-1; i>=0; --i)

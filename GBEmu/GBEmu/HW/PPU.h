@@ -56,7 +56,7 @@ namespace GBEmu::HW
 		RenderTexture m_renderBuffer{HWParam::DisplayResolution, ColorF{1.0}};
 		RenderTexture m_objMaskBuffer{HWParam::DisplayResolution, TextureFormat::R16G16_Float};
 
-		std::array<BGAndWindowFlag128, BGAndWindowFlagBufferSize_5> m_bgAndWindowFlagBuffer{};
+		std::array<LCDCFlag128, LCDCFlagBufferSize_5> m_lcdcFlagBuffer{};
 
 		PPUAddressLYDiff m_bgAndWindowTileDataDiff{};
 		PPUAddressLYDiff m_bgTileMapDisplayDiff{};

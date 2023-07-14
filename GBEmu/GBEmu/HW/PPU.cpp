@@ -75,26 +75,36 @@ namespace GBEmu::HW
 		const int ly = lcd.LY(); // 0~143
 		if (ly < 0 || 144 <= ly) return;
 
-		auto&& buffer = m_bgAndWindowFlagBuffer[ly / 32];
+		auto&& buffer = m_lcdcFlagBuffer[ly / 32];
 
 		// 0x00
 		if (lcd.IsWindowDisplayEnable() && ly >= lcd.WY())
 		{
-			buffer.WindowPriority |= 1 << (ly % 32);
+			buffer.WindowDisplayEnable |= 1 << (ly % 32);
 		}
 		else
 		{
-			buffer.WindowPriority &= ~(1 << (ly % 32));
+			buffer.WindowDisplayEnable &= ~(1 << (ly % 32));
 		}
 
 		// 0x20
 		if (lcd.IsBGAndWindowEnable())
 		{
-			buffer.Enable |= 1 << (ly % 32);
+			buffer.BGAndWindowEnable |= 1 << (ly % 32);
 		}
 		else
 		{
-			buffer.Enable &= ~(1 << (ly % 32));
+			buffer.BGAndWindowEnable &= ~(1 << (ly % 32));
+		}
+
+		// 0x40
+		if (lcd.IsOBJDisplayEnable())
+		{
+			buffer.OBJDisplayEnable |= 1 << (ly % 32);
+		}
+		else
+		{
+			buffer.OBJDisplayEnable &= ~(1 << (ly % 32));
 		}
 	}
 
@@ -151,7 +161,7 @@ namespace GBEmu::HW
 
 		const auto renderBGAndWindowArgs = PPURenderBGAndWindowArgs{
 			env, memory, lcd, vram,
-			m_bgAndWindowFlagBuffer,
+			m_lcdcFlagBuffer,
 			m_bgAndWindowTileDataDiff,
 			m_bgTileMapDisplayDiff,
 			m_windowTileMapDisplayDiff
@@ -164,7 +174,7 @@ namespace GBEmu::HW
 		PPURender::RenderObjMaskFromBGAndWindow(renderBGAndWindowArgs, m_objMaskBuffer);
 
 		// OBJ描画
-		PPURender::RenderOBJCompletely({env, memory, lcd, vram, m_objMaskBuffer});
+		PPURender::RenderOBJCompletely({env, memory, lcd, vram, m_lcdcFlagBuffer, m_objMaskBuffer});
 	}
 
 	void PPU::updateLY(LCD& lcd, int dotCycle)

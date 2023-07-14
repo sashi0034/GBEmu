@@ -7,18 +7,18 @@ namespace GBEmu::HW
 	class PPUAddressLYDiff;
 	class LCD;
 	class VRAM;
-	struct BGAndWindowFlag128;
+	struct LCDCFlag128;
 
 	// 16 byte struct (128 bit)
 	// padding needed for HLSL with 16 byte alignment
-	struct BGAndWindowFlag128
+	struct LCDCFlag128
 	{
-		uint32 WindowPriority; // 0x00
-		uint32 Enable; // 0x20
-		uint32 padding_0x40; // 0x40
+		uint32 WindowDisplayEnable; // 0x00
+		uint32 BGAndWindowEnable; // 0x20
+		uint32 OBJDisplayEnable; // 0x40
 		uint32 padding_0x60; // 0x60
 	};
-	static constexpr int BGAndWindowFlagBufferSize_5 = 5; // displayHeight_144 / 32 + 1
+	static constexpr int LCDCFlagBufferSize_5 = 5; // displayHeight_144 / 32 + 1
 
 	struct PPURenderBGAndWindowArgs
 	{
@@ -26,7 +26,7 @@ namespace GBEmu::HW
 		Memory& Memory;
 		const LCD& LCD;
 		VRAM& VRAM;
-		const std::array<BGAndWindowFlag128, BGAndWindowFlagBufferSize_5>& WindowEnableBuffer;
+		const std::array<LCDCFlag128, LCDCFlagBufferSize_5>& LCDCFlagBuffer;
 		const PPUAddressLYDiff& BGAndWindowTileDataDiff;
 		const PPUAddressLYDiff& BGTileMapDisplayDiff;
 		const PPUAddressLYDiff& WindowTileMapDisplayDiff;
@@ -38,6 +38,7 @@ namespace GBEmu::HW
 		Memory& Memory;
 		const LCD& LCD;
 		VRAM& VRAM;
+		const std::array<LCDCFlag128, LCDCFlagBufferSize_5>& LCDCFlagBuffer;
 		const RenderTexture& ObjMask;
 	};
 
