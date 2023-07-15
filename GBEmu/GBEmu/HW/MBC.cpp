@@ -15,6 +15,8 @@ namespace GBEmu::HW
 	constexpr int romBankSize_0x4000 = 0x4000; // 16 * 1024
 	constexpr int ramBankSize_0x2000 = 0x2000;
 
+	constexpr int bigRomSizeKiB_1024 = 1024;
+
 	String MBC::DebugProfile(const CartridgeHeader& cartridge)
 	{
 		return U"ROM BANK: {:02X}\nRAM BANK: {:02X}"_fmt(
@@ -37,14 +39,26 @@ namespace GBEmu::HW
 		if (RangeUint16(RomBank00Start_0x0000, RomBank00End_0x3FFF).IsBetween(addr))
 		{
 			const uint16 offset = addr - RomBank00Start_0x0000;
-			return m_bankMode == 1
-				? cartridge.ROM()[romBankIndexExtended(cartridge) * romBankSize_0x4000 + offset]
-				: cartridge.ROM()[offset];
+			if (m_bankMode == 1)
+			{
+				return cartridge.Header().RomSizeKB < bigRomSizeKiB_1024
+					? cartridge.ROM()[offset]
+					// 大容量ROMでは、モード1で$20, $40, $60にアクセス可能
+					: cartridge.ROM()[(m_secondBankIndex << 5) * romBankSize_0x4000 + offset];
+			}
+			else
+			{
+				return cartridge.ROM()[offset];
+			}
 		}
 		else if (RangeUint16(RomBankNNStart_0x4000, RomBankNNEnd_0x7FFF).IsBetween(addr))
 		{
 			const uint16 offset = addr - RomBankNNStart_0x4000;
-			return cartridge.ROM()[romBankIndexExtended(cartridge) * romBankSize_0x4000 + offset];
+			const int bankIndex = cartridge.Header().RomSizeKB < bigRomSizeKiB_1024
+				? m_romBankIndex
+				// 大容量ROMでは、5ビット目からRAMバンクバン番号の影響を受ける
+				: (m_secondBankIndex << 5) | m_romBankIndex;
+			return cartridge.ROM()[bankIndex * romBankSize_0x4000 + offset];
 		}
 		else if (RangeUint16(ExternalRamStart_0xA000, ExternalRamEnd_0xBFFF).IsBetween(addr))
 		{
@@ -112,15 +126,5 @@ namespace GBEmu::HW
 		return m_bankMode == 0
 				   ? offset
 				   : m_secondBankIndex * ramBankSize_0x2000 + offset;
-	}
-
-	uint16 MBC1::romBankIndexExtended(Cartridge& cartridge) const
-	{
-		// 256KiB以下のカートでは、16個の16KiBバンクすべてが4byte(uint16)で指定可能であるが、
-		// 5bit以上のバンクが必要な大型カードリッジはセカンダリバンクレジスタを使用して上位2bitを補う
-
-		return cartridge.Header().RomSizeKB >= 512 // TODO: 1024?
-			? (m_secondBankIndex << 5) | m_romBankIndex
-			: m_romBankIndex;
 	}
 }

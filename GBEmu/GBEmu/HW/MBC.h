@@ -27,7 +27,6 @@ namespace GBEmu::HW
 	public:
 		MBC1() = default;
 		~MBC1() override = default;
-		int externalRamAddress(uint16 addr) const;
 		uint8 Read(Cartridge& cartridge, uint16 addr) override;
 		void Write(Cartridge& cartridge, uint16 addr, uint8 data) override;
 		String DebugProfile(const CartridgeHeader& cartridge) override;
@@ -37,6 +36,6 @@ namespace GBEmu::HW
 		uint8 m_bankMode{};
 		bool m_ramEnableFlag{};
 
-		uint16 romBankIndexExtended(Cartridge& cartridge) const;
+		int externalRamAddress(uint16 addr) const;
 	};
 }
