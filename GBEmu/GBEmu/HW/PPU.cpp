@@ -129,6 +129,9 @@ namespace GBEmu::HW
 
 	void PPU::checkInterrupt(HWEnv& env, LCD& lcd, bool isModeChanged)
 	{
+		// LCD無効の時は割り込みが入らない
+		if (lcd.IsLCDDisplayEnable() == false) return;
+
 		auto&& memory = env.GetMemory();
 		auto&& interrupt = memory.Interrupt();
 
