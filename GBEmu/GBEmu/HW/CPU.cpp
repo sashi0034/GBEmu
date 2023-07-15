@@ -50,6 +50,12 @@ namespace GBEmu::HW
 		// 命令フェッチ
 		auto fetched = FetchInstruction(env);
 
+		constexpr auto infoCPUInstruction = InformCPUInstruction();
+		constexpr auto infoCPUInstructionCB = InformCPUInstructionCB();
+		const auto opInfo = fetched.IsPrefixedCB
+			? infoCPUInstructionCB[fetched.Code]
+			: infoCPUInstruction[fetched.Code];
+
 		// 実行イベントを通知
 		env.Debugger().OnExecuteInstruction(*this, fetched);
 
@@ -63,7 +69,7 @@ namespace GBEmu::HW
 			// 分岐命令など
 			? opResult.NextPC.value()
 			// 基本は、実行した命令長を進める
-			: m_pc + opResult.ByteLength;
+			: m_pc + opInfo.ByteLength;
 
 		// 算術演算のときはフラグ更新
 		if (opResult.Flag.has_value()) m_regF = applyFlagZNHC(m_regF, opResult.Flag.value());

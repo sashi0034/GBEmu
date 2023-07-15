@@ -20,7 +20,7 @@ namespace GBEmu::HW::CPUOperation
 	[[nodiscard]]
 	inline CPUOperationResult operateNOP()
 	{
-		return CPUOperationResult(1, 4);
+		return CPUOperationResult(4);
 	}
 
 	[[nodiscard]]
@@ -28,7 +28,7 @@ namespace GBEmu::HW::CPUOperation
 	{
 		// TODO: STOPの対応を検討
 		// env.GetCPU().SetState(CPUState::Stopped);
-		return CPUOperationResult(2, 4);
+		return CPUOperationResult(4);
 	}
 
 	[[nodiscard]]
@@ -50,7 +50,7 @@ namespace GBEmu::HW::CPUOperation
 			assert(false);
 		}
 
-		return CPUOperationResult(3, 12);
+		return CPUOperationResult(12);
 	}
 
 	[[nodiscard]]
@@ -76,7 +76,7 @@ namespace GBEmu::HW::CPUOperation
 			assert(false);
 		}
 
-		return CPUOperationResult(2, 8);
+		return CPUOperationResult(8);
 	}
 
 	[[nodiscard]]
@@ -86,9 +86,9 @@ namespace GBEmu::HW::CPUOperation
 		auto&& memory = env.GetMemory();
 		const uint8 a = cpu.RegA();
 
-		const auto cycle4 = CPUOperationResult(1, 4);
-		const auto cycle8 = CPUOperationResult(1, 8);
-		const auto cycle16 = CPUOperationResult(3, 16);
+		const auto cycle4 = CPUOperationResult(4);
+		const auto cycle8 = CPUOperationResult(8);
+		const auto cycle16 = CPUOperationResult(16);
 
 		switch (instr)
 		{
@@ -126,7 +126,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const auto cycle4 = CPUOperationResult(1, 4);
+		const auto cycle4 = CPUOperationResult(4);
 
 		using std::pair;
 		const pair<uint8, CPUOperationResult> dispatch =
@@ -138,15 +138,15 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::LD_A_H_0x7C ? pair{cpu.RegH(), cycle4} :
 			instr == ci::LD_A_L_0x7D ? pair{cpu.RegL(), cycle4} :
 			instr == ci::LD_A_mBC_0x0A ?
-				pair{memory.Read(env, cpu.RegBC()), CPUOperationResult(1, 8)} :
+				pair{memory.Read(env, cpu.RegBC()), CPUOperationResult(8)} :
 			instr == ci::LD_A_mDE_0x1A ?
-				pair{memory.Read(env, cpu.RegDE()), CPUOperationResult(1, 8)} :
+				pair{memory.Read(env, cpu.RegDE()), CPUOperationResult(8)} :
 			instr == ci::LD_A_mHL_0x7E ?
-				pair{memory.Read(env, cpu.RegHL()), CPUOperationResult(1, 8)} :
+				pair{memory.Read(env, cpu.RegHL()), CPUOperationResult(8)} :
 			instr == ci::LD_A_ma16_0xFA ?
-				pair{memory.Read(env, memory.Read16(env, cpu.PC() + 1)), CPUOperationResult(3, 16)} :
+				pair{memory.Read(env, memory.Read16(env, cpu.PC() + 1)), CPUOperationResult(16)} :
 			instr == ci::LD_A_d8_0x3E ?
-				pair{memory.Read(env, cpu.PC() + 1), CPUOperationResult(2, 8)} :
+				pair{memory.Read(env, cpu.PC() + 1), CPUOperationResult(8)} :
 			std::pair{undefined8(), CPUOperationResult::Invalid()};
 
 		cpu.SetA(dispatch.first);
@@ -159,9 +159,9 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const auto result_1_4 = CPUOperationResult(1, 4);
-		const auto result_1_8 = CPUOperationResult(1, 8);
-		const auto result_2_12 = CPUOperationResult(2, 12);
+		const auto result_1_4 = CPUOperationResult(4);
+		const auto result_1_8 = CPUOperationResult(8);
+		const auto result_2_12 = CPUOperationResult(12);
 
 		switch (instr)
 		{
@@ -240,7 +240,7 @@ namespace GBEmu::HW::CPUOperation
 		// 0x08
 		const uint16 a16 = env.GetMemory().Read16(env, env.GetCPU().PC() + 1);
 		env.GetMemory().Write16(env, a16, env.GetCPU().SP());
-		return CPUOperationResult(3, 20);
+		return CPUOperationResult(20);
 	}
 
 	[[nodiscard]]
@@ -250,7 +250,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		env.GetMemory().Write(env, cpu.RegHL(), cpu.RegA());
 		cpu.SetHL(cpu.RegHL() + 1);
-		return CPUOperationResult(1, 8);
+		return CPUOperationResult(8);
 	}
 
 	[[nodiscard]]
@@ -260,7 +260,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		cpu.SetA(env.GetMemory().Read(env, cpu.RegHL()));
 		cpu.SetHL(cpu.RegHL() + 1);
-		return CPUOperationResult(1, 8);
+		return CPUOperationResult(8);
 	}
 
 	[[nodiscard]]
@@ -270,7 +270,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		env.GetMemory().Write(env, cpu.RegHL(), cpu.RegA());
 		cpu.SetHL(cpu.RegHL() - 1);
-		return CPUOperationResult(1, 8);
+		return CPUOperationResult(8);
 	}
 
 	[[nodiscard]]
@@ -280,7 +280,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		cpu.SetA(env.GetMemory().Read(env, cpu.RegHL()));
 		cpu.SetHL(cpu.RegHL() - 1);
-		return CPUOperationResult(1, 8);
+		return CPUOperationResult(8);
 	}
 
 	[[nodiscard]]
@@ -289,7 +289,7 @@ namespace GBEmu::HW::CPUOperation
 		// 0xE2
 		auto&& cpu = env.GetCPU();
 		env.GetMemory().Write(env, addr_0xFF00 + cpu.RegC(), cpu.RegA());
-		return CPUOperationResult(1, 8);
+		return CPUOperationResult(8);
 	}
 
 	[[nodiscard]]
@@ -298,7 +298,7 @@ namespace GBEmu::HW::CPUOperation
 		// 0xF2
 		auto&& cpu = env.GetCPU();
 		cpu.SetA(env.GetMemory().Read(env, addr_0xFF00 + cpu.RegC()));
-		return CPUOperationResult(1, 8);
+		return CPUOperationResult(8);
 	}
 
 	[[nodiscard]]
@@ -307,7 +307,7 @@ namespace GBEmu::HW::CPUOperation
 		// 0xF9
 		auto&& cpu = env.GetCPU();
 		cpu.SetSP(cpu.RegHL());
-		return CPUOperationResult(1, 8);
+		return CPUOperationResult(8);
 	}
 
 	[[nodiscard]]
@@ -322,7 +322,7 @@ namespace GBEmu::HW::CPUOperation
 
 		cpu.SetHL(cpu.SP() + r8);
 
-		return CPUOperationResult::ByCalc(2, 12, CPUOperationZNHC{false, false, h, c});
+		return CPUOperationResult::ByCalc(12, CPUOperationZNHC{false, false, h, c});
 	}
 
 	[[nodiscard]]
@@ -336,10 +336,10 @@ namespace GBEmu::HW::CPUOperation
 		{
 		case ci::LDH_a8_A_0xE0:
 			memory.Write(env, addr_0xFF00 + a8, cpu.RegA());
-			return CPUOperationResult(2, 12);
+			return CPUOperationResult(12);
 		case ci::LDH_A_a8_0xF0:
 			cpu.SetA(memory.Read(env, addr_0xFF00 + a8));
-			return CPUOperationResult(2, 12);
+			return CPUOperationResult(12);
 		default:
 			assert(false);
 			return CPUOperationResult::Invalid();
@@ -350,7 +350,7 @@ namespace GBEmu::HW::CPUOperation
 	inline CPUOperationResult operateINC_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
-		const auto result = CPUOperationResult(1, 8);
+		const auto result = CPUOperationResult(8);
 
 		switch (instr)
 		{
@@ -392,7 +392,7 @@ namespace GBEmu::HW::CPUOperation
 
 		const bool z = cpu.GetReg8(target) == 0;
 
-		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{z, false, h, cpu.FlagC()});
+		return CPUOperationResult::ByCalc(4, CPUOperationZNHC{z, false, h, cpu.FlagC()});
 	}
 
 	[[nodiscard]]
@@ -407,14 +407,14 @@ namespace GBEmu::HW::CPUOperation
 		env.GetMemory().Write(env, cpu.RegHL(), after);
 		const bool z = after == 0;
 
-		return CPUOperationResult::ByCalc(1,12, CPUOperationZNHC{z, false, h, cpu.FlagC()});
+		return CPUOperationResult::ByCalc(12,CPUOperationZNHC{z, false, h, cpu.FlagC()});
 	}
 
 	[[nodiscard]]
 	inline CPUOperationResult operateDEC_XX(HWEnv& env, CPUInstruction instr)
 	{
 		auto&& cpu = env.GetCPU();
-		const auto result = CPUOperationResult(1, 8);
+		const auto result = CPUOperationResult(8);
 
 		switch (instr)
 		{
@@ -454,7 +454,7 @@ namespace GBEmu::HW::CPUOperation
 
 		const bool z = cpu.GetReg8(target) == 0;
 
-		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{z, true, h, cpu.FlagC()});
+		return CPUOperationResult::ByCalc(4, CPUOperationZNHC{z, true, h, cpu.FlagC()});
 	}
 
 	[[nodiscard]]
@@ -470,7 +470,7 @@ namespace GBEmu::HW::CPUOperation
 		env.GetMemory().Write(env, cpu.RegHL(), after);
 		const bool z = after == 0;
 
-		return CPUOperationResult::ByCalc(1, 12, CPUOperationZNHC{z, true, h, cpu.FlagC()});
+		return CPUOperationResult::ByCalc(12, CPUOperationZNHC{z, true, h, cpu.FlagC()});
 	}
 
 	[[nodiscard]]
@@ -482,7 +482,7 @@ namespace GBEmu::HW::CPUOperation
 		cpu.SetA((cpu.RegA() << 1) | bit7);
 
 		// 資料によっては、Z: Set if result is zero となっているのものあるのでしっかりテストしたい
-		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{false, false, false, bit7 == 1});
+		return CPUOperationResult::ByCalc(4, CPUOperationZNHC{false, false, false, bit7 == 1});
 	}
 
 	[[nodiscard]]
@@ -497,7 +497,7 @@ namespace GBEmu::HW::CPUOperation
 		cpu.SetA((cpu.RegA() << 1) | carry);
 
 		// 資料によっては、Z: Set if result is zero となっているのものあるのでしっかりテストしたい
-		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{false, false, false, bit7 == 1});
+		return CPUOperationResult::ByCalc(4, CPUOperationZNHC{false, false, false, bit7 == 1});
 	}
 
 	[[nodiscard]]
@@ -511,7 +511,7 @@ namespace GBEmu::HW::CPUOperation
 
 		cpu.SetA((cpu.RegA() >> 1) | (carry << 7));
 
-		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{false, false, false, bit0 == 0b1});
+		return CPUOperationResult::ByCalc(4, CPUOperationZNHC{false, false, false, bit0 == 0b1});
 	}
 
 	[[nodiscard]]
@@ -524,7 +524,7 @@ namespace GBEmu::HW::CPUOperation
 		cpu.SetA((cpu.RegA() >> 1) | (bit0 << 7));
 
 		// 資料によっては、Z: Set if result is zero となっているのものあるのでしっかりテストしたい
-		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{false, false, false, c});
+		return CPUOperationResult::ByCalc(4, CPUOperationZNHC{false, false, false, c});
 	}
 
 	[[nodiscard]]
@@ -544,7 +544,7 @@ namespace GBEmu::HW::CPUOperation
 
 		cpu.SetHL(cpu.RegHL() + src);
 
-		return CPUOperationResult::ByCalc(1, 8, CPUOperationZNHC{cpu.FlagZ(), false, h, c});
+		return CPUOperationResult::ByCalc(8, CPUOperationZNHC{cpu.FlagZ(), false, h, c});
 	}
 
 	[[nodiscard]]
@@ -553,7 +553,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const auto result_1_4 = CPUOperationResult(1, 4);
+		const auto result_1_4 = CPUOperationResult(4);
 
 		using std::pair;
 		pair<const uint8, CPUOperationResult> dispatch =
@@ -565,9 +565,9 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::ADD_A_H_0x84 ? pair{ cpu.RegH(), result_1_4 } :
 			instr == ci::ADD_A_L_0x85 ? pair{ cpu.RegL(), result_1_4 } :
 			instr == ci::ADD_A_mHL_0x86 ?
-				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(1, 8) } :
+				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(8) } :
 			instr == ci::ADD_A_d8_0xC6 ?
-				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(2, 8) } :
+				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(8) } :
 			pair{ undefined8(), CPUOperationResult::Invalid() };
 
 		const uint8 add = dispatch.first;
@@ -597,7 +597,7 @@ namespace GBEmu::HW::CPUOperation
 
 		cpu.SetSP(cpu.SP() + r8);
 
-		return CPUOperationResult::ByCalc(2, 16, CPUOperationZNHC{false, false, h, c});
+		return CPUOperationResult::ByCalc(16, CPUOperationZNHC{false, false, h, c});
 	}
 
 	[[nodiscard]]
@@ -606,7 +606,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const auto result_1_4 = CPUOperationResult(1, 4);
+		const auto result_1_4 = CPUOperationResult(4);
 
 		using std::pair;
 		pair<const uint8, CPUOperationResult> dispatch =
@@ -618,9 +618,9 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::ADC_A_H_0x8C ? pair{ cpu.RegH(), result_1_4 } :
 			instr == ci::ADC_A_L_0x8D ? pair{ cpu.RegL(), result_1_4 } :
 			instr == ci::ADC_A_mHL_0x8E ?
-				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(1, 8) } :
+				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(8) } :
 			instr == ci::ADC_A_d8_0xCE ?
-				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(2, 8) } :
+				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(8) } :
 			pair{ undefined8(), CPUOperationResult::Invalid() };
 
 		const uint8 add = dispatch.first;
@@ -642,7 +642,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const auto result_1_4 = CPUOperationResult(1, 4);
+		const auto result_1_4 = CPUOperationResult(4);
 
 		using std::pair;
 		pair<const uint8, CPUOperationResult> dispatch =
@@ -654,9 +654,9 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::SUB_A_H_0x94 ? pair{ cpu.RegH(), result_1_4 } :
 			instr == ci::SUB_A_L_0x95 ? pair{ cpu.RegL(), result_1_4 } :
 			instr == ci::SUB_A_mHL_0x96 ?
-				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(1, 8) } :
+				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(8) } :
 			instr == ci::SUB_A_d8_0xD6 ?
-				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(2, 8) } :
+				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(8) } :
 			pair{ undefined8(), CPUOperationResult::Invalid() };
 
 		const uint8 sub = dispatch.first;
@@ -677,7 +677,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const auto result_1_4 = CPUOperationResult(1, 4);
+		const auto result_1_4 = CPUOperationResult(4);
 
 		using std::pair;
 		pair<const uint8, CPUOperationResult> dispatch =
@@ -689,9 +689,9 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::SBC_A_H_0x9C ? pair{ cpu.RegH(), result_1_4 } :
 			instr == ci::SBC_A_L_0x9D ? pair{ cpu.RegL(), result_1_4 } :
 			instr == ci::SBC_A_mHL_0x9E ?
-				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(1, 8) } :
+				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(8) } :
 			instr == ci::SBC_A_d8_0xDE ?
-				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(2, 8) } :
+				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(8) } :
 			pair{ undefined8(), CPUOperationResult::Invalid() };
 
 		const uint8 sub = dispatch.first;
@@ -713,7 +713,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const auto result_1_4 = CPUOperationResult(1, 4);
+		const auto result_1_4 = CPUOperationResult(4);
 
 		using std::pair;
 		pair<const uint8, CPUOperationResult> dispatch =
@@ -725,9 +725,9 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::AND_A_H_0xA4 ? pair{ cpu.RegH(), result_1_4 } :
 			instr == ci::AND_A_L_0xA5 ? pair{ cpu.RegL(), result_1_4 } :
 			instr == ci::AND_A_mHL_0xA6 ?
-				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(1, 8) } :
+				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(8) } :
 			instr == ci::AND_A_d8_0xE6 ?
-				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(2, 8) } :
+				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(8) } :
 			pair{ undefined8(), CPUOperationResult::Invalid() };
 
 		cpu.SetA(cpu.RegA() & dispatch.first);
@@ -743,7 +743,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const auto result_1_4 = CPUOperationResult(1, 4);
+		const auto result_1_4 = CPUOperationResult(4);
 
 		using std::pair;
 		pair<const uint8, CPUOperationResult> dispatch =
@@ -755,9 +755,9 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::XOR_A_H_0xAC ? pair{ cpu.RegH(), result_1_4 } :
 			instr == ci::XOR_A_L_0xAD ? pair{ cpu.RegL(), result_1_4 } :
 			instr == ci::XOR_A_mHL_0xAE ?
-				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(1, 8) } :
+				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(8) } :
 			instr == ci::XOR_A_d8_0xEE ?
-				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(2, 8) } :
+				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(8) } :
 			pair{ undefined8(), CPUOperationResult::Invalid() };
 
 		cpu.SetA(cpu.RegA() ^ dispatch.first);
@@ -773,7 +773,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const auto result_1_4 = CPUOperationResult(1, 4);
+		const auto result_1_4 = CPUOperationResult(4);
 
 		using std::pair;
 		pair<const uint8, CPUOperationResult> dispatch =
@@ -785,9 +785,9 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::OR_A_H_0xB4 ? pair{ cpu.RegH(), result_1_4 } :
 			instr == ci::OR_A_L_0xB5 ? pair{ cpu.RegL(), result_1_4 } :
 			instr == ci::OR_A_mHL_0xB6 ?
-				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(1, 8) } :
+				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(8) } :
 			instr == ci::OR_A_d8_0xF6 ?
-				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(2, 8) } :
+				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(8) } :
 			pair{ undefined8(), CPUOperationResult::Invalid() };
 
 		cpu.SetA(cpu.RegA() | dispatch.first);
@@ -803,7 +803,7 @@ namespace GBEmu::HW::CPUOperation
 		auto&& cpu = env.GetCPU();
 		auto&& memory = env.GetMemory();
 
-		const auto result_1_4 = CPUOperationResult(1, 4);
+		const auto result_1_4 = CPUOperationResult(4);
 
 		using std::pair;
 		pair<const uint8, CPUOperationResult> dispatch =
@@ -815,9 +815,9 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::CP_A_H_0xBC ? pair{ cpu.RegH(), result_1_4 } :
 			instr == ci::CP_A_L_0xBD ? pair{ cpu.RegL(), result_1_4 } :
 			instr == ci::CP_A_mHL_0xBE ?
-				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(1, 8) } :
+				pair{ memory.Read(env, cpu.RegHL()), CPUOperationResult(8) } :
 			instr == ci::CP_A_d8_0xFE ?
-				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(2, 8) } :
+				pair{ memory.Read(env, cpu.PC() + 1), CPUOperationResult(8) } :
 			pair{ undefined8(), CPUOperationResult::Invalid() };
 
 		const uint8 a = cpu.RegA();
@@ -845,11 +845,11 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::JR_C_r8_0x38 ? cpu.FlagC() :
 			undefined8();
 
-		constexpr int bytes = 2;
+		constexpr int bytes = InformCPUInstruction()[static_cast<int>(ci::JR_r8_0x18)].ByteLength; // 2
 		return toJump
 			// 命令実行時では、このPCは命令実行前のPCを指しているので、nextPCにはbyteLengthを足しておく
-			? CPUOperationResult::ByJump(bytes, 12, cpu.PC() + bytes + r8)
-			: CPUOperationResult(bytes, 8);
+			? CPUOperationResult::ByJump(12, cpu.PC() + bytes + r8)
+			: CPUOperationResult(8);
 	}
 
 	[[nodiscard]]
@@ -866,8 +866,8 @@ namespace GBEmu::HW::CPUOperation
 			undefined8();
 
 		return toJump
-			? CPUOperationResult::ByJump(3, 16, env.GetMemory().Read16(env, cpu.PC() + 1))
-			: CPUOperationResult(3, 12);
+			? CPUOperationResult::ByJump(16, env.GetMemory().Read16(env, cpu.PC() + 1))
+			: CPUOperationResult(12);
 	}
 
 	[[nodiscard]]
@@ -875,7 +875,7 @@ namespace GBEmu::HW::CPUOperation
 	{
 		// 0xE9
 		auto&& cpu = env.GetCPU();
-		return CPUOperationResult::ByJump(1, 4, cpu.RegHL());
+		return CPUOperationResult::ByJump(4, cpu.RegHL());
 	}
 
 	[[nodiscard]]
@@ -892,17 +892,17 @@ namespace GBEmu::HW::CPUOperation
 			instr == ci::CALL_C_a16_0xDC ? cpu.FlagC() :
 			undefined8();
 
-		constexpr uint16 bytes = 3;
+		constexpr int bytes = InformCPUInstruction()[static_cast<int>(ci::CALL_a16_0xCD)].ByteLength; // 3
 		if (toCall)
 		{
 			memory.Write(env, cpu.SP() - 1, (cpu.PC() + bytes) >> 8);
 			memory.Write(env, cpu.SP() - 2, (cpu.PC() + bytes) & 0xFF);
 			cpu.SetSP(cpu.SP() - 2);
-			return CPUOperationResult::ByJump(bytes, 24, env.GetMemory().Read16(env, cpu.PC() + 1));
+			return CPUOperationResult::ByJump(24, env.GetMemory().Read16(env, cpu.PC() + 1));
 		}
 		else
 		{
-			return CPUOperationResult(bytes, 12);
+			return CPUOperationResult(12);
 		}
 	}
 
@@ -927,7 +927,7 @@ namespace GBEmu::HW::CPUOperation
 		memory.Write(env, cpu.SP() - 1, (cpu.PC() + bytes) >> 8);
 		memory.Write(env, cpu.SP() - 2, (cpu.PC() + bytes) & 0xFF);
 		cpu.SetSP(cpu.SP() - 2);
-		return CPUOperationResult::ByJump(bytes, 16, addr);
+		return CPUOperationResult::ByJump(16, addr);
 	}
 
 	[[nodiscard]]
@@ -948,7 +948,7 @@ namespace GBEmu::HW::CPUOperation
 		memory.Write(env, cpu.SP() - 2, data2);
 		cpu.SetSP(cpu.SP() - 2);
 
-		return CPUOperationResult(1, 16);
+		return CPUOperationResult(16);
 	}
 
 	[[nodiscard]]
@@ -974,11 +974,11 @@ namespace GBEmu::HW::CPUOperation
 		{
 			const uint16 sp = cpu.SP();
 			cpu.SetSP(sp + 2);
-			return CPUOperationResult::ByJump(1, cycleOnRet, env.GetMemory().Read16(env, sp));
+			return CPUOperationResult::ByJump(cycleOnRet, env.GetMemory().Read16(env, sp));
 		}
 		else
 		{
-			return CPUOperationResult(1, cycleOnSkip);
+			return CPUOperationResult(cycleOnSkip);
 		}
 	}
 
@@ -990,7 +990,7 @@ namespace GBEmu::HW::CPUOperation
 		const uint16 sp = cpu.SP();
 		cpu.SetSP(sp + 2);
 		cpu.RequestEnableIME();
-		return CPUOperationResult::ByJump(1, 16, env.GetMemory().Read16(env, sp));
+		return CPUOperationResult::ByJump(16, env.GetMemory().Read16(env, sp));
 	}
 
 	[[nodiscard]]
@@ -1016,7 +1016,7 @@ namespace GBEmu::HW::CPUOperation
 
 		cpu.SetSP(cpu.SP() + 2);
 
-		return CPUOperationResult(1, 12);
+		return CPUOperationResult(12);
 	}
 
 	[[nodiscard]]
@@ -1027,7 +1027,7 @@ namespace GBEmu::HW::CPUOperation
 
 		cpu.SetA(cpu.RegA() ^ 0xFF);
 
-		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{cpu.FlagZ(), true, true, cpu.FlagC()});
+		return CPUOperationResult::ByCalc(4, CPUOperationZNHC{cpu.FlagZ(), true, true, cpu.FlagC()});
 	}
 
 	[[nodiscard]]
@@ -1035,7 +1035,7 @@ namespace GBEmu::HW::CPUOperation
 	{
 		// 0x37
 		auto&& cpu = env.GetCPU();
-		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{cpu.FlagZ(), false, false, true});
+		return CPUOperationResult::ByCalc(4, CPUOperationZNHC{cpu.FlagZ(), false, false, true});
 	}
 
 	[[nodiscard]]
@@ -1043,7 +1043,7 @@ namespace GBEmu::HW::CPUOperation
 	{
 		// 0x3F
 		auto&& cpu = env.GetCPU();
-		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{cpu.FlagZ(), false, false, !cpu.FlagC()});
+		return CPUOperationResult::ByCalc(4, CPUOperationZNHC{cpu.FlagZ(), false, false, !cpu.FlagC()});
 	}
 
 	[[nodiscard]]
@@ -1052,7 +1052,7 @@ namespace GBEmu::HW::CPUOperation
 		// 0xF3
 		auto&& cpu = env.GetCPU();
 		cpu.DisableIME();
-		return CPUOperationResult(1, 4);
+		return CPUOperationResult(4);
 	}
 
 	[[nodiscard]]
@@ -1061,7 +1061,7 @@ namespace GBEmu::HW::CPUOperation
 		// 0xFB
 		auto&& cpu = env.GetCPU();
 		cpu.RequestEnableIME();
-		return CPUOperationResult(1, 4);
+		return CPUOperationResult(4);
 	}
 
 	[[nodiscard]]
@@ -1087,7 +1087,7 @@ namespace GBEmu::HW::CPUOperation
 		cpu.SetA(result & 0xFF);
 		const bool z = cpu.RegA() == 0;
 
-		return CPUOperationResult::ByCalc(1, 4, CPUOperationZNHC{z, cpu.FlagN(), false, c});
+		return CPUOperationResult::ByCalc(4, CPUOperationZNHC{z, cpu.FlagN(), false, c});
 	}
 
 	[[nodiscard]]
@@ -1117,7 +1117,7 @@ namespace GBEmu::HW::CPUOperation
 			}
 		}
 
-		return CPUOperationResult(1, 4);
+		return CPUOperationResult(4);
 	}
 
 
@@ -1385,6 +1385,6 @@ namespace GBEmu::HW::CPUOperation
 		}
 
 		HWLogger::Error(U"missed instruction unprefixed: {:X}"_fmt(static_cast<uint8>(instr)));
-		return CPUOperationResult(0, 0);
+		return CPUOperationResult(0);
 	}
 }

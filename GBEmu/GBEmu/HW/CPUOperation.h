@@ -14,45 +14,42 @@ namespace GBEmu::HW
 
 	struct CPUOperationResult
 	{
-		uint8 ByteLength;
 		uint8 CycleCount;
 		Optional<CPUOperationZNHC> Flag;
 		Optional<uint16> NextPC;
 
 		[[nodiscard]]
-		CPUOperationResult(uint8 byteLength, uint8 cycleCount) :
-			ByteLength(byteLength),
+		CPUOperationResult(uint8 cycleCount) :
 			CycleCount(cycleCount),
 			Flag(none),
 			NextPC(none)
 		{}
 
 		[[nodiscard]]
-		static CPUOperationResult ByCalc(uint8 byteLength, uint8 cycleCount, CPUOperationZNHC flag)
+		static CPUOperationResult ByCalc(uint8 cycleCount, CPUOperationZNHC flag)
 		{
-			return CPUOperationResult(byteLength, cycleCount, flag, none);
+			return CPUOperationResult(cycleCount, flag, none);
 		}
 
 		[[nodiscard]]
-		static CPUOperationResult ByJump(uint8 byteLength, uint8 cycleCount, uint16 nextPC)
+		static CPUOperationResult ByJump(uint8 cycleCount, uint16 nextPC)
 		{
-			return CPUOperationResult(byteLength, cycleCount, none, nextPC);
+			return CPUOperationResult(cycleCount, none, nextPC);
 		}
 
 		[[nodiscard]]
 		static CPUOperationResult Invalid()
 		{
-			return CPUOperationResult(0, 0);
+			return CPUOperationResult(0);
 		}
 
 		[[nodiscard]]
 		static CPUOperationResult Default()
 		{
-			return CPUOperationResult(1, 4);
+			return CPUOperationResult(4);
 		}
 	private:
-		CPUOperationResult(uint8 byteLength, uint8 cycleCount, const Optional<CPUOperationZNHC>& flag, const Optional<uint16>& nextPC) :
-			ByteLength(byteLength),
+		CPUOperationResult(uint8 cycleCount, const Optional<CPUOperationZNHC>& flag, const Optional<uint16>& nextPC) :
 			CycleCount(cycleCount),
 			Flag(flag),
 			NextPC(nextPC){}
