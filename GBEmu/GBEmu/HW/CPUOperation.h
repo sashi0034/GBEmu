@@ -19,7 +19,7 @@ namespace GBEmu::HW
 		Optional<uint16> NextPC;
 
 		[[nodiscard]]
-		CPUOperationResult(uint8 cycleCount) :
+		explicit CPUOperationResult(uint8 cycleCount) :
 			CycleCount(cycleCount),
 			Flag(none),
 			NextPC(none)
