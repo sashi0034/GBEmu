@@ -2,6 +2,8 @@
 A game Boy emulator written in C++
 
 - ✅ Passed all [CPU instructions tests](https://github.com/retrio/gb-test-roms/tree/master/cpu_instrs)
+- ✅ Video (So-so screen renders properly. With certain specs, 60 FPS can be maintained even in debug mode.)
+- ✅ Audio (It sounds fine.)
 
 ## Build
 
