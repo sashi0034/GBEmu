@@ -9,7 +9,7 @@ A game Boy emulator written in C++
 
 - Visual Studio 2022
 
-- [Siv3D](https://github.com/Siv3D/OpenSiv3D) = 0.6.10
+- [Siv3D](https://github.com/Siv3D/OpenSiv3D) 0.6.10
 
 ## References
   
