@@ -7,7 +7,7 @@ A game Boy emulator written in C++
 
 - Visual Studio 2022
 
-- [Siv3D](https://github.com/Siv3D/OpenSiv3D) >= 0.6.10
+- [Siv3D](https://github.com/Siv3D/OpenSiv3D) = 0.6.10
 
 ## References
   
@@ -24,8 +24,8 @@ A game Boy emulator written in C++
 
 <img src="https://github.com/sashi0034/GBEmu/assets/82739042/2338a340-3469-48e6-9362-9d47105607bb" width="800">
 
-## Not implemented
+## Todo
 
   * GCB mode
-  * Many MBCs except MBC1
-  * Support for Mac / Linus (Only HLSL shaders have been written yet, GLSL shaders and other areas are not yet complete.)
+  * Many MBCs (So far, only MBC1 has been implemented yet)
+  * OpenGL Support (Only HLSL shaders for DirectX have been written yet, GLSL shaders and other areas are not yet complete.)
