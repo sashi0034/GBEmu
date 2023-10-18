@@ -62,10 +62,13 @@ namespace GBEmu::HW
 		Cartridge() = default;
 		Cartridge(const CartridgeHeader& header, const Array<uint8>& data);
 
-		CartridgeHeader& Header() { return m_header; }
-		const Array<uint8>& ROM() { return m_rom; }
+		const CartridgeHeader& Header() const { return m_header; }
+		const Array<uint8>& ROM() const { return m_rom; }
+
 		Array<uint8>& RAM() { return m_ram; }
-		uint8 Read(uint16 addr);
+		const Array<uint8>& RAM() const { return m_ram; }
+
+		uint8 Read(uint16 addr) const;
 		void Write(uint16 addr, uint8 data);
 		String DebugProfile() const;
 

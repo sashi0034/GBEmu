@@ -23,7 +23,7 @@ namespace GBEmu::HW
 			cartridge.RomSizeKB / romBankSizeKiB_16, cartridge.RamSizeKB / ramBankSizeKiB_8);
 	}
 
-	uint8 MBCNone::Read(Cartridge& cartridge, uint16 addr)
+	uint8 MBCNone::Read(const Cartridge& cartridge, uint16 addr) const
 	{
 		return cartridge.ROM()[addr];
 	}
@@ -34,7 +34,7 @@ namespace GBEmu::HW
 		HWLogger::Error(U"invalid write at {:04X} in MBC0"_fmt(addr));
 	}
 
-	uint8 MBC1::Read(Cartridge& cartridge, uint16 addr)
+	uint8 MBC1::Read(const Cartridge& cartridge, uint16 addr) const
 	{
 		if (RangeUint16(RomBank00Start_0x0000, RomBank00End_0x3FFF).IsBetween(addr))
 		{

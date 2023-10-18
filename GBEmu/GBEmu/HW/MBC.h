@@ -10,7 +10,7 @@ namespace GBEmu::HW
 	{
 	public:
 		virtual ~MBC() = default;
-		virtual uint8 Read(Cartridge& cartridge, uint16 addr) { return 0; };
+		virtual uint8 Read(const Cartridge& cartridge, uint16 addr) const { return 0; };
 		virtual void Write(Cartridge& cartridge, uint16 addr, uint8 data) { return; };
 		virtual String DebugProfile(const CartridgeHeader& cartridge);
 	};
@@ -18,7 +18,7 @@ namespace GBEmu::HW
 	class MBCNone : public MBC
 	{
 	public:
-		uint8 Read(Cartridge& cartridge, uint16 addr) override;
+		uint8 Read(const Cartridge& cartridge, uint16 addr) const override;
 		void Write(Cartridge& cartridge, uint16 addr, uint8 data) override;
 	};
 
@@ -27,7 +27,7 @@ namespace GBEmu::HW
 	public:
 		MBC1() = default;
 		~MBC1() override = default;
-		uint8 Read(Cartridge& cartridge, uint16 addr) override;
+		uint8 Read(const Cartridge& cartridge, uint16 addr) const override;
 		void Write(Cartridge& cartridge, uint16 addr, uint8 data) override;
 		String DebugProfile(const CartridgeHeader& cartridge) override;
 

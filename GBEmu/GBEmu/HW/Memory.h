@@ -11,12 +11,12 @@ namespace GBEmu::HW
 	class Memory
 	{
 	public:
-		VRAM& GetVRAM() {return m_vram; }
+		VRAM& GetVRAM() { return m_vram; }
 
-		Interruption& Interrupt() {return m_interrupt; }
-		const Cartridge& GetCartridge() {return m_cartridge; }
+		Interruption& Interrupt() { return m_interrupt; }
+		const Cartridge& GetCartridge() { return m_cartridge; }
 
-		uint8 Read(HWEnv& env, uint16 addr);
+		uint8 Read(const HWEnv& env, uint16 addr) const;
 		uint16 Read16(HWEnv& env, uint16 addr);
 
 		void Write(HWEnv& env, uint16 addr, uint8 data);
@@ -28,6 +28,7 @@ namespace GBEmu::HW
 		void DumpIOPort(HWEnv& env, String& dest) const;
 
 		static constexpr int MemorySize_0x10000 = 0x10000;
+
 	private:
 		std::array<uint8, MemorySize_0x10000> m_memory{};
 		VRAM m_vram{};
@@ -35,7 +36,7 @@ namespace GBEmu::HW
 
 		Interruption m_interrupt{};
 
-		uint8 readIO(HWEnv& env, uint16 addr) const;
+		uint8 readIO(const HWEnv& env, uint16 addr) const;
 		void writeIO(HWEnv& env, uint16 addr, uint8 data);
 		void transferDMA(HWEnv& env, uint8 data);
 

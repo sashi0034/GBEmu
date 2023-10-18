@@ -39,7 +39,7 @@ namespace GBEmu::HW
 		m_mbc = getMBC(m_header);
 	}
 
-	uint8 Cartridge::Read(uint16 addr)
+	uint8 Cartridge::Read(uint16 addr) const
 	{
 		return m_mbc->Read(*this, addr);
 	}

@@ -26,7 +26,7 @@ namespace GBEmu::HW
 	class HWEnv;
 	using namespace MemoryAddress;
 
-	uint8 Memory::Read(HWEnv& env, uint16 addr)
+	uint8 Memory::Read(const HWEnv& env, uint16 addr) const
 	{
 		// https://github.com/pokemium/gb-docs-ja/blob/main/cartridge/mbc/mbc1.md
 
@@ -135,7 +135,7 @@ namespace GBEmu::HW
 		}
 	}
 
-	uint8 Memory::readIO(HWEnv& env, uint16 addr) const
+	uint8 Memory::readIO(const HWEnv& env, uint16 addr) const
 	{
 		// 0xFF00 - 0xFF7F
 		switch (addr)
