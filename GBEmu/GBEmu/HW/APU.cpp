@@ -11,9 +11,10 @@ namespace GBEmu::HW
 	APU::APU() :
 		m_stream(std::make_shared<APUStream>()),
 		m_audio(Audio(m_stream))
-	{}
+	{
+	}
 
-	void APU::UpdateFrame(HWEnv& env)
+	void APU::UpdateFrame(HWEnv& env) const
 	{
 		// NR52電源制御
 		if (m_powerControl == false)
@@ -54,11 +55,12 @@ namespace GBEmu::HW
 		constexpr int sufficientBuffer = HWParam::AudioSampleRate / 2;
 		if (m_stream->BufferRemaining() > sufficientBuffer) return;
 
-		const std::array<int, 4> amplitudes {
+		const std::array<int, 4> amplitudes{
 			m_ch1.Amplitude() * m_ch1.ChannelEnabled(),
 			m_ch2.Amplitude() * m_ch2.ChannelEnabled(),
 			m_ch3.Amplitude() * m_ch3.ChannelEnabled(),
-			m_ch4.Amplitude() * m_ch4.ChannelEnabled() };
+			m_ch4.Amplitude() * m_ch4.ChannelEnabled()
+		};
 
 		// マスターボリューム
 		const float leftVol = ((m_channelControl >> 4) & 0b111) + 1;
@@ -68,7 +70,7 @@ namespace GBEmu::HW
 		// DAC (digital-to-analog convertor)
 		float leftAmp = 0;
 		float rightAmp = 0;
-		for (int i=0; i<4; i++)
+		for (int i = 0; i < 4; i++)
 		{
 			// 0の入力は-1.0を生成し、15の入力は+1.0を生成といった比例した出力にする
 			const float amp = (amplitudes[i] / 7.5f) - 1.0f;

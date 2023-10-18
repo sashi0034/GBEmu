@@ -122,12 +122,12 @@ namespace GBEmu::HW
 		m_cartridge = Cartridge(cartridgeHeader, cartridgeData);
 	}
 
-	void Memory::DumpIOPort(HWEnv& env, String& dest)
+	void Memory::DumpIOPort(HWEnv& env, String& dest) const
 	{
 		for (uint16 addr = IOPortsStart_0xFF00; addr <= IOPortsEnd_0xFF7F; addr += 0x08)
 		{
 			dest += U"{:04X}:"_fmt(addr);
-			for (uint16 i=0; i<0x08; ++i)
+			for (uint16 i = 0; i < 0x08; ++i)
 			{
 				dest += U" {:02X}"_fmt(readIO(env, addr + i));
 			}
@@ -135,7 +135,7 @@ namespace GBEmu::HW
 		}
 	}
 
-	uint8 Memory::readIO(HWEnv& env, uint16 addr)
+	uint8 Memory::readIO(HWEnv& env, uint16 addr) const
 	{
 		// 0xFF00 - 0xFF7F
 		switch (addr)
@@ -195,11 +195,21 @@ namespace GBEmu::HW
 		case NR52_0xFF26:
 			return env.GetAPU().ReadAddr<NR52_0xFF26>();
 
-		case WaveRamStart_0xFF30 + 0x0: case WaveRamStart_0xFF30 + 0x1: case WaveRamStart_0xFF30 + 0x2:
-		case WaveRamStart_0xFF30 + 0x3: case WaveRamStart_0xFF30 + 0x4: case WaveRamStart_0xFF30 + 0x5:
-		case WaveRamStart_0xFF30 + 0x6: case WaveRamStart_0xFF30 + 0x7: case WaveRamStart_0xFF30 + 0x8:
-		case WaveRamStart_0xFF30 + 0x9: case WaveRamStart_0xFF30 + 0xA: case WaveRamStart_0xFF30 + 0xB:
-		case WaveRamStart_0xFF30 + 0xC: case WaveRamStart_0xFF30 + 0xD: case WaveRamStart_0xFF30 + 0xE:
+		case WaveRamStart_0xFF30 + 0x0:
+		case WaveRamStart_0xFF30 + 0x1:
+		case WaveRamStart_0xFF30 + 0x2:
+		case WaveRamStart_0xFF30 + 0x3:
+		case WaveRamStart_0xFF30 + 0x4:
+		case WaveRamStart_0xFF30 + 0x5:
+		case WaveRamStart_0xFF30 + 0x6:
+		case WaveRamStart_0xFF30 + 0x7:
+		case WaveRamStart_0xFF30 + 0x8:
+		case WaveRamStart_0xFF30 + 0x9:
+		case WaveRamStart_0xFF30 + 0xA:
+		case WaveRamStart_0xFF30 + 0xB:
+		case WaveRamStart_0xFF30 + 0xC:
+		case WaveRamStart_0xFF30 + 0xD:
+		case WaveRamStart_0xFF30 + 0xE:
 		case WaveRamEnd_0xFF3F:
 			return env.GetAPU().ReadWaveRam(addr);
 
@@ -240,98 +250,136 @@ namespace GBEmu::HW
 		switch (addr)
 		{
 		case JOYP_0xFF00:
-			env.GetJoypad().WriteJOYP(data); break;
+			env.GetJoypad().WriteJOYP(data);
+			break;
 
 		case DIV_0xFF04:
-			env.GetTimer().WriteAddr<DIV_0xFF04>(data); break;
+			env.GetTimer().WriteAddr<DIV_0xFF04>(data);
+			break;
 		case TIMA_0xFF05:
-			env.GetTimer().WriteAddr<TIMA_0xFF05>(data); break;
+			env.GetTimer().WriteAddr<TIMA_0xFF05>(data);
+			break;
 		case TAC_0xFF07:
-			env.GetTimer().WriteAddr<TAC_0xFF07>(data); break;
+			env.GetTimer().WriteAddr<TAC_0xFF07>(data);
+			break;
 		case TMA_0xFF06:
-			env.GetTimer().WriteAddr<TMA_0xFF06>(data); break;
+			env.GetTimer().WriteAddr<TMA_0xFF06>(data);
+			break;
 
 		case NR10_0xFF10:
-			env.GetAPU().WriteAddr<NR10_0xFF10>(data); break;
+			env.GetAPU().WriteAddr<NR10_0xFF10>(data);
+			break;
 		case NR11_0xFF11:
-			env.GetAPU().WriteAddr<NR11_0xFF11>(data); break;
+			env.GetAPU().WriteAddr<NR11_0xFF11>(data);
+			break;
 		case NR12_0xFF12:
-			env.GetAPU().WriteAddr<NR12_0xFF12>(data); break;
+			env.GetAPU().WriteAddr<NR12_0xFF12>(data);
+			break;
 		case NR13_0xFF13:
-			env.GetAPU().WriteAddr<NR13_0xFF13>(data); break;
+			env.GetAPU().WriteAddr<NR13_0xFF13>(data);
+			break;
 		case NR14_0xFF14:
-			env.GetAPU().WriteAddr<NR14_0xFF14>(data); break;
+			env.GetAPU().WriteAddr<NR14_0xFF14>(data);
+			break;
 		case NR21_0xFF16:
-			env.GetAPU().WriteAddr<NR21_0xFF16>(data); break;
+			env.GetAPU().WriteAddr<NR21_0xFF16>(data);
+			break;
 		case NR22_0xFF17:
-			env.GetAPU().WriteAddr<NR22_0xFF17>(data); break;
+			env.GetAPU().WriteAddr<NR22_0xFF17>(data);
+			break;
 		case NR23_0xFF18:
-			env.GetAPU().WriteAddr<NR23_0xFF18>(data); break;
+			env.GetAPU().WriteAddr<NR23_0xFF18>(data);
+			break;
 		case NR24_0xFF19:
-			env.GetAPU().WriteAddr<NR24_0xFF19>(data); break;
+			env.GetAPU().WriteAddr<NR24_0xFF19>(data);
+			break;
 		case NR30_0xFF1A:
-			env.GetAPU().WriteAddr<NR30_0xFF1A>(data); break;
+			env.GetAPU().WriteAddr<NR30_0xFF1A>(data);
+			break;
 		case NR31_0xFF1B:
-			env.GetAPU().WriteAddr<NR31_0xFF1B>(data); break;
+			env.GetAPU().WriteAddr<NR31_0xFF1B>(data);
+			break;
 		case NR32_0xFF1C:
-			env.GetAPU().WriteAddr<NR32_0xFF1C>(data); break;
+			env.GetAPU().WriteAddr<NR32_0xFF1C>(data);
+			break;
 		case NR33_0xFF1D:
-			env.GetAPU().WriteAddr<NR33_0xFF1D>(data); break;
+			env.GetAPU().WriteAddr<NR33_0xFF1D>(data);
+			break;
 		case NR34_0xFF1E:
-			env.GetAPU().WriteAddr<NR34_0xFF1E>(data); break;
+			env.GetAPU().WriteAddr<NR34_0xFF1E>(data);
+			break;
 		case NR41_0xFF20:
-			env.GetAPU().WriteAddr<NR41_0xFF20>(data); break;
+			env.GetAPU().WriteAddr<NR41_0xFF20>(data);
+			break;
 		case NR42_0xFF21:
-			env.GetAPU().WriteAddr<NR42_0xFF21>(data); break;
+			env.GetAPU().WriteAddr<NR42_0xFF21>(data);
+			break;
 		case NR43_0xFF22:
-			env.GetAPU().WriteAddr<NR43_0xFF22>(data); break;
+			env.GetAPU().WriteAddr<NR43_0xFF22>(data);
+			break;
 		case NR44_0xFF23:
-			env.GetAPU().WriteAddr<NR44_0xFF23>(data); break;
+			env.GetAPU().WriteAddr<NR44_0xFF23>(data);
+			break;
 		case NR50_0xFF24:
-			env.GetAPU().WriteAddr<NR50_0xFF24>(data); break;
+			env.GetAPU().WriteAddr<NR50_0xFF24>(data);
+			break;
 		case NR51_0xFF25:
-			env.GetAPU().WriteAddr<NR51_0xFF25>(data); break;
+			env.GetAPU().WriteAddr<NR51_0xFF25>(data);
+			break;
 		case NR52_0xFF26:
-			env.GetAPU().WriteAddr<NR52_0xFF26>(data); break;
-
+			env.GetAPU().WriteAddr<NR52_0xFF26>(data);
+			break;
+		// @formatter:off
 		case WaveRamStart_0xFF30 + 0x0: case WaveRamStart_0xFF30 + 0x1: case WaveRamStart_0xFF30 + 0x2:
 		case WaveRamStart_0xFF30 + 0x3: case WaveRamStart_0xFF30 + 0x4: case WaveRamStart_0xFF30 + 0x5:
 		case WaveRamStart_0xFF30 + 0x6: case WaveRamStart_0xFF30 + 0x7: case WaveRamStart_0xFF30 + 0x8:
 		case WaveRamStart_0xFF30 + 0x9: case WaveRamStart_0xFF30 + 0xA: case WaveRamStart_0xFF30 + 0xB:
 		case WaveRamStart_0xFF30 + 0xC: case WaveRamStart_0xFF30 + 0xD: case WaveRamStart_0xFF30 + 0xE:
-		case WaveRamEnd_0xFF3F:
-			env.GetAPU().WriteWaveRam(addr, data); break;
-
+		case WaveRamEnd_0xFF3F: // @formatter:on
+			env.GetAPU().WriteWaveRam(addr, data);
+			break;
 		case LCDC_0xFF40:
-			env.GetPPU().GetLCD().WriteAddr<LCDC_0xFF40>(data); break;
+			env.GetPPU().GetLCD().WriteAddr<LCDC_0xFF40>(data);
+			break;
 		case STAT_0xFF41:
-			env.GetPPU().GetLCD().WriteAddr<STAT_0xFF41>(data); break;
+			env.GetPPU().GetLCD().WriteAddr<STAT_0xFF41>(data);
+			break;
 		case BGP_0xFF47:
-			env.GetPPU().GetLCD().WriteAddr<BGP_0xFF47>(data); break;
+			env.GetPPU().GetLCD().WriteAddr<BGP_0xFF47>(data);
+			break;
 		case OBP0_0xFF48:
-			env.GetPPU().GetLCD().WriteAddr<OBP0_0xFF48>(data); break;
+			env.GetPPU().GetLCD().WriteAddr<OBP0_0xFF48>(data);
+			break;
 		case OBP1_0xFF49:
-			env.GetPPU().GetLCD().WriteAddr<OBP1_0xFF49>(data); break;
+			env.GetPPU().GetLCD().WriteAddr<OBP1_0xFF49>(data);
+			break;
 		case SCX_0xFF43:
-			env.GetPPU().GetLCD().WriteAddr<SCX_0xFF43>(data); break;
+			env.GetPPU().GetLCD().WriteAddr<SCX_0xFF43>(data);
+			break;
 		case SCY_0xFF42:
-			env.GetPPU().GetLCD().WriteAddr<SCY_0xFF42>(data); break;
+			env.GetPPU().GetLCD().WriteAddr<SCY_0xFF42>(data);
+			break;
 		case LY_0xFF44:
-			env.GetPPU().GetLCD().WriteAddr<LY_0xFF44>(data); break;
+			env.GetPPU().GetLCD().WriteAddr<LY_0xFF44>(data);
+			break;
 		case LYC_0xFF45:
-			env.GetPPU().GetLCD().WriteAddr<LYC_0xFF45>(data); break;
+			env.GetPPU().GetLCD().WriteAddr<LYC_0xFF45>(data);
+			break;
 		case WX_0xFF4B:
-			env.GetPPU().GetLCD().WriteAddr<WX_0xFF4B>(data); break;
+			env.GetPPU().GetLCD().WriteAddr<WX_0xFF4B>(data);
+			break;
 		case WY_0xFF4A:
-			env.GetPPU().GetLCD().WriteAddr<WY_0xFF4A>(data); break;
-
+			env.GetPPU().GetLCD().WriteAddr<WY_0xFF4A>(data);
+			break;
 		case IF_0xFF0F:
-			m_interrupt.SetIF(data); break;
-
+			m_interrupt.SetIF(data);
+			break;
 		case DMA_0xFF46:
-			transferDMA(env, data); break;
+			transferDMA(env, data);
+			break;
 		default:
-			m_memory[addr] = data; break;
+			m_memory[addr] = data;
+			break;
 		}
 	}
 
@@ -393,25 +441,27 @@ namespace GBEmu::HW
 
 		constexpr int maxTitleLength = 15;
 		header.Title = cartridgeData
-			.slice(CartridgeAddress::TitleStart, maxTitleLength)
-			.map([](uint8 data){return static_cast<char32_t>(data);})
-			.join(U""_sv, U""_sv, U""_sv);
+		               .slice(CartridgeAddress::TitleStart, maxTitleLength)
+		               .map([](uint8 data) { return static_cast<char32_t>(data); })
+		               .join(U""_sv, U""_sv, U""_sv);
 
 		header.Type = static_cast<CartridgeType>(cartridgeData[CartridgeAddress::CartridgeType]);
 
 
-		uint8 romInfo = cartridgeData[CartridgeAddress::RomSize];
+		const uint8 romInfo = cartridgeData[CartridgeAddress::RomSize];
 		// カートリッジの ROM サイズを指定します。通常は「32KB shl N」として計算されます。
 		header.RomSizeKB = 32 << romInfo;
 
 		const uint8 ramInfo = cartridgeData[CartridgeAddress::RamSize];
 
+		// @formatter:off
 		header.RamSizeKB =
 			ramInfo == 0x00 ? 0 :
 			ramInfo == 0x01 ? 2 :
 			ramInfo == 0x02 ? 8 :
 			ramInfo == 0x03 ? 32 :
 			0xff;
+		// @formatter:on
 
 		HWLogger::Assert(header.RamSizeKB != 0xff, U"invalid ram info in cartridge");
 

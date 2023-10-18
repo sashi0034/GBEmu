@@ -6,6 +6,7 @@ namespace GBEmu::UI
 	{
 	public:
 		void Draw();
+
 	private:
 		int m_count{};
 	};

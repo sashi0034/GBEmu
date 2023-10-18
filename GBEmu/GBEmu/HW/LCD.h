@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "MemoryAddress.h"
+#include "GBEmu/Util/Utils.h"
 
 namespace GBEmu::HW
 {
@@ -47,8 +48,11 @@ namespace GBEmu::HW
 		uint8 LCDC() const;
 		uint8 STAT() const;
 
-		template <uint16 addr> uint8 ReadAddr() const;
-		template <uint16 addr> void WriteAddr(uint8 data);
+		template <uint16 addr>
+		uint8 ReadAddr() const;
+		template <uint16 addr>
+		void WriteAddr(uint8 data);
+
 	private:
 		uint8 m_lcdc{};
 		uint8 m_stat{};
@@ -68,17 +72,18 @@ namespace GBEmu::HW
 	{
 		using namespace MemoryAddress;
 
-		if constexpr (addr==LCDC_0xFF40) return m_lcdc;
-		else if constexpr (addr==STAT_0xFF41) return m_stat;
-		else if constexpr (addr==BGP_0xFF47) return m_bgp;
-		else if constexpr (addr==OBP0_0xFF48) return m_obp0;
-		else if constexpr (addr==OBP1_0xFF49) return m_obp1;
-		else if constexpr (addr==SCX_0xFF43) return m_scx;
-		else if constexpr (addr==SCY_0xFF42) return m_scy;
-		else if constexpr (addr==LY_0xFF44) return m_ly;
-		else if constexpr (addr==LYC_0xFF45) return m_lyc;
-		else if constexpr (addr==WX_0xFF4B) return m_wx;
-		else if constexpr (addr==WY_0xFF4A) return m_wy;
+		if constexpr (addr == LCDC_0xFF40) return m_lcdc;
+		else if constexpr (addr == STAT_0xFF41) return m_stat;
+		else if constexpr (addr == BGP_0xFF47) return m_bgp;
+		else if constexpr (addr == OBP0_0xFF48) return m_obp0;
+		else if constexpr (addr == OBP1_0xFF49) return m_obp1;
+		else if constexpr (addr == SCX_0xFF43) return m_scx;
+		else if constexpr (addr == SCY_0xFF42) return m_scy;
+		else if constexpr (addr == LY_0xFF44) return m_ly;
+		else if constexpr (addr == LYC_0xFF45) return m_lyc;
+		else if constexpr (addr == WX_0xFF4B) return m_wx;
+		else if constexpr (addr == WY_0xFF4A) return m_wy;
+		else static_assert(Util::AlwaysFalseValue<addr>);
 	}
 
 	template <uint16 addr>
@@ -86,17 +91,17 @@ namespace GBEmu::HW
 	{
 		using namespace MemoryAddress;
 
-		if constexpr (addr==LCDC_0xFF40) m_lcdc = data;
-		else if constexpr (addr==STAT_0xFF41) m_stat = data;
-		else if constexpr (addr==BGP_0xFF47) m_bgp = data;
-		else if constexpr (addr==OBP0_0xFF48) m_obp0 = data;
-		else if constexpr (addr==OBP1_0xFF49) m_obp1 = data;
-		else if constexpr (addr==SCX_0xFF43) m_scx = data;
-		else if constexpr (addr==SCY_0xFF42) m_scy = data;
-		else if constexpr (addr==LY_0xFF44) m_ly = data;
-		else if constexpr (addr==LYC_0xFF45) m_lyc = data;
-		else if constexpr (addr==WX_0xFF4B) m_wx = data;
-		else if constexpr (addr==WY_0xFF4A) m_wy = data;
-		else {assert(false); }
+		if constexpr (addr == LCDC_0xFF40) m_lcdc = data;
+		else if constexpr (addr == STAT_0xFF41) m_stat = data;
+		else if constexpr (addr == BGP_0xFF47) m_bgp = data;
+		else if constexpr (addr == OBP0_0xFF48) m_obp0 = data;
+		else if constexpr (addr == OBP1_0xFF49) m_obp1 = data;
+		else if constexpr (addr == SCX_0xFF43) m_scx = data;
+		else if constexpr (addr == SCY_0xFF42) m_scy = data;
+		else if constexpr (addr == LY_0xFF44) m_ly = data;
+		else if constexpr (addr == LYC_0xFF45) m_lyc = data;
+		else if constexpr (addr == WX_0xFF4B) m_wx = data;
+		else if constexpr (addr == WY_0xFF4A) m_wy = data;
+		else static_assert(Util::AlwaysFalseValue<addr>);
 	}
 }

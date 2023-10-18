@@ -24,7 +24,7 @@ namespace GBEmu::HW
 	{
 		const uint8 data = m_waveRam[m_waveRamOffset / 2];
 		const uint8 wave = (data >> ((1 - (m_waveRamOffset % 2)) * 4)) & 0xF;
-		constexpr int shift[4] = { 4, 0, 1, 2 };
+		constexpr int shift[4] = {4, 0, 1, 2};
 		return wave >> shift[m_waveOutputLevel];
 	}
 

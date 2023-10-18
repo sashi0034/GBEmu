@@ -13,8 +13,8 @@ namespace GBEmu::HW
 	String CPUInstructionProperty::ToString() const
 	{
 		return IsPrefixedCB
-			? Unicode::Widen(magic_enum::enum_name(static_cast<CPUInstructionCB>(Code)))
-			: Unicode::Widen(magic_enum::enum_name(static_cast<CPUInstruction>(Code)));
+			       ? Unicode::Widen(magic_enum::enum_name(static_cast<CPUInstructionCB>(Code)))
+			       : Unicode::Widen(magic_enum::enum_name(static_cast<CPUInstruction>(Code)));
 	}
 
 	CPU::CPU()
@@ -53,8 +53,8 @@ namespace GBEmu::HW
 		constexpr auto infoCPUInstruction = InformCPUInstruction();
 		constexpr auto infoCPUInstructionCB = InformCPUInstructionCB();
 		const auto opInfo = fetched.IsPrefixedCB
-			? infoCPUInstructionCB[fetched.Code]
-			: infoCPUInstruction[fetched.Code];
+			                    ? infoCPUInstructionCB[fetched.Code]
+			                    : infoCPUInstruction[fetched.Code];
 
 		// 実行イベントを通知
 		env.Debugger().OnExecuteInstruction(*this, fetched);
@@ -62,14 +62,14 @@ namespace GBEmu::HW
 		// 命令実行
 		const auto opResult =
 			fetched.IsPrefixedCB
-              ? CPUOperationCB::OperateInstructionCB(env, static_cast<CPUInstructionCB>(fetched.Code))
-              : CPUOperation::OperateInstruction(env, static_cast<CPUInstruction>(fetched.Code));
+				? CPUOperationCB::OperateInstructionCB(env, static_cast<CPUInstructionCB>(fetched.Code))
+				: CPUOperation::OperateInstruction(env, static_cast<CPUInstruction>(fetched.Code));
 
 		m_pc = opResult.NextPC.has_value()
-			// 分岐命令など
-			? opResult.NextPC.value()
-			// 基本は、実行した命令長を進める
-			: m_pc + opInfo.ByteLength;
+			       // 分岐命令など
+			       ? opResult.NextPC.value()
+			       // 基本は、実行した命令長を進める
+			       : m_pc + opInfo.ByteLength;
 
 		// 算術演算のときはフラグ更新
 		if (opResult.Flag.has_value()) m_regF = applyFlagZNHC(m_regF, opResult.Flag.value());
@@ -90,7 +90,7 @@ namespace GBEmu::HW
 			return none;
 		}
 
-		static const std::array<uint16, 5> interruptAddress{
+		static constexpr std::array<uint16, 5> interruptAddress{
 			InterruptVBlank_0x0040,
 			InterruptSTAT_0x0048,
 			InterruptTimer_0x0050,
@@ -98,7 +98,7 @@ namespace GBEmu::HW
 			InterruptJoypad_0x0060
 		};
 
-		for (int i=0; i<interruptAddress.size(); ++i)
+		for (int i = 0; i < interruptAddress.size(); ++i)
 		{
 			auto result =
 				handleInterrupt(env, memory, interruptEnable, interruptFlag, interruptAddress[i], i);

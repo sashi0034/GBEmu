@@ -42,9 +42,9 @@ namespace GBEmu::HW
 			if (m_bankMode == 1)
 			{
 				return cartridge.Header().RomSizeKB < bigRomSizeKiB_1024
-					? cartridge.ROM()[offset]
-					// 大容量ROMでは、モード1で$20, $40, $60にアクセス可能
-					: cartridge.ROM()[(m_secondBankIndex << 5) * romBankSize_0x4000 + offset];
+				       ? cartridge.ROM()[offset]
+				       // 大容量ROMでは、モード1で$20, $40, $60にアクセス可能
+				       : cartridge.ROM()[(m_secondBankIndex << 5) * romBankSize_0x4000 + offset];
 			}
 			else
 			{
@@ -55,9 +55,9 @@ namespace GBEmu::HW
 		{
 			const uint16 offset = addr - RomBankNNStart_0x4000;
 			const int bankIndex = cartridge.Header().RomSizeKB < bigRomSizeKiB_1024
-				? m_romBankIndex
-				// 大容量ROMでは、5ビット目からRAMバンクバン番号の影響を受ける
-				: (m_secondBankIndex << 5) | m_romBankIndex;
+			                      ? m_romBankIndex
+			                      // 大容量ROMでは、5ビット目からRAMバンクバン番号の影響を受ける
+			                      : (m_secondBankIndex << 5) | m_romBankIndex;
 			return cartridge.ROM()[bankIndex * romBankSize_0x4000 + offset];
 		}
 		else if (RangeUint16(ExternalRamStart_0xA000, ExternalRamEnd_0xBFFF).IsBetween(addr))
@@ -84,12 +84,14 @@ namespace GBEmu::HW
 			else
 			{
 				const auto romSizeKB = cartridge.Header().RomSizeKB;
+				// @formatter:off
 				const auto mask =
 					romSizeKB == 32 ? 0b1 :
 					romSizeKB == 64 ? 0b11 :
 					romSizeKB == 128 ? 0b111 :
 					romSizeKB == 256 ? 0b1111 :
 					0b11111;
+				// @formatter:on
 				m_romBankIndex = data & mask;
 			}
 		}
@@ -124,7 +126,7 @@ namespace GBEmu::HW
 	{
 		const uint16 offset = addr - ExternalRamStart_0xA000;
 		return m_bankMode == 0
-				   ? offset
-				   : m_secondBankIndex * ramBankSize_0x2000 + offset;
+		       ? offset
+		       : m_secondBankIndex * ramBankSize_0x2000 + offset;
 	}
 }

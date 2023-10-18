@@ -29,12 +29,12 @@ namespace GBEmu::HW
 		uint8 TileIndex;
 		uint8 Flags;
 
-		int ActualY() const {return static_cast<int>(Y) - 16; }
-		int ActualX() const {return static_cast<int>(X) - 8; }
-		bool FlagPriorityBGAndWindow() const {return (Flags >> 7) & 0b1; };
-		bool FlagYFlip() const {return (Flags >> 6) & 0b1; };
-		bool FlagXFlip() const {return (Flags >> 5) & 0b1; };
-		bool Palette() const {return (Flags >> 4) & 0b1; };
+		int ActualY() const { return static_cast<int>(Y) - 16; }
+		int ActualX() const { return static_cast<int>(X) - 8; }
+		bool FlagPriorityBGAndWindow() const { return (Flags >> 7) & 0b1; };
+		bool FlagYFlip() const { return (Flags >> 6) & 0b1; };
+		bool FlagXFlip() const { return (Flags >> 5) & 0b1; };
+		bool Palette() const { return (Flags >> 4) & 0b1; };
 	};
 
 	class PPU
@@ -47,7 +47,9 @@ namespace GBEmu::HW
 
 		Size DrawAt(const Point& pos, double scale) const;
 
-		LCD& GetLCD() {return m_lcd; };
+		LCD& GetLCD() { return m_lcd; };
+		const LCD& GetLCD() const { return m_lcd; };
+
 	private:
 		int m_dotCycle{};
 		PPUMode m_nextMode = PPUMode::OAMSearch;

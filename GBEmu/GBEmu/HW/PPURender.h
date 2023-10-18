@@ -18,6 +18,7 @@ namespace GBEmu::HW
 		uint32 OBJDisplayEnable; // 0x40
 		uint32 padding_0x60; // 0x60
 	};
+
 	static constexpr int LCDCFlagBufferSize_5 = 5; // displayHeight_144 / 32 + 1
 
 	struct PPURenderBGAndWindowArgs

@@ -49,7 +49,7 @@ namespace GBEmu::HW
 	void AudioFrequencySweep::WriteNR10(uint8 nr)
 	{
 		m_period = (nr >> 4) & 0b111; // bit 6-4
-		m_direction = (nr >> 3) &0b1; // bit 3
+		m_direction = (nr >> 3) & 0b1; // bit 3
 		m_shift = nr & 0b111; // bit 2-0
 	}
 
@@ -61,7 +61,7 @@ namespace GBEmu::HW
 	AudioFrequency AudioFrequencySweep::calcNewFreq(AudioFrequency freqShadow, uint8 direction, uint8 shift)
 	{
 		return direction == 0
-			? AudioFrequency(freqShadow() + (freqShadow() >> shift))
-			: AudioFrequency(freqShadow() - (freqShadow() >> shift));
+			       ? AudioFrequency(freqShadow() + (freqShadow() >> shift))
+			       : AudioFrequency(freqShadow() - (freqShadow() >> shift));
 	}
 }

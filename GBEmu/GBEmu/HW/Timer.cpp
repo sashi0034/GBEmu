@@ -50,9 +50,9 @@ namespace GBEmu::HW
 
 		const uint16 sysClockBefore = sysClock - 1;
 
-		return  (newEnable == false)
-			? ((sysClockBefore & (oldClock / 2)) != 0)
-			: (sysClockBefore & (oldClock / 2)) != 0 && (sysClock & (newClock / 2)) == 0;
+		return (newEnable == false)
+		       ? ((sysClockBefore & (oldClock / 2)) != 0)
+		       : (sysClockBefore & (oldClock / 2)) != 0 && (sysClock & (newClock / 2)) == 0;
 	}
 
 	void Timer::checkUpdateTIMAOverflowedCountdown(Memory& memory)

@@ -5,7 +5,7 @@ namespace GBEmu
 {
 	void Util::FillTexture(const Texture& texture, float tileSize, const Size& size, const Vec2& pos)
 	{
-		const ScopedRenderStates2D sampler{ SamplerState::RepeatLinear };
+		const ScopedRenderStates2D sampler{SamplerState::RepeatLinear};
 		const float scale = texture.size().x / tileSize;
 		(void)texture.mapped(size * scale).scaled(1 / scale).draw(pos);
 	}
@@ -28,7 +28,7 @@ namespace GBEmu
 	String Util::ConcatStringWithBreak(const Array<String>& array)
 	{
 		String result{};
-		for (int i=0; i<array.size(); ++i)
+		for (int i = 0; i < array.size(); ++i)
 		{
 			result += array[i];
 			if (i < array.size() - 1) result += U"\n";

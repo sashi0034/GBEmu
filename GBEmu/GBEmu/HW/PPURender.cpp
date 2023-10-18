@@ -42,10 +42,10 @@ namespace GBEmu::HW::PPURender
 		ConstantBuffer<TileBgAndWindowDmgCb> tileCb{};
 
 		// BG兼 ウィンドウパレットを設定
-		for (int i=0; i<4; ++i) tileCb->palette[i] = colorPaletteDMG()[arg.LCD.BGPaletteData(i)].toFloat4();
+		for (int i = 0; i < 4; ++i) tileCb->palette[i] = colorPaletteDMG()[arg.LCD.BGPaletteData(i)].toFloat4();
 
 		// WindowEnable情報を設定
-		for (int i=0; i<arg.LCDCFlagBuffer.size(); ++i)
+		for (int i = 0; i < arg.LCDCFlagBuffer.size(); ++i)
 			tileCb->windowPriorityBuffer[i] = arg.LCDCFlagBuffer[i];
 
 		// 転送
@@ -63,7 +63,7 @@ namespace GBEmu::HW::PPURender
 	{
 		ConstantBuffer<TileBgAndWindowDmgCb> tileCb{};
 
-		const ScopedRenderTarget2D target{ objMaskBuffer };
+		const ScopedRenderTarget2D target{objMaskBuffer};
 		(void)objMaskBuffer.clear(Palette::Black);
 
 		// マスク用パレットを設定
@@ -73,7 +73,7 @@ namespace GBEmu::HW::PPURender
 		tileCb->palette[3] = Float4(0, 0, 0, 0);
 
 		// WindowEnable情報を設定
-		for (int i=0; i<arg.LCDCFlagBuffer.size(); ++i) tileCb->windowPriorityBuffer[i] = arg.LCDCFlagBuffer[i];
+		for (int i = 0; i < arg.LCDCFlagBuffer.size(); ++i) tileCb->windowPriorityBuffer[i] = arg.LCDCFlagBuffer[i];
 
 		// 転送
 		Graphics2D::SetPSConstantBuffer(1, tileCb);
@@ -87,7 +87,7 @@ namespace GBEmu::HW::PPURender
 
 	void RenderBGCompletely(const PPURenderBGAndWindowArgs& arg)
 	{
-		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileBgDMG };
+		const ScopedCustomShader2D shader{HWAsset::Instance().PsTileBgDMG};
 
 		const uint8 scy = arg.LCD.SCY();
 		const uint8 scx = arg.LCD.SCX();
@@ -97,19 +97,25 @@ namespace GBEmu::HW::PPURender
 
 		int tileDataBaseIndex = 0;
 		int bgBaseIndex = 0;
-		for (int y= -8 + scyModulo; y < displayHeight_144 + scyModulo; y += 8)
+		for (int y = -8 + scyModulo; y < displayHeight_144 + scyModulo; y += 8)
 		{
 			// 描画中に割り込みでベースアドレスが変わっているかもしれないので、差分経歴を確認して反映
 			if (arg.BGAndWindowTileDataDiff.History().size() > tileDataBaseIndex + 1 &&
-				arg.BGAndWindowTileDataDiff.History()[tileDataBaseIndex + 1].LY <= y) tileDataBaseIndex++;
+				arg.BGAndWindowTileDataDiff.History()[tileDataBaseIndex + 1].LY <= y)
+			{
+				tileDataBaseIndex++;
+			}
 			const uint16 tileDataBaseAddr = arg.BGAndWindowTileDataDiff.History()[tileDataBaseIndex].Address;
 
 			if (arg.BGTileMapDisplayDiff.History().size() > bgBaseIndex + 1 &&
-				arg.BGTileMapDisplayDiff.History()[bgBaseIndex + 1].LY <= y) bgBaseIndex++;
+				arg.BGTileMapDisplayDiff.History()[bgBaseIndex + 1].LY <= y)
+			{
+				bgBaseIndex++;
+			}
 			const uint16 bgBaseAddr = arg.BGTileMapDisplayDiff.History()[bgBaseIndex].Address;
 
 			// 水平方向描画
-			for (int x = -8 + scxModulo; x< displayWidth_160 + scxModulo; x += 8)
+			for (int x = -8 + scxModulo; x < displayWidth_160 + scxModulo; x += 8)
 			{
 				const uint8 scrolledX = static_cast<uint8>(x + scx);
 				const uint8 scrolledY = static_cast<uint8>(y + scy);
@@ -126,26 +132,28 @@ namespace GBEmu::HW::PPURender
 
 	void RenderWindowCompletely(const PPURenderBGAndWindowArgs& arg)
 	{
-		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileWindowDMG };
+		const ScopedCustomShader2D shader{HWAsset::Instance().PsTileWindowDMG};
 
 		const uint8 wy = arg.LCD.WY();
 		const uint8 wx = arg.LCD.WX();
 
 		int tileDataBaseIndex = 0;
 		int windowBaseIndex = 0;
-		for (int y= wy; y < displayHeight_144; y += 8)
+		for (int y = wy; y < displayHeight_144; y += 8)
 		{
 			// 描画中に割り込みでベースアドレスが変わっているかもしれないので、差分経歴を確認して反映
 			if (arg.BGAndWindowTileDataDiff.History().size() > tileDataBaseIndex + 1 &&
-				arg.BGAndWindowTileDataDiff.History()[tileDataBaseIndex + 1].LY <= y) tileDataBaseIndex++;
+				arg.BGAndWindowTileDataDiff.History()[tileDataBaseIndex + 1].LY <= y)
+				tileDataBaseIndex++;
 			const uint16 tileDataBaseAddr = arg.BGAndWindowTileDataDiff.History()[tileDataBaseIndex].Address;
 
 			if (arg.WindowTileMapDisplayDiff.History().size() > windowBaseIndex + 1 &&
-				arg.WindowTileMapDisplayDiff.History()[windowBaseIndex + 1].LY <= y) windowBaseIndex++;
+				arg.WindowTileMapDisplayDiff.History()[windowBaseIndex + 1].LY <= y)
+				windowBaseIndex++;
 			const uint16 windowBaseAddr = arg.WindowTileMapDisplayDiff.History()[windowBaseIndex].Address;
 
 			// 水平方向描画
-			for (int x = wx - 7; x< displayWidth_160 + 8; x += 8)
+			for (int x = wx - 7; x < displayWidth_160 + 8; x += 8)
 			{
 				const uint8 tileX = static_cast<uint8>(x - (wx - 7)) / 8;
 				const uint8 tileY = static_cast<uint8>(y - wy) / 8;
@@ -205,7 +213,7 @@ namespace GBEmu::HW::PPURender
 
 	void RenderOBJCompletely(const RenderOBJArgs& arg)
 	{
-		const ScopedCustomShader2D shader{ HWAsset::Instance().PsTileObjDMG };
+		const ScopedCustomShader2D shader{HWAsset::Instance().PsTileObjDMG};
 		Graphics2D::SetPSTexture(1, arg.ObjMask);
 
 		ConstantBuffer<TileObjDmgCb> tileCb{};
@@ -215,12 +223,12 @@ namespace GBEmu::HW::PPURender
 
 		// LCDCフラグ情報転送
 		ConstantBuffer<LCDCFlagsCb> lcdcFlagsCb{};
-		for (int i=0; i<arg.LCDCFlagBuffer.size(); ++i)
+		for (int i = 0; i < arg.LCDCFlagBuffer.size(); ++i)
 			lcdcFlagsCb->windowPriorityBuffer[i] = arg.LCDCFlagBuffer[i];
 		Graphics2D::SetPSConstantBuffer(2, lcdcFlagsCb);
 
 		// 末尾から描画していく
-		for (int i=oamList.size()-1; i>=0; --i)
+		for (int i = oamList.size() - 1; i >= 0; --i)
 		{
 			auto&& oam = oamList[i];
 

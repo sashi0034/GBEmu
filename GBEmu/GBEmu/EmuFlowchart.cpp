@@ -15,7 +15,7 @@ namespace GBEmu::EmuFlowchart
 	{
 		const auto cartridgeDir = FileSystem::PathAppend(FileSystem::InitialDirectory(), U"asset/rom");
 		const auto selectedPath = Dialog::OpenFile(
-			{ FileFilter{ .name = U"GAMEBOY Cartridge", .patterns = {U"gb?"} } },
+			{FileFilter{.name = U"GAMEBOY Cartridge", .patterns = {U"gb?"}}},
 			cartridgeDir,
 			U"Open cartridge file");
 		if (selectedPath.has_value() == false)
@@ -38,7 +38,7 @@ namespace GBEmu::EmuFlowchart
 		constexpr Size sceneSize = {1920, 1080};
 		Scene::Resize(sceneSize.x, sceneSize.y);
 		Window::Resize(1280, 720);
-		Scene::SetBackground(ColorF{ 0.3, 0.3, 0.3 });
+		Scene::SetBackground(ColorF{0.3, 0.3, 0.3});
 		System::SetTerminationTriggers(UserAction::CloseButtonClicked);
 
 		// エミュレータ設定
@@ -53,8 +53,8 @@ namespace GBEmu::EmuFlowchart
 		}
 
 		const auto cartridgePath = FileSystem::Exists(EmuConfig::Instance().Cartridge.Path)
-			? EmuConfig::Instance().Cartridge.Path
-			: selectFileFromExplorer();
+		                           ? EmuConfig::Instance().Cartridge.Path
+		                           : selectFileFromExplorer();
 		if (cartridgePath.empty()) return;
 
 		Console.open();
@@ -77,7 +77,7 @@ namespace GBEmu::EmuFlowchart
 			uiEnv.Back().Draw();
 
 			// エミュレータ画面描画
-			const auto hwScreen = hwEnv.GetPPU().DrawAt(Scene::Center(),  pixelScale);
+			const auto hwScreen = hwEnv.GetPPU().DrawAt(Scene::Center(), pixelScale);
 
 			// VRAM領域描画
 			hwEnv.GetMemory().GetVRAM().DumpDrawAt(
@@ -87,9 +87,15 @@ namespace GBEmu::EmuFlowchart
 			// HUD描画
 			constexpr int padding = 64;
 			const int hudWidth = Scene::Center().x - (hwScreen.x / 2) - (padding * 2);
-			uiEnv.Hud().DrawLeft(uiEnv, hwEnv, Point(padding, Scene::Center().y - hwScreen.y / 2), hudWidth, hwScreen.y);
-			uiEnv.Hud().DrawRight(uiEnv, hwEnv, Point(Scene::Width() - padding - hudWidth, Scene::Center().y - hwScreen.y / 2), hudWidth, hwScreen.y);
-			uiEnv.Hud().DrawUp(uiEnv, hwEnv, hwFrame, Scene::Center().moveBy(0, -hwScreen.y / 2 - padding), Scene::Center().moveBy(0, -hwScreen.y / 2));
+			uiEnv.Hud().DrawLeft(
+				uiEnv, hwEnv,
+				Point(padding, Scene::Center().y - hwScreen.y / 2), hudWidth, hwScreen.y);
+			uiEnv.Hud().DrawRight(
+				uiEnv, hwEnv,
+				Point(Scene::Width() - padding - hudWidth, Scene::Center().y - hwScreen.y / 2), hudWidth, hwScreen.y);
+			uiEnv.Hud().DrawUp(
+				uiEnv, hwEnv, hwFrame,
+				Scene::Center().moveBy(0, -hwScreen.y / 2 - padding), Scene::Center().moveBy(0, -hwScreen.y / 2));
 		}
 	}
 }

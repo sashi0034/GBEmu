@@ -115,8 +115,8 @@ namespace GBEmu::HW
 
 	Size PPU::DrawAt(const Point& pos, double scale) const
 	{
-		const ScopedRenderStates2D sampler{ SamplerState::ClampNearest };
-		const ScopedCustomShader2D shader{ HWAsset::Instance().PsDisplaySpecial };
+		const ScopedRenderStates2D sampler{SamplerState::ClampNearest};
+		const ScopedCustomShader2D shader{HWAsset::Instance().PsDisplaySpecial};
 
 		ConstantBuffer<DisplaySpecialCb> cb{};
 		cb->PixelScale = static_cast<float>(scale);
@@ -154,7 +154,7 @@ namespace GBEmu::HW
 	{
 		memory.GetVRAM().CheckRefreshAtlas();
 
-		const ScopedRenderTarget2D target{ m_renderBuffer };
+		const ScopedRenderTarget2D target{m_renderBuffer};
 
 		auto&& vram = memory.GetVRAM();
 
@@ -193,9 +193,13 @@ namespace GBEmu::HW
 	{
 		const int scan = dotCycle % scanLineFreq_456;
 		const PPUMode mode =
-			(dotCycle / scanLineFreq_456) >= scanLineSize_144 ? PPUMode::VBlank :
-			(scan < oamSearchDuration_80) ? PPUMode::OAMSearch :
-			(scan < oamSearchDuration_80 + pixelTransferDuration_289) ? PPUMode::PixelTransfer : // less than 369
+			(dotCycle / scanLineFreq_456) >= scanLineSize_144
+			? PPUMode::VBlank
+			: (scan < oamSearchDuration_80)
+			? PPUMode::OAMSearch
+			: (scan < oamSearchDuration_80 + pixelTransferDuration_289)
+			? PPUMode::PixelTransfer
+			: // less than 369
 			PPUMode::HBlank; // duration: scanLineFreq - pixelTransferDuration = 456 - 369
 		return mode;
 	}

@@ -25,7 +25,7 @@ namespace GBEmu::HW
 		void LoadCartridge(const FilePath& cartridgePath);
 		void Initialize(HWEnv& env);
 
-		void DumpIOPort(HWEnv& env, String& dest);
+		void DumpIOPort(HWEnv& env, String& dest) const;
 
 		static constexpr int MemorySize_0x10000 = 0x10000;
 	private:
@@ -35,7 +35,7 @@ namespace GBEmu::HW
 
 		Interruption m_interrupt{};
 
-		uint8 readIO(HWEnv& env, uint16 addr);
+		uint8 readIO(HWEnv& env, uint16 addr) const;
 		void writeIO(HWEnv& env, uint16 addr, uint8 data);
 		void transferDMA(HWEnv& env, uint8 data);
 

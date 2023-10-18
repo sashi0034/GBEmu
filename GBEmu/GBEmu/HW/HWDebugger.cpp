@@ -3,6 +3,7 @@
 
 #include "HWEnv.h"
 #include "MemoryAddress.h"
+#include "GBEmu/Util/Utils.h"
 
 // あるデバッグしたいときは、以下のどれかをコメントイン
 // #define IMPL_FOUNDINSTRUCTIONDISTRIBUTION
@@ -33,7 +34,7 @@ namespace GBEmu::HW
 	constexpr int size_500 = 500;
 
 #ifdef IMPL_EXECUTEDINSTRUCTIONLOG
-  	struct HWDebugExecutedInstruction
+	struct HWDebugExecutedInstruction
 	{
 		uint16 CurrentPC;
 		String NextInstruction;
@@ -64,22 +65,22 @@ namespace GBEmu::HW
 		std::deque<HWDebugWroteMemory> m_wroteMemoryLog{};
 #endif
 #ifdef IMPL_STATISTICSPC
-  		Optional<uint16> m_statisticsPC{};
+		Optional<uint16> m_statisticsPC{};
 #endif
 #ifdef IMPL_TRACE
-  		int m_traceCountdown{};
+		int m_traceCountdown{};
 		HashSet<std::string> m_tracedKey{};
 #endif
 
 #ifdef IMPL_TRACE
 		void debugTrace(HWEnv& env)
 		{
-			Console.writeln( U"CPU: { " + env.GetCPU().StringifyInfo(env.GetMemory()) + U" }\n");
+			Console.writeln(U"CPU: { " + env.GetCPU().StringifyInfo(env) + U" }\n");
 		}
 
 		Optional<std::pair<std::string, int>> checkStartTrace(HWEnv& env) const
 		{
-  			auto&& cpu = env.GetCPU();
+			auto&& cpu = env.GetCPU();
 			auto&& memory = env.GetMemory();
 			using pair = std::pair<std::string, int>;
 
@@ -113,13 +114,15 @@ namespace GBEmu::HW
 		void printFoundInstructionDistribution() const
 		{
 			String str = U"";
-			for (int i=0; i<256; ++i)
+			for (int i = 0; i < 256; ++i)
 			{
-				str += U"{}: {}\n"_fmt(Util::StringifyEnum(static_cast<CPUInstruction>(i)), m_foundInstructionDistribution[i]);
+				str += U"{}: {}\n"_fmt(Util::StringifyEnum(static_cast<CPUInstruction>(i)),
+				                       m_foundInstructionDistribution[i]);
 			}
-			for (int i=0; i<256; ++i)
+			for (int i = 0; i < 256; ++i)
 			{
-				str += U"{}: {}\n"_fmt(Util::StringifyEnum(static_cast<CPUInstructionCB>(i)), m_foundInstructionCBDistribution[i]);
+				str += U"{}: {}\n"_fmt(Util::StringifyEnum(static_cast<CPUInstructionCB>(i)),
+				                       m_foundInstructionCBDistribution[i]);
 			}
 			Console.writeln(str);
 		}
@@ -128,8 +131,8 @@ namespace GBEmu::HW
 #ifdef IMPL_WROTEMEMORYLOG
 		void printWroteMemoryLog()
 		{
-  			// メモリ書き込み経歴を出力
-			for (int i=0; i<m_wroteMemoryLog.size(); ++i)
+			// メモリ書き込み経歴を出力
+			for (int i = 0; i < m_wroteMemoryLog.size(); ++i)
 			{
 				auto&& log = m_wroteMemoryLog[i];
 				Console.writeln(U"[{}] ({:04X}) <- {:02X} (PC: {:04X}, instr: {})"_fmt(
@@ -139,7 +142,7 @@ namespace GBEmu::HW
 #endif
 
 #ifdef IMPL_STATISTICSPC
-  		static void printSearchedMemoryBlob(HWEnv& env, const Array<uint16>& blob)
+		static void printSearchedMemoryBlob(HWEnv& env, const Array<uint16>& blob)
 		{
 			for (uint16 addr = 0xFFFF;;)
 			{
@@ -153,7 +156,7 @@ namespace GBEmu::HW
 		void publishStatistics(HWEnv& env) const
 		{
 #ifdef IMPL_FOUNDINSTRUCTIONDISTRIBUTION
-  			// 命令の実行分布
+			// 命令の実行分布
 			printFoundInstructionDistribution();
 #endif
 			// 特定のメモリ列を探索
@@ -161,6 +164,7 @@ namespace GBEmu::HW
 			// 	{0xF0, 0x91, 0x00, 0xE0, 0x91, 0x00, 0xF2, 0x00, 0x00});
 		}
 #endif
+
 	public:
 		Impl()
 		{
@@ -169,7 +173,7 @@ namespace GBEmu::HW
 #endif
 
 #ifdef IMPL_STATISTICSPC
-  			// 特定のPCになったら統計出す
+			// 特定のPCになったら統計出す
 			m_statisticsPC = 0xCE67;
 #endif
 		}
@@ -195,7 +199,7 @@ namespace GBEmu::HW
 #endif
 
 #ifdef IMPL_STATISTICSPC
-  			// 特定PCで統計表示
+			// 特定PCで統計表示
 			if (env.GetCPU().PC() == m_statisticsPC)
 			{
 				publishStatistics(env);
@@ -207,7 +211,7 @@ namespace GBEmu::HW
 		void OnExecuteInstruction(const CPU& cpu, const CPUInstructionProperty& fetchedInstruction)
 		{
 #ifdef IMPL_EXECUTEDINSTRUCTIONLOG
-  			// 命令実行経歴を残す
+			// 命令実行経歴を残す
 			m_executedInstructionLog.push_front(HWDebugExecutedInstruction{
 				cpu.PC(),
 				fetchedInstruction.ToString()
@@ -216,7 +220,7 @@ namespace GBEmu::HW
 #endif
 
 #ifdef IMPL_FOUNDINSTRUCTIONDISTRIBUTION
-  			// 命令出現分布を記憶
+			// 命令出現分布を記憶
 			if (fetchedInstruction.IsPrefixedCB)
 				m_foundInstructionCBDistribution[fetchedInstruction.Code]++;
 			else
@@ -227,7 +231,7 @@ namespace GBEmu::HW
 		void OnMemoryWrite(uint16 address, uint8 data)
 		{
 #ifdef IMPL_WROTEMEMORYLOG
-  			// メモリ書き込み経歴を残す (ダイレクトな書き込み経歴は取得できない)
+			// メモリ書き込み経歴を残す (ダイレクトな書き込み経歴は取得できない)
 			m_wroteMemoryLog.push_front(
 				HWDebugWroteMemory{address, data, m_executedInstructionLog[0]});
 			constexpr int wroteMemoryLogSize = size_500;
@@ -237,9 +241,9 @@ namespace GBEmu::HW
 	};
 
 	HWDebugger::HWDebugger() :
-		m_impl {std::make_unique<Impl>()}
+		m_impl{std::make_unique<Impl>()}
 	{
-		for (int i=1; i<=4; ++i)
+		for (int i = 1; i <= 4; ++i)
 		{
 			m_audioSampleBuffer[i].reserve(HWParam::AudioSampleRate / HWParam::FPS);
 		}
@@ -260,19 +264,20 @@ namespace GBEmu::HW
 		RenderTexture& graph, std::array<std::vector<float>, audioChannelCapacity>& samples)
 	{
 		// 描画設定
-		graph.clear(ColorF{ 1.0, 0.0 });
-		const ScopedRenderTarget2D target{ graph };
-		const ScopedRenderStates2D blend{ BlendState::Opaque };
+		graph.clear(ColorF{1.0, 0.0});
+		const ScopedRenderTarget2D target{graph};
+		const ScopedRenderStates2D blend{BlendState::Opaque};
 
 		constexpr std::array palette{
-			Color(U"#FFFFFF"), Color(U"#FF40FF"), Color(U"#FFFF00"), Color(U"#00FFFF")};
+			Color(U"#FFFFFF"), Color(U"#FF40FF"), Color(U"#FFFF00"), Color(U"#00FFFF")
+		};
 
 		// すべてのサンプルごとに線を描画すると、処理が重いのである程度標本化してから描画する
 		constexpr int fragSize = 32;
 		const float fragW = graph.size().x / fragSize;
 
 		// 波形を4チャンネルごとに描画
-		for (int ch=1; ch<=4; ++ch)
+		for (int ch = 1; ch <= 4; ++ch)
 		{
 			auto&& waves = samples[ch];
 			const float density = waves.size() / static_cast<float>(fragSize); // 1点に標本化する波形の個数
@@ -281,7 +286,7 @@ namespace GBEmu::HW
 			float cursorX = 0;
 			float oldPlotY = 0;
 			// そのチャンネルのサンプルを探索
-			for (int i=0; i<waves.size(); ++i)
+			for (int i = 0; i < waves.size(); ++i)
 			{
 				count++;
 				sum += waves[i];
@@ -329,14 +334,15 @@ namespace GBEmu::HW
 	}
 
 	// データ列を受け取って、そのメモリ列が存在するならアドレスを返す
-	Optional<uint16> HWDebugger::SearchMemoryBlob(HWEnv& env, Memory& memory, const RangeUint16& range, const Array<uint16>& blob)
+	Optional<uint16> HWDebugger::SearchMemoryBlob(
+		HWEnv& env, Memory& memory, const RangeUint16& range, const Array<uint16>& blob)
 	{
-		for (uint16 i=range.Min(); i<= range.Max() - blob.size() + 1; ++i)
+		for (uint16 i = range.Min(); i <= range.Max() - blob.size() + 1; ++i)
 		{
 			if (memory.Read(env, i) != blob[0]) continue;
 
 			bool isMatch = true;
-			for (int x = 1; x<blob.size(); ++x)
+			for (int x = 1; x < blob.size(); ++x)
 			{
 				if (memory.Read(env, i + x) == blob[x]) continue;
 				isMatch = false;

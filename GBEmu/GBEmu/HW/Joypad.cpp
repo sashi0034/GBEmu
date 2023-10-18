@@ -12,7 +12,7 @@ namespace GBEmu::HW
 			m_getter = []() -> uint8
 			{
 				auto&& pad = EmuGamepad::Instance();
-					return 0b11100000 |
+				return 0b11100000 |
 					(pad.IsPressed(EmuGamepadKey::Right) ? 0 : 1 << 0) |
 					(pad.IsPressed(EmuGamepadKey::Left) ? 0 : 1 << 1) |
 					(pad.IsPressed(EmuGamepadKey::Up) ? 0 : 1 << 2) |

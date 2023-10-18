@@ -22,6 +22,7 @@ namespace GBEmu
 		static EmuGamepad& Instance();
 
 		bool IsPressed(EmuGamepadKey key);
+
 	private:
 		std::array<InputGroup, static_cast<int>(EmuGamepadKey::Max)> m_inputGroups;
 		InputGroup m_inputModifier{};

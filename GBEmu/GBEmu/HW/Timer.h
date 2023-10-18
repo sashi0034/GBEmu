@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "MemoryAddress.h"
+#include "GBEmu/Util/Utils.h"
 
 namespace GBEmu::HW
 {
@@ -13,8 +14,11 @@ namespace GBEmu::HW
 
 		void StepCycle(HWEnv& env);
 
-		template <uint16 addr> void WriteAddr(uint8 data);
-		template <uint16 addr> uint8 ReadAddr() const;
+		template <uint16 addr>
+		void WriteAddr(uint8 data);
+		template <uint16 addr>
+		uint8 ReadAddr() const;
+
 	private:
 		uint16 m_divDetail{};
 
@@ -40,7 +44,7 @@ namespace GBEmu::HW
 		else if constexpr (addr == TIMA_0xFF05) m_tima = data;
 		else if constexpr (addr == TAC_0xFF07) m_tac = data;
 		else if constexpr (addr == TMA_0xFF06) m_tma = data;
-		else {assert(false); }
+		else static_assert(Util::AlwaysFalseValue<addr>);
 	}
 
 	template <uint16 addr>
@@ -52,5 +56,10 @@ namespace GBEmu::HW
 		else if constexpr (addr == TIMA_0xFF05) return m_tima;
 		else if constexpr (addr == TAC_0xFF07) return m_tac;
 		else if constexpr (addr == TMA_0xFF06) return m_tma;
+		else
+		{
+			static_assert(Util::AlwaysFalseValue<addr>);
+			return {};
+		}
 	}
 }

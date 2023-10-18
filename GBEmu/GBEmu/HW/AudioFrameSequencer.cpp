@@ -15,7 +15,8 @@ namespace GBEmu::HW
 		ch4.StepLengthCounter();
 	}
 
-	void AudioFrameSequencer::StepCycle(AudioChSquare<1>& ch1, AudioChSquare<2>& ch2, AudioChWave& ch3, AudioChNoise& ch4)
+	void AudioFrameSequencer::StepCycle(
+		AudioChSquare<1>& ch1, AudioChSquare<2>& ch2, AudioChWave& ch3, AudioChNoise& ch4)
 	{
 		constexpr int timerMax = HWParam::ClockFrequencyDMG_4194304 / timerFrequency_512; // 8192
 

@@ -2,6 +2,7 @@
 #include "AudioFrequencySweep.h"
 #include "AudioLengthCounter.h"
 #include "AudioVolumeEnvelope.h"
+#include "GBEmu/Util/Utils.h"
 
 namespace GBEmu::HW
 {
@@ -12,18 +13,24 @@ namespace GBEmu::HW
 	class AudioChSquare
 	{
 		static_assert(ch == ch_1 || ch == ch_2);
+
 	public:
 		void StepFreqTimer();
-		template<int chan = ch, std::enable_if_t<chan == ch_1, int> = 0> void StepFreqSweep();
+		template <int chan = ch, std::enable_if_t<chan == ch_1, int>  = 0>
+		void StepFreqSweep();
 		void StepLengthCounter();
 		void StepVolumeEnvelope();
 
-		template <int x> void WriteNR(uint8 data);
-		template <int x> uint8 ReadNR() const;
+		template <int x>
+		void WriteNR(uint8 data);
 
-		const AudioFrequency& Freq() const {return m_freq; }
+		template <int x>
+		uint8 ReadNR() const;
+
+		const AudioFrequency& Freq() const { return m_freq; }
 		int Amplitude() const;
 		bool ChannelEnabled() const { return m_channelEnabled; }
+
 	private:
 		static constexpr int lengthCounterMax_63 = 63;
 
@@ -53,7 +60,7 @@ namespace GBEmu::HW
 	}
 
 	template <int ch>
-	template<int chan = ch, std::enable_if_t<chan == ch_1, int> = 0>
+	template <int chan = ch, std::enable_if_t<chan == ch_1, int>  = 0>
 	void AudioChSquare<ch>::StepFreqSweep()
 	{
 		if constexpr (ch == ch_1)
@@ -65,7 +72,7 @@ namespace GBEmu::HW
 	template <int ch>
 	void AudioChSquare<ch>::StepLengthCounter()
 	{
-		 m_channelEnabled &= m_lengthCounter.Step();
+		m_channelEnabled &= m_lengthCounter.Step();
 	}
 
 	template <int ch>
@@ -135,7 +142,8 @@ namespace GBEmu::HW
 		}
 		else
 		{
-			assert(false); return 0;
+			static_assert(Util::AlwaysFalseValue<x>);
+			return {};
 		}
 	}
 

@@ -29,8 +29,8 @@ namespace GBEmu::HW
 
 
 	Cartridge::Cartridge(const CartridgeHeader& header, const Array<uint8>& data) :
-		   m_header(std::move(header)),
-		   m_rom(std::move(data))
+		m_header(std::move(header)),
+		m_rom(std::move(data))
 	{
 		m_headerSummary = U"{} | {}"_fmt(header.Title, Util::StringifyEnum(header.Type));
 

@@ -7,8 +7,9 @@ namespace GBEmu::UI
 	class UIEnv
 	{
 	public:
-		UIBack& Back(){return m_back; }
-		UIHud& Hud(){return m_hud; }
+		UIBack& Back() { return m_back; }
+		UIHud& Hud() { return m_hud; }
+
 	private:
 		UIBack m_back;
 		UIHud m_hud;

@@ -9,12 +9,13 @@ namespace GBEmu::HW
 		~APUStream() override = default;
 		void getAudio(float* left, float* right, size_t samplesToWrite) override;
 		bool hasEnded() override { return false; };
-		void rewind() override {};
+		void rewind() override { return; }
 
 		void PushSample(float left, float right);
 
 		int BufferRemaining() const;
 		int BufferSize() const;
+
 	private:
 		Wave m_wave{};
 		int m_headIndex{};

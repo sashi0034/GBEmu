@@ -20,7 +20,9 @@ namespace GBEmu::HW
 		void DumpDrawAt(const Vec2& pos, double scale);
 		void CheckRefreshAtlas();
 
-		RenderTexture& Atlas(){return m_tileAtlas; }
+		RenderTexture& Atlas() { return m_tileAtlas; }
+		const RenderTexture& Atlas() const { return m_tileAtlas; }
+
 	private:
 		void refreshAtlas();
 

@@ -5,6 +5,7 @@
 #include "AudioChWave.h"
 #include "AudioFrameSequencer.h"
 #include "MemoryAddress.h"
+#include "GBEmu/Util/Utils.h"
 
 namespace GBEmu::HW
 {
@@ -17,14 +18,17 @@ namespace GBEmu::HW
 	public:
 		APU();
 
-		void UpdateFrame(HWEnv& env);
+		void UpdateFrame(HWEnv& env) const;
 		void StepCycle(HWEnv& env);
 
-		template <uint16 addr> uint8 ReadAddr() const;
-		template <uint16 addr> void WriteAddr(uint8 data);
+		template <uint16 addr>
+		uint8 ReadAddr() const;
+		template <uint16 addr>
+		void WriteAddr(uint8 data);
 
 		uint8 ReadWaveRam(uint16 addr) const { return m_ch3.ReadWaveRam(addr); }
 		void WriteWaveRam(uint16 addr, uint8 data) { m_ch3.WriteWaveRam(addr, data); }
+
 	private:
 		std::shared_ptr<APUStream> m_stream{};
 		Audio m_audio{};
@@ -42,7 +46,8 @@ namespace GBEmu::HW
 		float m_outputTimer{};
 
 		void pushSample(HWDebugger& debugger) const;
-		template <int... Args> void writeFor(uint8 data);
+		template <int... Args>
+		void writeFor(uint8 data);
 	};
 
 	template <uint16 addr>
@@ -50,32 +55,37 @@ namespace GBEmu::HW
 	{
 		using namespace MemoryAddress;
 
-		if constexpr (addr==NR10_0xFF10) return m_ch1.ReadNR<0>();
-		else if constexpr (addr==NR11_0xFF11) return m_ch1.ReadNR<1>();
-		else if constexpr (addr==NR12_0xFF12) return m_ch1.ReadNR<2>();
-		else if constexpr (addr==NR13_0xFF13) return m_ch1.ReadNR<3>();
-		else if constexpr (addr==NR14_0xFF14) return m_ch1.ReadNR<4>();
-		else if constexpr (addr==NR21_0xFF16) return m_ch2.ReadNR<1>();
-		else if constexpr (addr==NR22_0xFF17) return m_ch2.ReadNR<2>();
-		else if constexpr (addr==NR23_0xFF18) return m_ch2.ReadNR<3>();
-		else if constexpr (addr==NR24_0xFF19) return m_ch2.ReadNR<4>();
-		else if constexpr (addr==NR30_0xFF1A) return m_ch3.ReadNR3x<0>();
-		else if constexpr (addr==NR31_0xFF1B) return m_ch3.ReadNR3x<1>();
-		else if constexpr (addr==NR32_0xFF1C) return m_ch3.ReadNR3x<2>();
-		else if constexpr (addr==NR33_0xFF1D) return m_ch3.ReadNR3x<3>();
-		else if constexpr (addr==NR34_0xFF1E) return m_ch3.ReadNR3x<4>();
-		else if constexpr (addr==NR41_0xFF20) return m_ch4.ReadNR4x<1>();
-		else if constexpr (addr==NR42_0xFF21) return m_ch4.ReadNR4x<2>();
-		else if constexpr (addr==NR43_0xFF22) return m_ch4.ReadNR4x<3>();
-		else if constexpr (addr==NR44_0xFF23) return m_ch4.ReadNR4x<4>();
-		else if constexpr (addr==NR50_0xFF24) return m_channelControl;
-		else if constexpr (addr==NR51_0xFF25) return m_selection;
-		else if constexpr (addr==NR52_0xFF26)
+		if constexpr (addr == NR10_0xFF10) return m_ch1.ReadNR<0>();
+		else if constexpr (addr == NR11_0xFF11) return m_ch1.ReadNR<1>();
+		else if constexpr (addr == NR12_0xFF12) return m_ch1.ReadNR<2>();
+		else if constexpr (addr == NR13_0xFF13) return m_ch1.ReadNR<3>();
+		else if constexpr (addr == NR14_0xFF14) return m_ch1.ReadNR<4>();
+		else if constexpr (addr == NR21_0xFF16) return m_ch2.ReadNR<1>();
+		else if constexpr (addr == NR22_0xFF17) return m_ch2.ReadNR<2>();
+		else if constexpr (addr == NR23_0xFF18) return m_ch2.ReadNR<3>();
+		else if constexpr (addr == NR24_0xFF19) return m_ch2.ReadNR<4>();
+		else if constexpr (addr == NR30_0xFF1A) return m_ch3.ReadNR3x<0>();
+		else if constexpr (addr == NR31_0xFF1B) return m_ch3.ReadNR3x<1>();
+		else if constexpr (addr == NR32_0xFF1C) return m_ch3.ReadNR3x<2>();
+		else if constexpr (addr == NR33_0xFF1D) return m_ch3.ReadNR3x<3>();
+		else if constexpr (addr == NR34_0xFF1E) return m_ch3.ReadNR3x<4>();
+		else if constexpr (addr == NR41_0xFF20) return m_ch4.ReadNR4x<1>();
+		else if constexpr (addr == NR42_0xFF21) return m_ch4.ReadNR4x<2>();
+		else if constexpr (addr == NR43_0xFF22) return m_ch4.ReadNR4x<3>();
+		else if constexpr (addr == NR44_0xFF23) return m_ch4.ReadNR4x<4>();
+		else if constexpr (addr == NR50_0xFF24) return m_channelControl;
+		else if constexpr (addr == NR51_0xFF25) return m_selection;
+		else if constexpr (addr == NR52_0xFF26)
 		{
 			return
 				(m_ch1.ChannelEnabled() << 0) | (m_ch2.ChannelEnabled() << 1) |
 				(m_ch3.ChannelEnabled() << 2) | (m_ch3.ChannelEnabled() << 3) |
 				(m_powerControl << 7);
+		}
+		else
+		{
+			static_assert(Util::AlwaysFalseValue<addr>);
+			return {};
 		}
 	}
 
@@ -84,27 +94,27 @@ namespace GBEmu::HW
 	{
 		using namespace MemoryAddress;
 
-		if constexpr (addr==NR10_0xFF10) m_ch1.WriteNR<0>(data);
-		else if constexpr (addr==NR11_0xFF11) m_ch1.WriteNR<1>(data);
-		else if constexpr (addr==NR12_0xFF12) m_ch1.WriteNR<2>(data);
-		else if constexpr (addr==NR13_0xFF13) m_ch1.WriteNR<3>(data);
-		else if constexpr (addr==NR14_0xFF14) m_ch1.WriteNR<4>(data);
-		else if constexpr (addr==NR21_0xFF16) m_ch2.WriteNR<1>(data);
-		else if constexpr (addr==NR22_0xFF17) m_ch2.WriteNR<2>(data);
-		else if constexpr (addr==NR23_0xFF18) m_ch2.WriteNR<3>(data);
-		else if constexpr (addr==NR24_0xFF19) m_ch2.WriteNR<4>(data);
-		else if constexpr (addr==NR30_0xFF1A) m_ch3.WriteNR3x<0>(data);
-		else if constexpr (addr==NR31_0xFF1B) m_ch3.WriteNR3x<1>(data);
-		else if constexpr (addr==NR32_0xFF1C) m_ch3.WriteNR3x<2>(data);
-		else if constexpr (addr==NR33_0xFF1D) m_ch3.WriteNR3x<3>(data);
-		else if constexpr (addr==NR34_0xFF1E) m_ch3.WriteNR3x<4>(data);
-		else if constexpr (addr==NR41_0xFF20) m_ch4.WriteNR4x<1>(data);
-		else if constexpr (addr==NR42_0xFF21) m_ch4.WriteNR4x<2>(data);
-		else if constexpr (addr==NR43_0xFF22) m_ch4.WriteNR4x<3>(data);
-		else if constexpr (addr==NR44_0xFF23) m_ch4.WriteNR4x<4>(data);
-		else if constexpr (addr==NR50_0xFF24) m_channelControl = data;
-		else if constexpr (addr==NR51_0xFF25) m_selection = data;
-		else if constexpr (addr==NR52_0xFF26)
+		if constexpr (addr == NR10_0xFF10) m_ch1.WriteNR<0>(data);
+		else if constexpr (addr == NR11_0xFF11) m_ch1.WriteNR<1>(data);
+		else if constexpr (addr == NR12_0xFF12) m_ch1.WriteNR<2>(data);
+		else if constexpr (addr == NR13_0xFF13) m_ch1.WriteNR<3>(data);
+		else if constexpr (addr == NR14_0xFF14) m_ch1.WriteNR<4>(data);
+		else if constexpr (addr == NR21_0xFF16) m_ch2.WriteNR<1>(data);
+		else if constexpr (addr == NR22_0xFF17) m_ch2.WriteNR<2>(data);
+		else if constexpr (addr == NR23_0xFF18) m_ch2.WriteNR<3>(data);
+		else if constexpr (addr == NR24_0xFF19) m_ch2.WriteNR<4>(data);
+		else if constexpr (addr == NR30_0xFF1A) m_ch3.WriteNR3x<0>(data);
+		else if constexpr (addr == NR31_0xFF1B) m_ch3.WriteNR3x<1>(data);
+		else if constexpr (addr == NR32_0xFF1C) m_ch3.WriteNR3x<2>(data);
+		else if constexpr (addr == NR33_0xFF1D) m_ch3.WriteNR3x<3>(data);
+		else if constexpr (addr == NR34_0xFF1E) m_ch3.WriteNR3x<4>(data);
+		else if constexpr (addr == NR41_0xFF20) m_ch4.WriteNR4x<1>(data);
+		else if constexpr (addr == NR42_0xFF21) m_ch4.WriteNR4x<2>(data);
+		else if constexpr (addr == NR43_0xFF22) m_ch4.WriteNR4x<3>(data);
+		else if constexpr (addr == NR44_0xFF23) m_ch4.WriteNR4x<4>(data);
+		else if constexpr (addr == NR50_0xFF24) m_channelControl = data;
+		else if constexpr (addr == NR51_0xFF25) m_selection = data;
+		else if constexpr (addr == NR52_0xFF26)
 		{
 			m_powerControl = data >> 7;
 			if (m_powerControl) return;
@@ -116,6 +126,7 @@ namespace GBEmu::HW
 				NR41_0xFF20, NR42_0xFF21, NR43_0xFF22, NR44_0xFF23, NR50_0xFF24,
 				NR51_0xFF25>(0);
 		}
+		else static_assert(Util::AlwaysFalseValue<addr>);
 	}
 
 	template <int... Args>

@@ -13,6 +13,7 @@ namespace GBEmu::HW
 
 		uint8 Volume() const { return m_volume; }
 		uint8 InitialVolume() const { return m_initialVolume; }
+
 	private:
 		uint8 m_initialVolume{};
 		uint8 m_direction{};

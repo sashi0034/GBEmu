@@ -510,7 +510,7 @@ namespace GBEmu::HW
 		array[static_cast<int>(SET_6_B_0xF0)] = {2};
 		array[static_cast<int>(SET_6_C_0xF1)] = {2};
 		array[static_cast<int>(SET_6_D_0xF2)] = {2};
-		array[static_cast<int>(SET_6_E_0xF3)]={2};
+		array[static_cast<int>(SET_6_E_0xF3)] = {2};
 		array[static_cast<int>(SET_6_H_0xF4)] = {2};
 		array[static_cast<int>(SET_6_L_0xF5)] = {2};
 		array[static_cast<int>(SET_6_mHL_0xF6)] = {2};
@@ -518,7 +518,7 @@ namespace GBEmu::HW
 		array[static_cast<int>(SET_7_B_0xF8)] = {2};
 		array[static_cast<int>(SET_7_C_0xF9)] = {2};
 		array[static_cast<int>(SET_7_D_0xFA)] = {2};
-		array[static_cast<int>(SET_7_E_0xFB)]={2};
+		array[static_cast<int>(SET_7_E_0xFB)] = {2};
 		array[static_cast<int>(SET_7_H_0xFC)] = {2};
 		array[static_cast<int>(SET_7_L_0xFD)] = {2};
 		array[static_cast<int>(SET_7_mHL_0xFE)] = {2};

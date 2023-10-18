@@ -16,7 +16,7 @@ namespace GBEmu::HW
 		const int writable = std::min(static_cast<int>(samplesToWrite), buffer);
 
 		// バッファの内容をストリームする
-		for (int i=0; i<writable; ++i)
+		for (int i = 0; i < writable; ++i)
 		{
 			*left = m_wave[m_headIndex].left;
 			*right = m_wave[m_headIndex].right;
@@ -26,7 +26,7 @@ namespace GBEmu::HW
 		}
 
 		// samplesToWriteの空いている部分は0でパディング
-		for (int i=writable; i<samplesToWrite; ++i)
+		for (int i = writable; i < samplesToWrite; ++i)
 		{
 			*left = 0;
 			*right = 0;
@@ -45,11 +45,11 @@ namespace GBEmu::HW
 
 	int APUStream::BufferRemaining() const
 	{
-		return m_headIndex <= m_tailIndex ?
-			// tailもheadも折り返していないとき
-			m_tailIndex - m_headIndex :
-			// tailだけ折り返している状態のとき
-			m_tailIndex + (m_wave.size() - m_headIndex);
+		return m_headIndex <= m_tailIndex
+			       // tailもheadも折り返していないとき
+			       ? m_tailIndex - m_headIndex
+			       // tailだけ折り返している状態のとき
+			       : m_tailIndex + (m_wave.size() - m_headIndex);
 	}
 
 	int APUStream::BufferSize() const

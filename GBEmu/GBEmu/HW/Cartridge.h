@@ -3,7 +3,8 @@
 
 namespace GBEmu::HW
 {
-	enum class CartridgeType : uint8 {
+	enum class CartridgeType : uint8
+	{
 		RomOnly = 0x00,
 		MBC1 = 0x01,
 		MBC1Ram = 0x02,
@@ -37,7 +38,8 @@ namespace GBEmu::HW
 
 	namespace CartridgeAddress
 	{
-		enum : uint16{
+		enum : uint16
+		{
 			TitleStart = 0x0134,
 			TitleEnd = 0x0143,
 			CartridgeType = 0x147,
@@ -60,12 +62,13 @@ namespace GBEmu::HW
 		Cartridge() = default;
 		Cartridge(const CartridgeHeader& header, const Array<uint8>& data);
 
-		CartridgeHeader& Header(){return m_header;}
-		const Array<uint8>& ROM(){return m_rom;}
-		Array<uint8>& RAM(){return m_ram;}
+		CartridgeHeader& Header() { return m_header; }
+		const Array<uint8>& ROM() { return m_rom; }
+		Array<uint8>& RAM() { return m_ram; }
 		uint8 Read(uint16 addr);
 		void Write(uint16 addr, uint8 data);
 		String DebugProfile() const;
+
 	private:
 		CartridgeHeader m_header{};
 		String m_headerSummary{};

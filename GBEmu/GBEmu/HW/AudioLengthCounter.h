@@ -13,6 +13,7 @@ namespace GBEmu::HW
 
 		void SetCounter(uint8 counter) { m_counter = counter; }
 		uint8 GetCounter() const { return m_counter; }
+
 	private:
 		uint8 m_counter{};
 		bool m_enabled{};

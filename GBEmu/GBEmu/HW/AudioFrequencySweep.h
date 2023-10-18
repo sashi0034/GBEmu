@@ -11,6 +11,7 @@ namespace GBEmu::HW
 
 		void WriteNR10(uint8 nr);
 		uint8 ReadNR10() const;
+
 	private:
 		uint8 m_period{};
 		uint8 m_direction{};

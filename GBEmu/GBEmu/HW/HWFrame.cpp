@@ -18,20 +18,20 @@ namespace GBEmu::HW
 			const auto cpuCycle = env.GetCPU().StepOperation(env);
 
 			// CPUで進んだサイクル数の分を他のユニットも更新
-			for (int i=0; i<cpuCycle.Count; ++i)
+			for (int i = 0; i < cpuCycle.Count; ++i)
 			{
 				// タイマ更新
 				env.GetTimer().StepCycle(env);
 			}
 
-			for (int i=0; i<cpuCycle.Count; ++i)
+			for (int i = 0; i < cpuCycle.Count; ++i)
 			{
 				// APU更新
 				env.GetAPU().StepCycle(env);
 			}
 
 			auto&& lcd = env.GetPPU().GetLCD();
-			for (int i=0; i<cpuCycle.Count; ++i)
+			for (int i = 0; i < cpuCycle.Count; ++i)
 			{
 				// PPU更新
 				const auto ppuResult = env.GetPPU().StepCycle(env);

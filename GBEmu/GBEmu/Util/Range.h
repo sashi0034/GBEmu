@@ -6,13 +6,17 @@ namespace GBEmu::Util
 	class Range
 	{
 		static_assert(std::is_arithmetic_v<T>, "template argument must be an arithmetic type");
+
 	private:
-		const T m_Min;
-		const T m_Max;
+		T m_Min;
+		T m_Max;
+
 	public:
 		constexpr Range(T minInclusive, T maxInclusive) :
-			m_Min(minInclusive), m_Max(maxInclusive)
-		{}
+			m_Min(minInclusive),
+			m_Max(maxInclusive)
+		{
+		}
 
 		static Range<T> WithAssert(T minInclusive, T maxInclusive)
 		{
@@ -26,8 +30,8 @@ namespace GBEmu::Util
 			return Range<T>(value1, value2);
 		}
 
-		T Max() const {return m_Max; }
-		T Min() const {return m_Min; }
+		T Max() const { return m_Max; }
+		T Min() const { return m_Min; }
 
 		constexpr Range<T> ExtendRange(T extension)
 		{
@@ -35,7 +39,8 @@ namespace GBEmu::Util
 			return Range(m_Min - extension, m_Max + extension);
 		}
 
-		constexpr T GetDiff() const{
+		constexpr T GetDiff() const
+		{
 			return m_Max - m_Min;
 		}
 
@@ -49,7 +54,7 @@ namespace GBEmu::Util
 			return (std::max)(m_Min, (std::min)(targetValue, m_Max));
 		}
 
-		T Normalize(T targetValue, const Range<T>&afterRange)
+		T Normalize(T targetValue, const Range<T>& afterRange)
 		{
 			T normalizedRate = (targetValue - this->m_Min) / (this->m_Max - this->m_Min);
 			T result = afterRange.m_Min + (afterRange.m_Max - afterRange.m_Min) * normalizedRate;

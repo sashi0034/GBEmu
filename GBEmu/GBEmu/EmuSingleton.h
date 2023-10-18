@@ -11,14 +11,19 @@ namespace GBEmu
 	public:
 		EmuSingleton();
 		~EmuSingleton();
-		static EmuSingleton& Instance(){ return *globalInstance; }
+		static EmuSingleton& Instance() { return *globalInstance; }
 
-		void RegisterConfig(const EmuConfig& config) {m_config = config;}
-		const EmuConfig& Config() {return m_config;}
+		void RegisterConfig(const EmuConfig& config) { m_config = config; }
+		const EmuConfig& Config() { return m_config; }
 
-		EmuGamepad& Gamepad() {return m_emuGamepad;}
-		HW::HWAsset& HWAsset(){return m_hwAsset;}
-		UI::UIAsset& UIAsset(){return m_uiAsset;}
+		EmuGamepad& Gamepad() { return m_emuGamepad; }
+		HW::HWAsset& HWAsset() { return m_hwAsset; }
+		UI::UIAsset& UIAsset() { return m_uiAsset; }
+
+		const EmuGamepad& Gamepad() const { return m_emuGamepad; }
+		const HW::HWAsset& HWAsset() const { return m_hwAsset; }
+		const UI::UIAsset& UIAsset() const { return m_uiAsset; }
+
 	private:
 		EmuConfig m_config{};
 		EmuGamepad m_emuGamepad{};

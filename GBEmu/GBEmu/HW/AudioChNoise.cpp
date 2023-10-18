@@ -32,8 +32,8 @@ namespace GBEmu::HW
 	int AudioChNoise::Amplitude() const
 	{
 		const int a = m_volumeEnvelope.InitialVolume() == 0
-			? 0
-			: (~m_lfsr) & 0b1;
+			              ? 0
+			              : (~m_lfsr) & 0b1;
 		return a * m_volumeEnvelope.Volume();
 	}
 

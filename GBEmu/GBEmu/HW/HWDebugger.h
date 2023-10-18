@@ -22,14 +22,25 @@ namespace GBEmu::HW
 		void OnMemoryWrite(uint16 address, uint8 data);
 		void OnAudioSample(int channel, float wave);
 		const CPUInstructionProperty& LastExecutedInstruction() const { return m_lastExecutedInstruction; };
-		double CPUWorkedRate() const {return m_cpuWorkedCycleInFrame / static_cast<double>(HWParam::PPUCyclePeriod_70224); }
+
+		double CPUWorkedRate() const
+		{
+			return m_cpuWorkedCycleInFrame / static_cast<double>(HWParam::PPUCyclePeriod_70224);
+		}
+
 		const RenderTexture& AudioGraph() const { return m_audioGraph; }
 
-		static Optional<uint16> SearchMemoryBlob(HWEnv& env, Memory& memory, const RangeUint16& range, const Array<uint16>& blob);
+		static Optional<uint16> SearchMemoryBlob(HWEnv& env, Memory& memory, const RangeUint16& range,
+		                                         const Array<uint16>& blob);
+
 	private:
 		// UIで使わず開発でのみ使うものはImplに入れる
 		class Impl;
-		struct ImplPtr : std::unique_ptr<Impl> { ~ImplPtr(); } m_impl;
+
+		struct ImplPtr : std::unique_ptr<Impl>
+		{
+			~ImplPtr();
+		} m_impl;
 
 		CPUInstructionProperty m_lastExecutedInstruction;
 		int m_cpuWorkedCycleInFrame{};
@@ -42,6 +53,4 @@ namespace GBEmu::HW
 		static void refreshAudioGraph(
 			RenderTexture& graph, std::array<std::vector<float>, 5>& samples);
 	};
-
-
 }

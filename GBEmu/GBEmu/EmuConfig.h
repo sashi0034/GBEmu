@@ -23,5 +23,4 @@ namespace GBEmu
 		static EmuConfig LoadToml(const FilePath& path, const FilePath& alternativePath);
 		static const EmuConfig& Instance();
 	};
-
 }
