@@ -24,6 +24,7 @@ namespace GBEmu::HW::CPUOperationCB
 	{
 		auto&& cpu = env.GetCPU();
 
+		// @formatter:off
 		const CPUReg8 reg =
 			instr == ci::RLC_A_0x07 ? CPUReg8::A :
 			instr == ci::RLC_B_0x00 ? CPUReg8::B :
@@ -33,6 +34,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::RLC_H_0x04 ? CPUReg8::H :
 			instr == ci::RLC_L_0x05 ? CPUReg8::L :
 			undefinedReg8();
+		// @formatter:on
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 bit7 = before >> 7;
@@ -68,6 +70,7 @@ namespace GBEmu::HW::CPUOperationCB
 	{
 		auto&& cpu = env.GetCPU();
 
+		// @formatter:off
 		const CPUReg8 reg =
 			instr == ci::RRC_A_0x0F ? CPUReg8::A :
 			instr == ci::RRC_B_0x08 ? CPUReg8::B :
@@ -77,6 +80,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::RRC_H_0x0C ? CPUReg8::H :
 			instr == ci::RRC_L_0x0D ? CPUReg8::L :
 			undefinedReg8();
+		// @formatter:on
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 bit0 = before & 0b1;
@@ -112,6 +116,7 @@ namespace GBEmu::HW::CPUOperationCB
 	{
 		auto&& cpu = env.GetCPU();
 
+		// @formatter:off
 		const CPUReg8 reg =
 			instr == ci::RL_A_0x17 ? CPUReg8::A :
 			instr == ci::RL_B_0x10 ? CPUReg8::B :
@@ -121,6 +126,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::RL_H_0x14 ? CPUReg8::H :
 			instr == ci::RL_L_0x15 ? CPUReg8::L :
 			undefinedReg8();
+		// @formatter:on
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 bit7 = before >> 7;
@@ -162,6 +168,7 @@ namespace GBEmu::HW::CPUOperationCB
 	{
 		auto&& cpu = env.GetCPU();
 
+		// @formatter:off
 		const CPUReg8 reg =
 			instr == ci::RR_A_0x1F ? CPUReg8::A :
 			instr == ci::RR_B_0x18 ? CPUReg8::B :
@@ -171,6 +178,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::RR_H_0x1C ? CPUReg8::H :
 			instr == ci::RR_L_0x1D ? CPUReg8::L :
 			undefinedReg8();
+		// @formatter:on
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 bit0 = before & 0b1;
@@ -212,6 +220,7 @@ namespace GBEmu::HW::CPUOperationCB
 	{
 		auto&& cpu = env.GetCPU();
 
+		// @formatter:off
 		const CPUReg8 reg =
 			instr == ci::SLA_A_0x27 ? CPUReg8::A :
 			instr == ci::SLA_B_0x20 ? CPUReg8::B :
@@ -221,6 +230,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::SLA_H_0x24 ? CPUReg8::H :
 			instr == ci::SLA_L_0x25 ? CPUReg8::L :
 			undefinedReg8();
+		// @formatter:on
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 after = before << 1;
@@ -256,6 +266,7 @@ namespace GBEmu::HW::CPUOperationCB
 	{
 		auto&& cpu = env.GetCPU();
 
+		// @formatter:off
 		const CPUReg8 reg =
 			instr == ci::SRA_A_0x2F ? CPUReg8::A :
 			instr == ci::SRA_B_0x28 ? CPUReg8::B :
@@ -265,6 +276,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::SRA_H_0x2C ? CPUReg8::H :
 			instr == ci::SRA_L_0x2D ? CPUReg8::L :
 			undefinedReg8();
+		// @formatter:on
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 after = (before >> 1) | (before & (1 << 7));
@@ -300,6 +312,7 @@ namespace GBEmu::HW::CPUOperationCB
 	{
 		auto&& cpu = env.GetCPU();
 
+		// @formatter:off
 		const CPUReg8 reg =
 			instr == ci::SRL_A_0x3F ? CPUReg8::A :
 			instr == ci::SRL_B_0x38 ? CPUReg8::B :
@@ -309,6 +322,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::SRL_H_0x3C ? CPUReg8::H :
 			instr == ci::SRL_L_0x3D ? CPUReg8::L :
 			undefinedReg8();
+		// @formatter:on
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 after = before >> 1;
@@ -344,6 +358,7 @@ namespace GBEmu::HW::CPUOperationCB
 	{
 		auto&& cpu = env.GetCPU();
 
+		// @formatter:off
 		const CPUReg8 reg =
 			instr == ci::SWAP_A_0x37 ? CPUReg8::A :
 			instr == ci::SWAP_B_0x30 ? CPUReg8::B :
@@ -353,6 +368,7 @@ namespace GBEmu::HW::CPUOperationCB
 			instr == ci::SWAP_H_0x34 ? CPUReg8::H :
 			instr == ci::SWAP_L_0x35 ? CPUReg8::L :
 			undefinedReg8();
+		// @formatter:on
 
 		const uint8 before = cpu.GetReg8(reg);
 		const uint8 after = (before >> 4) | (before << 4);
@@ -391,6 +407,7 @@ namespace GBEmu::HW::CPUOperationCB
 		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::BIT_0_B_0x40)) / 8;
 		const uint8 r8 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::BIT_0_B_0x40)) % 8;
 
+		// @formatter:off
 		const CPUReg8 reg =
 			r8 == 7 ? CPUReg8::A :
 			r8 == 0 ? CPUReg8::B :
@@ -400,6 +417,7 @@ namespace GBEmu::HW::CPUOperationCB
 			r8 == 4 ? CPUReg8::H :
 			r8 == 5 ? CPUReg8::L :
 			undefinedReg8();
+		// @formatter:on
 
 		const uint8 value = cpu.GetReg8(reg);
 		const bool z = (value & (1 << u3)) == 0;
@@ -428,6 +446,7 @@ namespace GBEmu::HW::CPUOperationCB
 		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::RES_0_B_0x80)) / 8;
 		const uint8 r8 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::RES_0_B_0x80)) % 8;
 
+		// @formatter:off
 		const CPUReg8 reg =
 			r8 == 7 ? CPUReg8::A :
 			r8 == 0 ? CPUReg8::B :
@@ -437,6 +456,7 @@ namespace GBEmu::HW::CPUOperationCB
 			r8 == 4 ? CPUReg8::H :
 			r8 == 5 ? CPUReg8::L :
 			undefinedReg8();
+		// @formatter:on
 
 		const uint8 value = cpu.GetReg8(reg);
 		cpu.SetReg8(reg, value & (~(1 << u3)));
@@ -466,6 +486,7 @@ namespace GBEmu::HW::CPUOperationCB
 		const uint8 u3 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::SET_0_B_0xC0)) / 8;
 		const uint8 r8 = (static_cast<uint8>(instr) - static_cast<uint8>(ci::SET_0_B_0xC0)) % 8;
 
+		// @formatter:off
 		const CPUReg8 reg =
 			r8 == 7 ? CPUReg8::A :
 			r8 == 0 ? CPUReg8::B :
@@ -475,6 +496,7 @@ namespace GBEmu::HW::CPUOperationCB
 			r8 == 4 ? CPUReg8::H :
 			r8 == 5 ? CPUReg8::L :
 			undefinedReg8();
+		// @formatter:on
 
 		const uint8 value = cpu.GetReg8(reg);
 		cpu.SetReg8(reg, value | (1 << u3));
@@ -587,7 +609,7 @@ namespace GBEmu::HW::CPUOperationCB
 		case ci::BIT_2_E_0x53: return operateBIT_N_X(env, instr);
 		case ci::BIT_2_H_0x54: return operateBIT_N_X(env, instr);
 		case ci::BIT_2_L_0x55: return operateBIT_N_X(env, instr);
-		case ci::BIT_2_mHL_0x56:return operateBIT_N_mHL(env, instr);
+		case ci::BIT_2_mHL_0x56: return operateBIT_N_mHL(env, instr);
 		case ci::BIT_2_A_0x57: return operateBIT_N_X(env, instr);
 		case ci::BIT_3_B_0x58: return operateBIT_N_X(env, instr);
 		case ci::BIT_3_C_0x59: return operateBIT_N_X(env, instr);
